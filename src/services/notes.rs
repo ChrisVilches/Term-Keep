@@ -1,90 +1,66 @@
-use crate::Note;
-use rusqlite::Connection;
-
-// TODO: Should be singleton.
-pub fn database_connection() -> Result<rusqlite::Connection, rusqlite::Error> {
-  Connection::open("./test.db")
-}
-
-// Should be idempotent.
-pub fn install_database() -> Result<usize, rusqlite::Error> {
-  database_connection()?.execute(
-    "CREATE TABLE IF NOT EXISTS note (
-            id          INTEGER PRIMARY KEY,
-            content     TEXT NOT NULL,
-            task_status INTEGER,
-            archived    BOOLEAN NOT NULL DEFAULT false, 
-            pinned      BOOLEAN NOT NULL DEFAULT false,
-            task        BOOLEAN NOT NULL
-        )",
-    (),
-  )
-}
+use crate::models::note::Note;
+use crate::models::note_type::NoteType;
+use crate::services::db;
 
 pub fn create_note(content: &str) -> Note {
   Note {
     id: None,
     content: content.to_string(),
     pinned: false,
-    task: false,
+    note_type: NoteType::Normal,
     archived: false,
-    task_status: None,
   }
 }
 
 // TODO: Not sure about the Result<>.
 pub fn insert_note(note: Note) -> Result<usize, rusqlite::Error> {
-  database_connection()?.execute(
+  db::connection().execute(
     "INSERT INTO note (content, task) VALUES (?1, ?2)",
     (&note.content, false),
   )
 }
 
-pub fn find_all_notes<'stmt>() -> Result<Vec<Note>, rusqlite::Error> {
-  let conn = database_connection()?;
-  let mut stmt = conn.prepare(
-    "SELECT id, content, pinned, task, archived, task_status FROM note WHERE archived = false",
-  )?;
+fn row_to_note(row: &rusqlite::Row) -> Result<Note, rusqlite::Error> {
+  let note_type = match row.get(4)? {
+    None => NoteType::Normal,
+    num => NoteType::Task(num.unwrap()), // TODO: wtf?
+  };
 
-  let rows = stmt.query_map([], |row| {
-    Ok(Note {
-      id: row.get(0)?,
-      content: row.get(1)?,
-      pinned: row.get(2)?,
-      task: row.get(3)?,
-      archived: row.get(4)?,
-      task_status: row.get(5)?,
-    })
-  })?;
-
-  let mut notes = Vec::<Note>::new();
-
-  for row in rows {
-    notes.push(row?);
-  }
-
-  Ok(notes)
+  Ok(Note {
+    id: row.get(0)?,
+    content: row.get(1)?,
+    pinned: row.get(2)?,
+    archived: row.get(3)?,
+    note_type,
+  })
 }
 
-// TODO: Can I remove this lifetime?
-pub fn find_one_note<'stmt>(id: i32) -> Result<Note, rusqlite::Error> {
-  let conn = database_connection()?;
-  let mut stmt = conn.prepare(
-    "SELECT id, content, pinned, task, archived, task_status FROM note WHERE id = ? LIMIT 1",
+fn rows_to_vec(mut stmt: rusqlite::Statement, params: &[&dyn rusqlite::ToSql]) -> Vec<Note> {
+  stmt
+    .query_map(params, row_to_note)
+    .unwrap()
+    .map(|n| n.unwrap())
+    .collect()
+}
+
+pub fn find_all_notes() -> Result<Vec<Note>, rusqlite::Error> {
+  let conn = db::connection();
+  let stmt = conn.prepare(
+    "SELECT id, content, pinned, archived, task_status FROM note WHERE archived = false",
   )?;
 
-  let rows = stmt.query_map([id], |row| {
-    Ok(Note {
-      id: row.get(0)?,
-      content: row.get(1)?,
-      pinned: row.get(2)?,
-      task: row.get(3)?,
-      archived: row.get(4)?,
-      task_status: row.get(5)?,
-    })
-  })?;
+  Ok(rows_to_vec(stmt, rusqlite::params![]))
+}
 
-  let notes: Vec<Note> = rows.map(|n| n.unwrap()).collect();
+pub fn find_one_note(id: i32) -> Result<Note, rusqlite::Error> {
+  let conn = db::connection();
+  let stmt = conn
+    .prepare("SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1")?;
 
-  Ok(notes.first().unwrap().clone())
+  Ok(
+    rows_to_vec(stmt, rusqlite::params![id])
+      .first()
+      .unwrap()
+      .clone(),
+  )
 }
