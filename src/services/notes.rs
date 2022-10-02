@@ -2,7 +2,7 @@ use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::services::db;
 
-pub fn create_note(content: &str) -> Note {
+pub fn build_note(content: &str) -> Note {
   Note {
     id: None,
     content: content.to_string(),
@@ -60,7 +60,25 @@ pub fn find_one_note(id: i32) -> Result<Note, rusqlite::Error> {
   Ok(
     rows_to_vec(stmt, rusqlite::params![id])
       .first()
-      .unwrap()
+      .expect(&*format!("Note (ID = {}) not found", id))
       .clone(),
   )
+}
+
+pub fn create_note(text: String) {
+  let conn = db::connection();
+  let mut stmt = conn.prepare("INSERT INTO note (content) VALUES (?)").unwrap();
+  stmt.execute([text]).unwrap();
+}
+
+pub fn create_task(text: String) {
+  let conn = db::connection();
+  let mut stmt = conn.prepare("INSERT INTO note (content, task_status) VALUES (?, 0)").unwrap();
+  stmt.execute([text]).unwrap();
+}
+
+pub fn update_note(id: i32, text: String) {
+  let conn = db::connection();
+  let mut stmt = conn.prepare("UPDATE note SET content = ? WHERE id = ?").unwrap();
+  stmt.execute(rusqlite::params![text, id]).unwrap();
 }

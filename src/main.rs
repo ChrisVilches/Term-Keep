@@ -70,7 +70,9 @@ fn main() {
 
   println!();
 
-  commands::show_one::show_one(3);
+  // commands::show_one::show_one(3);
 
-  commands::create_note::create_note();
+  // commands::create_note::create_note(true);
+
+  // commands::edit_note::edit_note(3);
 }

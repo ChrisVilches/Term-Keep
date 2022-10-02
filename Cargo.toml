@@ -9,3 +9,4 @@ edition = "2021"
 clap = { version = "4.0.8", features = ["derive"] }
 rusqlite = { version = "0.28.0", features = ["bundled"] }
 colored = "2.0.0"
+edit = "0.1.4"
