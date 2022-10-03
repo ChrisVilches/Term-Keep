@@ -1,6 +1,7 @@
 use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::services::db;
+use crate::services::errors::NotFoundError;
 
 fn row_to_note(row: &rusqlite::Row) -> Result<Note, rusqlite::Error> {
   let note_type = match row.get(4)? {
@@ -47,26 +48,41 @@ pub fn find_one_note(id: u32) -> Result<Note, rusqlite::Error> {
   )
 }
 
-pub fn create_note(text: String) {
+// TODO: Maybe it'd be better that all functions return a Result, and that it has
+//       to be "unwrapped" from the CLI (or commands/controllers module). I already
+//       have some functions that work like that.
+pub fn create_note(text: String) -> Result<(), rusqlite::Error> {
   let conn = db::connection();
-  let mut stmt = conn
-    .prepare("INSERT INTO note (content) VALUES (?)")
-    .unwrap();
-  stmt.execute([text]).unwrap();
+  let stmt = conn.prepare("INSERT INTO note (content) VALUES (?)");
+  stmt?.execute([text])?;
+  Ok(())
 }
 
-pub fn create_task(text: String) {
+pub fn create_task(text: String) -> Result<(), rusqlite::Error> {
   let conn = db::connection();
-  let mut stmt = conn
-    .prepare("INSERT INTO note (content, task_status) VALUES (?, 0)")
-    .unwrap();
-  stmt.execute([text]).unwrap();
+  let stmt = conn.prepare("INSERT INTO note (content, task_status) VALUES (?, 0)");
+  stmt?.execute([text])?;
+  Ok(())
 }
 
-pub fn update_note(id: u32, text: String) {
+pub fn update_note(id: u32, text: String) -> Result<(), rusqlite::Error> {
+  let conn = db::connection();
+  let stmt = conn.prepare("UPDATE note SET content = ? WHERE id = ?");
+  stmt?.execute(rusqlite::params![text, id])?;
+  Ok(())
+}
+
+pub fn pin(id: u32, pinned: bool) -> Result<(), NotFoundError> {
+  // TODO: Add check to see if the note actually exists or not.
+  //       I think this can be done with the query return (number of rows modified)
   let conn = db::connection();
   let mut stmt = conn
-    .prepare("UPDATE note SET content = ? WHERE id = ?")
+    .prepare("UPDATE note SET pinned = ? WHERE id = ?")
     .unwrap();
-  stmt.execute(rusqlite::params![text, id]).unwrap();
+  let rows_changed = stmt.execute(rusqlite::params![pinned, id]).unwrap();
+
+  match rows_changed {
+    1 => Ok(()),
+    _ => Err(NotFoundError { id }),
+  }
 }

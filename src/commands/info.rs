@@ -1,6 +1,6 @@
 use crate::config;
 
-pub fn info() {  
+pub fn info() {
   println!(
     "Database location: {}",
     config::env::get_string_env_var("DB_PATH")

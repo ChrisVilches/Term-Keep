@@ -1,9 +1,9 @@
 use crate::helpers::note_fmt;
-use crate::services::notes::find_all_notes;
+use crate::services;
 use crate::Note;
 
 pub fn show_all() {
-  let notes: Vec<Note> = find_all_notes().unwrap();
+  let notes: Vec<Note> = services::notes::find_all_notes().unwrap();
   println!("{} note(s)", notes.len());
   println!();
 

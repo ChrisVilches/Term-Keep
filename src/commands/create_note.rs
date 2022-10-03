@@ -1,4 +1,4 @@
-use crate::services::notes;
+use crate::services;
 use colored::*;
 
 // TODO: This flag parameter should be named when calling... not sure how to do it.
@@ -12,9 +12,9 @@ pub fn create_note(task: bool) {
   // Also right now this doesn't throw a "Result", so the error cannot be handled here.
 
   if task {
-    notes::create_task(content);
+    services::notes::create_task(content).unwrap();
   } else {
-    notes::create_note(content);
+    services::notes::create_note(content).unwrap();
   }
 
   // TODO: I think it'd be better if the create/update methods

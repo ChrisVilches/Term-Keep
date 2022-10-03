@@ -1,9 +1,8 @@
-use crate::commands::show_one::notes::find_one_note;
-use crate::services::notes;
+use crate::services;
 use crate::Note;
 
 pub fn show_one(note_id: u32) {
-  let note: Note = find_one_note(note_id).unwrap();
+  let note: Note = services::notes::find_one_note(note_id).unwrap();
 
   match note.id {
     None => println!("ID: -"),

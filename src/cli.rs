@@ -26,6 +26,12 @@ enum Commands {
   #[command(about = "Create a new task")]
   NewTask,
 
+  #[command(about = "Pin a note")]
+  Pin { id: u32 },
+
+  #[command(about = "Unpin a note")]
+  Unpin { id: u32 },
+
   #[command(about = "Show configuration information")]
   Info,
 }
@@ -51,6 +57,12 @@ pub fn create_cli() {
     }
     Commands::NewTask => {
       commands::create_note::create_note(true);
+    }
+    Commands::Pin { id } => {
+      commands::pin_note::pin_note(*id, true);
+    }
+    Commands::Unpin { id } => {
+      commands::pin_note::pin_note(*id, false);
     }
     Commands::Info => {
       commands::info::info();

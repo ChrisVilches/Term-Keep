@@ -4,6 +4,10 @@ use crate::models::task_status::TaskStatus;
 use crate::util::strings;
 use colored::*;
 
+/**
+ * TODO: I think this file could simply be moved to "util". It works fine there I think.
+ */
+
 const NOTE_SUMMARY_MAX_LENGTH: usize = 25;
 
 fn format_content(content: String) -> String {
