@@ -2,7 +2,7 @@ use crate::models::note_type::NoteType;
 
 #[derive(Debug, Clone)]
 pub struct Note {
-  pub id: Option<i32>,
+  pub id: Option<u32>,
   pub content: String,
   pub pinned: bool,
   pub note_type: NoteType,

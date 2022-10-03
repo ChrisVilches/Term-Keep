@@ -58,15 +58,15 @@ pub fn note_icons(note: &Note) -> String {
   let pin_icon = "📌";
   let archive_icon = "📁";
 
-  let mut result = String::new();
+  let mut icons = Vec::<&str>::new();
 
   if note.archived {
-    result += archive_icon;
+    icons.push(archive_icon);
   }
 
   if note.pinned {
-    result += pin_icon;
+    icons.push(pin_icon);
   }
 
-  result
+  return icons.join(" ");
 }

@@ -13,12 +13,49 @@ struct Cli {
 //       I'd like to fix this so it can be executed with -a. Not urgent.
 #[derive(Args)]
 struct ShowAllNotes {
+  #[clap(long = "archived", short = 'a', action, help = "Only archived notes")]
+  archived: bool,
+}
+
+#[derive(Args)]
+struct Archive {
+  #[clap(name = "Note ID")]
+  id: u32,
+
   #[clap(
-    long = "archived",
-    short = 'a',
+    long = "remove",
+    short = 'r',
     action,
-    help = "Only archived notes/tasks"
+    help = "Remove from archive list"
   )]
+  remove: bool,
+}
+
+#[derive(Args)]
+struct Pin {
+  #[clap(name = "Note ID")]
+  id: u32,
+
+  // TODO: If I remove the "action", does the value never become true? I think that's what it does (confirm)
+  #[clap(long = "remove", short = 'r', action, help = "Remove pin")]
+  remove: bool,
+}
+
+#[derive(Args)]
+struct ChangeTaskStatus {
+  #[clap(name = "Note (task) ID")]
+  id: u32,
+
+  #[clap(name = "New status")]
+  status: String,
+}
+
+#[derive(Args)]
+struct Search {
+  #[clap(name = "Text to search")]
+  text: String,
+
+  #[clap(long = "archived", short = 'a', action, help = "Only archived notes")]
   archived: bool,
 }
 
@@ -27,8 +64,11 @@ enum Commands {
   #[command(name = "all", about = "Show all notes")]
   ShowAllNotes(ShowAllNotes),
 
-  #[command(about = "Show one note/task")]
+  #[command(about = "Show one note")]
   Show { id: u32 },
+
+  #[command(about = "Find notes (text search)", alias = "find")]
+  Search(Search),
 
   #[command(name = "edit", about = "Edit a note")]
   EditNote { id: u32 },
@@ -39,21 +79,33 @@ enum Commands {
   #[command(about = "Create a new task")]
   NewTask,
 
-  #[command(about = "Pin a note")]
-  Pin { id: u32 },
+  #[command(about = "Change a task status")]
+  ChangeTaskStatus(ChangeTaskStatus),
 
-  #[command(about = "Unpin a note")]
-  Unpin { id: u32 },
+  #[command(about = "Pin a note")]
+  Pin(Pin),
 
   #[command(about = "Archive a note")]
-  Archive { id: u32 },
+  Archive(Archive),
 
-  #[command(about = "Unarchive a note")]
-  Unarchive { id: u32 },
-
-  #[command(about = "Show configuration information")]
+  #[command(about = "Show miscellaneous information")]
   Info,
 }
+
+fn abort_with_message(msg: String) {
+  eprintln!("{}", msg);
+  std::process::exit(1);
+}
+
+/**
+ * TODO:
+ * Some of these things can be improved by passing the entire Command object as argument,
+ * since it's still a module related to comments, the modules are still decoupled (this wouldn't
+ * be the case if I was passing the objects to the services module).
+ *
+ *
+ * TODO: Prettify (by using abort_with_message, or something similar) all the crashes of other commands.
+ */
 
 pub fn create_cli() {
   let cli = Cli::parse();
@@ -71,6 +123,9 @@ pub fn create_cli() {
     Commands::Show { id } => {
       commands::show_one::show_one(*id);
     }
+    Commands::Search(search) => {
+      commands::search::find_fuzzy(search.text.to_string(), search.archived);
+    }
     Commands::EditNote { id } => {
       commands::edit_note::edit_note(*id);
     }
@@ -80,17 +135,20 @@ pub fn create_cli() {
     Commands::NewTask => {
       commands::create_note::create_note(true);
     }
-    Commands::Pin { id } => {
-      commands::pin_note::pin_note(*id, true);
+    Commands::ChangeTaskStatus(change_task_status) => {
+      let result =
+        commands::tasks::change_status(change_task_status.id, &change_task_status.status);
+
+      match result {
+        Ok(_) => {}
+        Err(e) => abort_with_message(e),
+      }
     }
-    Commands::Unpin { id } => {
-      commands::pin_note::pin_note(*id, false);
+    Commands::Pin(pin) => {
+      commands::pin_note::pin_note(pin.id, !pin.remove);
     }
-    Commands::Archive { id } => {
-      commands::deletion::archive(*id, true);
-    }
-    Commands::Unarchive { id } => {
-      commands::deletion::archive(*id, false);
+    Commands::Archive(archive) => {
+      commands::deletion::archive(archive.id, !archive.remove);
     }
     Commands::Info => {
       commands::info::info();

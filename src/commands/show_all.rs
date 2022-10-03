@@ -24,7 +24,11 @@ pub fn show_all(archived: bool) {
   let not_pinned: Vec<&Note> = notes.iter().filter(|n| !n.pinned).collect();
 
   for note in &pinned {
-    println!("{} {}", note_fmt::note_icons(&note), note_fmt::format_note_summary(&note));
+    println!(
+      "{} {}",
+      note_fmt::note_icons(&note),
+      note_fmt::format_note_summary(&note)
+    );
   }
 
   if pinned.len() > 0 {
@@ -32,6 +36,10 @@ pub fn show_all(archived: bool) {
   }
 
   for note in &not_pinned {
-    println!("{} {}", note_fmt::note_icons(&note), note_fmt::format_note_summary(&note));
+    println!(
+      "{} {}",
+      note_fmt::note_icons(&note),
+      note_fmt::format_note_summary(&note)
+    );
   }
 }

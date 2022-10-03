@@ -12,3 +12,4 @@ rusqlite = { version = "0.28.0", features = ["bundled"] }
 colored = "2.0.0"
 edit = "0.1.4"
 rand = "0.8.5"
+fuzzy-matcher = "0.3.7"

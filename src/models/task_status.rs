@@ -2,11 +2,22 @@ use rusqlite::types::FromSql;
 use rusqlite::types::FromSqlResult;
 use rusqlite::types::ValueRef;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum TaskStatus {
   Todo = 0,
   Progress = 1,
   Done = 2,
+}
+
+impl TaskStatus {
+  pub fn from_string(status: &str) -> Result<TaskStatus, String> {
+    match status {
+      "todo" => Ok(TaskStatus::Todo),
+      "progress" => Ok(TaskStatus::Progress),
+      "done" => Ok(TaskStatus::Done),
+      _ => Err("Invalid status (allowed values: todo, progress, done)".to_string()),
+    }
+  }
 }
 
 impl FromSql for TaskStatus {

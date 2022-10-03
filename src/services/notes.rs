@@ -3,6 +3,8 @@ use crate::models::note_type::NoteType;
 use crate::services::db;
 use crate::services::errors::NotFoundError;
 
+// TODO: This file is a bit messy because each service works a bit differently from each other.
+
 fn row_to_note(row: &rusqlite::Row) -> Result<Note, rusqlite::Error> {
   let note_type = match row.get(4)? {
     None => NoteType::Normal,
@@ -98,4 +100,11 @@ pub fn archive(id: u32, archived: bool) -> Result<(), NotFoundError> {
     1 => Ok(()),
     _ => Err(NotFoundError { id }),
   }
+}
+
+pub fn change_task_status(id: u32, status: i32) -> Result<(), rusqlite::Error> {
+  let conn = db::connection();
+  let stmt = conn.prepare("UPDATE note SET task_status = ? WHERE id = ?");
+  stmt?.execute(rusqlite::params![status, id])?;
+  Ok(())
 }

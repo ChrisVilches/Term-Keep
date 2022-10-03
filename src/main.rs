@@ -12,14 +12,14 @@ use crate::services::tips;
 use crate::util::files::lines_from_file;
 
 fn show_random_tip() {
-  match tips::random_tip() {
-    Some(t) => {
-      println!();
-      println!("💡 Tip: {}", t);
-    }
-    None => {}
+  if let Some(t) = tips::random_tip() {
+    println!();
+    println!("💡 Tip: {}", t);
   }
 }
+
+// TODO: Clean all panics.
+// TODO: Clean all unwraps (since they can panic).
 
 fn main() {
   services::db::install_database().unwrap();
