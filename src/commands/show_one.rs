@@ -2,7 +2,7 @@ use crate::commands::show_one::notes::find_one_note;
 use crate::services::notes;
 use crate::Note;
 
-pub fn show_one(note_id: i32) {
+pub fn show_one(note_id: u32) {
   let note: Note = find_one_note(note_id).unwrap();
 
   match note.id {

@@ -1,8 +1,10 @@
+use crate::config;
 use rusqlite::Connection;
 
 // TODO: Should be singleton.
 pub fn connection() -> rusqlite::Connection {
-  Connection::open("./test.db").unwrap()
+  let db_path = config::env::get_string_env_var("DB_PATH");
+  Connection::open(db_path).unwrap()
 }
 
 // Should be idempotent.

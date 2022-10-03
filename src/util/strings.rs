@@ -2,9 +2,35 @@ pub fn truncate_string_ellipsis(s: String, length: usize) -> String {
   let mut new_s = String::from(s);
 
   if new_s.len() <= length {
-    return new_s;
+    new_s
+  } else {
+    new_s.truncate(length);
+    new_s + "..."
+  }
+}
+
+pub fn first_line(s: String) -> String {
+  s.split("\n")
+    .collect::<Vec<_>>()
+    .first()
+    .unwrap()
+    .to_string()
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_first_line() {
+    assert_eq!(first_line("hello\nworld".to_string()), "hello");
+    assert_eq!(first_line("  a \n b".to_string()), "  a ");
+    assert_eq!(first_line(" only one line ".to_string()), " only one line ");
   }
 
-  new_s.truncate(length);
-  new_s + "..."
+  #[test]
+  fn test_truncate_string_ellipsis() {
+    assert_eq!(truncate_string_ellipsis("abcde".to_string(), 2), "ab...");
+    assert_eq!(truncate_string_ellipsis("abcde".to_string(), 7), "abcde");
+  }
 }

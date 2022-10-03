@@ -2,24 +2,6 @@ use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::services::db;
 
-pub fn build_note(content: &str) -> Note {
-  Note {
-    id: None,
-    content: content.to_string(),
-    pinned: false,
-    note_type: NoteType::Normal,
-    archived: false,
-  }
-}
-
-// TODO: Not sure about the Result<>.
-pub fn insert_note(note: Note) -> Result<usize, rusqlite::Error> {
-  db::connection().execute(
-    "INSERT INTO note (content, task) VALUES (?1, ?2)",
-    (&note.content, false),
-  )
-}
-
 fn row_to_note(row: &rusqlite::Row) -> Result<Note, rusqlite::Error> {
   let note_type = match row.get(4)? {
     None => NoteType::Normal,
@@ -52,7 +34,7 @@ pub fn find_all_notes() -> Result<Vec<Note>, rusqlite::Error> {
   Ok(rows_to_vec(stmt, rusqlite::params![]))
 }
 
-pub fn find_one_note(id: i32) -> Result<Note, rusqlite::Error> {
+pub fn find_one_note(id: u32) -> Result<Note, rusqlite::Error> {
   let conn = db::connection();
   let stmt = conn
     .prepare("SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1")?;
@@ -67,18 +49,24 @@ pub fn find_one_note(id: i32) -> Result<Note, rusqlite::Error> {
 
 pub fn create_note(text: String) {
   let conn = db::connection();
-  let mut stmt = conn.prepare("INSERT INTO note (content) VALUES (?)").unwrap();
+  let mut stmt = conn
+    .prepare("INSERT INTO note (content) VALUES (?)")
+    .unwrap();
   stmt.execute([text]).unwrap();
 }
 
 pub fn create_task(text: String) {
   let conn = db::connection();
-  let mut stmt = conn.prepare("INSERT INTO note (content, task_status) VALUES (?, 0)").unwrap();
+  let mut stmt = conn
+    .prepare("INSERT INTO note (content, task_status) VALUES (?, 0)")
+    .unwrap();
   stmt.execute([text]).unwrap();
 }
 
-pub fn update_note(id: i32, text: String) {
+pub fn update_note(id: u32, text: String) {
   let conn = db::connection();
-  let mut stmt = conn.prepare("UPDATE note SET content = ? WHERE id = ?").unwrap();
+  let mut stmt = conn
+    .prepare("UPDATE note SET content = ? WHERE id = ?")
+    .unwrap();
   stmt.execute(rusqlite::params![text, id]).unwrap();
 }

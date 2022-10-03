@@ -1,6 +1,8 @@
-use colored::*;
 use crate::services::notes;
+use colored::*;
 
+// TODO: This flag parameter should be named when calling... not sure how to do it.
+// pseudocode create_note({ task: true })
 pub fn create_note(task: bool) {
   let template = "New note";
   let content = edit::edit(template).unwrap();
@@ -20,5 +22,4 @@ pub fn create_note(task: bool) {
   // because that one shows a lot of data with a nice format.
 
   println!("{}", "Created".blue());
-
 }

@@ -1,4 +1,4 @@
-use crate::format_note_summary;
+use crate::helpers::note_fmt;
 use crate::services::notes::find_all_notes;
 use crate::Note;
 
@@ -11,7 +11,7 @@ pub fn show_all() {
   let not_pinned: Vec<&Note> = notes.iter().filter(|n| !n.pinned).collect();
 
   for note in &pinned {
-    println!("📌 {}", format_note_summary(&note));
+    println!("📌 {}", note_fmt::format_note_summary(&note));
   }
 
   if pinned.len() > 0 {
@@ -19,6 +19,6 @@ pub fn show_all() {
   }
 
   for note in &not_pinned {
-    println!("{}", format_note_summary(&note));
+    println!("{}", note_fmt::format_note_summary(&note));
   }
 }

@@ -1,18 +1,18 @@
+use crate::services::notes;
 use crate::Note;
 use colored::*;
-use crate::services::notes;
 
-pub fn edit_note(id: i32) {
+pub fn edit_note(id: u32) {
   let note: Note = notes::find_one_note(id).unwrap();
   let template = note.content;
 
   let content = edit::edit(template.to_string()).unwrap();
-  
+
   if template.eq(&content) {
     println!("{}", "Not changed".black());
     return;
   }
-  
+
   println!("{}", content);
 
   // TODO: Should handle error (show message). This applies to most services as well.
