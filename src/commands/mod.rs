@@ -1,4 +1,5 @@
 pub mod create_note;
+pub mod deletion;
 pub mod edit_note;
 pub mod info;
 pub mod pin_note;

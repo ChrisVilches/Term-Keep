@@ -5,10 +5,10 @@ use crate::util::strings;
 use colored::*;
 
 /**
- * TODO: I think this file could simply be moved to "util". It works fine there I think.
+ * TODO: I think this file could simply be moved to "util" folder. It works fine there I think.
  */
 
-const NOTE_SUMMARY_MAX_LENGTH: usize = 25;
+const NOTE_SUMMARY_MAX_LENGTH: usize = 50;
 
 fn format_content(content: String) -> String {
   strings::truncate_string_ellipsis(strings::first_line(content), NOTE_SUMMARY_MAX_LENGTH)
@@ -52,4 +52,21 @@ pub fn format_note_summary(note: &Note) -> String {
     NoteType::Normal => format_normal_note_summary(note),
     NoteType::Task(status) => format_task_summary(note, status),
   }
+}
+
+pub fn note_icons(note: &Note) -> String {
+  let pin_icon = "📌";
+  let archive_icon = "📁";
+
+  let mut result = String::new();
+
+  if note.archived {
+    result += archive_icon;
+  }
+
+  if note.pinned {
+    result += pin_icon;
+  }
+
+  result
 }

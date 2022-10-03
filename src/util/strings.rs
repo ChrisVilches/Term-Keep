@@ -9,6 +9,13 @@ pub fn truncate_string_ellipsis(s: String, length: usize) -> String {
   }
 }
 
+pub fn bool_to_str(b: bool) -> String {
+  match b {
+    true => "Yes".to_string(),
+    false => "No".to_string(),
+  }
+}
+
 pub fn first_line(s: String) -> String {
   s.split("\n")
     .collect::<Vec<_>>()

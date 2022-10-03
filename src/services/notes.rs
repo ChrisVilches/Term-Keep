@@ -26,13 +26,13 @@ fn rows_to_vec(mut stmt: rusqlite::Statement, params: &[&dyn rusqlite::ToSql]) -
     .collect()
 }
 
-pub fn find_all_notes() -> Result<Vec<Note>, rusqlite::Error> {
+// TODO: Flag arguments are difficult to read.
+pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
   let conn = db::connection();
-  let stmt = conn.prepare(
-    "SELECT id, content, pinned, archived, task_status FROM note WHERE archived = false",
-  )?;
+  let stmt = conn
+    .prepare("SELECT id, content, pinned, archived, task_status FROM note WHERE archived = ?")?;
 
-  Ok(rows_to_vec(stmt, rusqlite::params![]))
+  Ok(rows_to_vec(stmt, rusqlite::params![archived]))
 }
 
 pub fn find_one_note(id: u32) -> Result<Note, rusqlite::Error> {
@@ -72,14 +72,27 @@ pub fn update_note(id: u32, text: String) -> Result<(), rusqlite::Error> {
   Ok(())
 }
 
+// TODO: Throws notfounderror, but unwraps (silents / panics) the rusqlite::Error.
+//       How can this be improved?
 pub fn pin(id: u32, pinned: bool) -> Result<(), NotFoundError> {
-  // TODO: Add check to see if the note actually exists or not.
-  //       I think this can be done with the query return (number of rows modified)
   let conn = db::connection();
   let mut stmt = conn
     .prepare("UPDATE note SET pinned = ? WHERE id = ?")
     .unwrap();
   let rows_changed = stmt.execute(rusqlite::params![pinned, id]).unwrap();
+
+  match rows_changed {
+    1 => Ok(()),
+    _ => Err(NotFoundError { id }),
+  }
+}
+
+pub fn archive(id: u32, archived: bool) -> Result<(), NotFoundError> {
+  let conn = db::connection();
+  let mut stmt = conn
+    .prepare("UPDATE note SET archived = ? WHERE id = ?")
+    .unwrap();
+  let rows_changed = stmt.execute(rusqlite::params![archived, id]).unwrap();
 
   match rows_changed {
     1 => Ok(()),

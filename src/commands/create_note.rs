@@ -6,10 +6,12 @@ use colored::*;
 pub fn create_note(task: bool) {
   let template = "New note";
   let content = edit::edit(template).unwrap();
+
   println!("{}", content);
 
   // TODO: Should handle error (show message). This applies to most services as well.
   // Also right now this doesn't throw a "Result", so the error cannot be handled here.
+  // EDIT: The error is now thrown (for most services), that's why I'm using unwrap.
 
   if task {
     services::notes::create_task(content).unwrap();

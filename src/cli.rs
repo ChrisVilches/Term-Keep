@@ -1,5 +1,5 @@
 use crate::commands;
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -9,18 +9,31 @@ struct Cli {
   command: Option<Commands>,
 }
 
+// TODO: Cannot be executed as "$ term_keep -a". It must be "$ term_keep all -a"
+//       I'd like to fix this so it can be executed with -a. Not urgent.
+#[derive(Args)]
+struct ShowAllNotes {
+  #[clap(
+    long = "archived",
+    short = 'a',
+    action,
+    help = "Only archived notes/tasks"
+  )]
+  archived: bool,
+}
+
 #[derive(Subcommand)]
 enum Commands {
-  #[command(about = "Show all notes")]
-  All,
+  #[command(name = "all", about = "Show all notes")]
+  ShowAllNotes(ShowAllNotes),
 
   #[command(about = "Show one note/task")]
   Show { id: u32 },
 
-  #[command(about = "Edit a note")]
+  #[command(name = "edit", about = "Edit a note")]
   EditNote { id: u32 },
 
-  #[command(about = "Create a new note")]
+  #[command(name = "new", about = "Create a new note")]
   NewNote,
 
   #[command(about = "Create a new task")]
@@ -32,6 +45,12 @@ enum Commands {
   #[command(about = "Unpin a note")]
   Unpin { id: u32 },
 
+  #[command(about = "Archive a note")]
+  Archive { id: u32 },
+
+  #[command(about = "Unarchive a note")]
+  Unarchive { id: u32 },
+
   #[command(about = "Show configuration information")]
   Info,
 }
@@ -39,12 +58,15 @@ enum Commands {
 pub fn create_cli() {
   let cli = Cli::parse();
 
-  match &cli.command.unwrap_or(Commands::All) {
-    Commands::All => {
+  match &cli
+    .command
+    .unwrap_or(Commands::ShowAllNotes(ShowAllNotes { archived: false }))
+  {
+    Commands::ShowAllNotes(show_all_notes) => {
       // TODO: This way of calling it should be different.
       //       Maybe scoped by similarity (display, creation, etc).
       //       Also, shouldn't it be "controllers"?
-      commands::show_all::show_all();
+      commands::show_all::show_all(show_all_notes.archived);
     }
     Commands::Show { id } => {
       commands::show_one::show_one(*id);
@@ -63,6 +85,12 @@ pub fn create_cli() {
     }
     Commands::Unpin { id } => {
       commands::pin_note::pin_note(*id, false);
+    }
+    Commands::Archive { id } => {
+      commands::deletion::archive(*id, true);
+    }
+    Commands::Unarchive { id } => {
+      commands::deletion::archive(*id, false);
     }
     Commands::Info => {
       commands::info::info();

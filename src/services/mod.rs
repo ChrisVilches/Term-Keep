@@ -1,3 +1,4 @@
 pub mod db;
-pub mod notes;
 mod errors;
+pub mod notes;
+pub mod tips;
