@@ -9,6 +9,7 @@ use crate::cli::create_cli;
 use crate::models::note::Note;
 use crate::models::task_status::TaskStatus;
 use crate::services::tips;
+use crate::util::cli::abort_with_message;
 use crate::util::files::lines_from_file;
 
 fn show_random_tip() {
@@ -18,11 +19,14 @@ fn show_random_tip() {
   }
 }
 
-// TODO: Clean all panics.
 // TODO: Clean all unwraps (since they can panic).
 
 fn main() {
-  services::db::install_database().unwrap();
+  match services::db::install_database() {
+    Ok(_) => {}
+    Err(e) => abort_with_message(format!("Couldn't install database\n{}", e)),
+  };
+
   create_cli();
   show_random_tip();
 }

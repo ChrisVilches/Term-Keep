@@ -1,6 +1,7 @@
 use crate::commands;
-use crate::util::cli::abort_with_message;
 use clap::{Args, Parser, Subcommand};
+
+// TODO: File is too large. Split into smaller files.
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -10,11 +11,9 @@ struct Cli {
   command: Option<Commands>,
 }
 
-// TODO: Cannot be executed as "$ term_keep -a". It must be "$ term_keep all -a"
-//       I'd like to fix this so it can be executed with -a. Not urgent.
 #[derive(Args)]
 struct ShowAllNotes {
-  #[clap(long = "archived", short = 'a', action, help = "Only archived notes")]
+  #[clap(long = "archived", short = 'a', help = "Only archived notes")]
   archived: bool,
 }
 
@@ -23,12 +22,7 @@ struct Archive {
   #[clap(name = "Note ID")]
   id: u32,
 
-  #[clap(
-    long = "remove",
-    short = 'r',
-    action,
-    help = "Remove from archive list"
-  )]
+  #[clap(long = "remove", short = 'r', help = "Remove from archive list")]
   remove: bool,
 }
 
@@ -37,8 +31,7 @@ struct Pin {
   #[clap(name = "Note ID")]
   id: u32,
 
-  // TODO: If I remove the "action", does the value never become true? I think that's what it does (confirm)
-  #[clap(long = "remove", short = 'r', action, help = "Remove pin")]
+  #[clap(long = "remove", short = 'r', help = "Remove pin")]
   remove: bool,
 }
 
@@ -62,7 +55,7 @@ struct Search {
   #[clap(name = "Text to search")]
   text: String,
 
-  #[clap(long = "archived", short = 'a', action, help = "Only archived notes")]
+  #[clap(long = "archived", short = 'a', help = "Only archived notes")]
   archived: bool,
 }
 
@@ -125,65 +118,35 @@ enum Commands {
  * Some of these things can be improved by passing the entire Command object as argument,
  * since it's still a module related to comments, the modules are still decoupled (this wouldn't
  * be the case if I was passing the objects to the services module).
- *
- *
- * TODO: Prettify (by using abort_with_message, or something similar) all the crashes of other commands.
  */
 
 pub fn create_cli() {
   let cli = Cli::parse();
 
-  match &cli
-    .command
-    .unwrap_or(Commands::ShowAllNotes(ShowAllNotes { archived: false }))
-  {
-    Commands::ShowAllNotes(show_all_notes) => {
-      // TODO: This way of calling it should be different.
-      //       Maybe scoped by similarity (display, creation, etc).
-      //       Also, shouldn't it be "controllers"?
-      commands::show_all::show_all(show_all_notes.archived);
-    }
-    Commands::Show { id } => {
-      commands::show_one::show_one(*id);
-    }
-    Commands::Search(search) => {
-      commands::search::find_fuzzy(search.text.to_string(), search.archived);
-    }
-    Commands::EditNote { id } => {
-      commands::edit_note::edit_note(*id);
-    }
-    Commands::NewNote(new_note) => {
-      commands::create_note::create_note(false, &new_note.template_name);
-    }
-    Commands::NewTask(new_note) => {
-      commands::create_note::create_note(true, &new_note.template_name);
-    }
-    Commands::ChangeTaskStatus(change_task_status) => {
-      let result =
-        commands::tasks::change_status(change_task_status.id, &change_task_status.status);
+  let default_cmd = Commands::ShowAllNotes(ShowAllNotes { archived: false });
 
-      match result {
-        Ok(_) => {}
-        Err(e) => abort_with_message(e),
-      }
-    }
-    Commands::Pin(pin) => {
-      commands::pin_note::pin_note(pin.id, !pin.remove);
-    }
-    Commands::Archive(archive) => {
-      commands::deletion::archive(archive.id, !archive.remove);
-    }
-    Commands::Templates => {
-      commands::templates::show_all();
-    }
-    Commands::UpsertTemplate(upsert) => {
-      commands::templates::upsert(upsert.template_name.to_string());
-    }
-    Commands::RemoveTemplate(remove) => {
-      commands::templates::remove(remove.template_name.to_string());
-    }
-    Commands::Info => {
-      commands::info::info();
-    }
+  match &cli.command.unwrap_or(default_cmd) {
+    // Display
+    Commands::ShowAllNotes(args) => commands::note_display::show_all(args.archived),
+    Commands::Show { id } => commands::note_display::show_one(*id),
+    Commands::Search(args) => commands::search::find_fuzzy(args.text.to_string(), args.archived),
+
+    // Editing
+    Commands::EditNote { id } => commands::note_edit::edit_content(*id),
+    Commands::NewNote(args) => commands::note_creation::create_note(&args.template_name),
+    Commands::NewTask(args) => commands::note_creation::create_task(&args.template_name),
+    Commands::ChangeTaskStatus(args) => commands::tasks::change_status(args.id, &args.status),
+
+    // Pin / Archive
+    Commands::Pin(pin) => commands::note_edit::pin_note(pin.id, !pin.remove),
+    Commands::Archive(archive) => commands::note_edit::archive(archive.id, !archive.remove),
+
+    // Templates
+    Commands::Templates => commands::templates::show_all(),
+    Commands::UpsertTemplate(args) => commands::templates::upsert(args.template_name.to_string()),
+    Commands::RemoveTemplate(args) => commands::templates::remove(args.template_name.to_string()),
+
+    // Misc
+    Commands::Info => commands::info::info(),
   }
 }

@@ -12,17 +12,13 @@ fn template_text(template_name: &Option<String>) -> String {
   }
 }
 
-// TODO: This flag parameter should be named when calling... not sure how to do it.
-// pseudocode create_note({ task: true })
-pub fn create_note(task: bool, template_name: &Option<String>) {
+fn create(template_name: &Option<String>, task: bool) {
   // TODO: Should not create if the user closes the editor without saving. Is it possible?
   let content = edit::edit(template_text(&template_name)).unwrap();
 
   println!("{}", content);
 
   // TODO: Should handle error (show message). This applies to most services as well.
-  // Also right now this doesn't throw a "Result", so the error cannot be handled here.
-  // EDIT: The error is now thrown (for most services), that's why I'm using unwrap.
 
   if task {
     services::notes::create_task(content).unwrap();
@@ -35,4 +31,12 @@ pub fn create_note(task: bool, template_name: &Option<String>) {
   // because that one shows a lot of data with a nice format.
 
   println!("{}", "Created".blue());
+}
+
+pub fn create_note(template_name: &Option<String>) {
+  create(template_name, false);
+}
+
+pub fn create_task(template_name: &Option<String>) {
+  create(template_name, true);
 }

@@ -20,9 +20,6 @@ fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
   }
 }
 
-// TODO: This is very slow. But for personal data it works.
-// Maybe adding a flag to the CLI (--fuzzy) and letting the user know that
-// it may be slow, would be enough.
 pub fn find_fuzzy(text: String, archived: bool) {
   let notes: Vec<Note> = services::notes::find_all_notes(archived).unwrap();
 

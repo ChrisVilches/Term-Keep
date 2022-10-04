@@ -1,5 +1,6 @@
 use crate::helpers::note_fmt;
 use crate::services;
+use crate::util::cli::require_note;
 use crate::Note;
 use colored::*;
 
@@ -42,4 +43,15 @@ pub fn show_all(archived: bool) {
       note_fmt::format_note_summary(&note)
     );
   }
+}
+
+pub fn show_one(note_id: u32) {
+  let note: Note = require_note(note_id);
+
+  match note.id {
+    None => println!("ID: -"),
+    Some(id) => println!("ID: {}", id),
+  }
+
+  println!("{}", note.content);
 }

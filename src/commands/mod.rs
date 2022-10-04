@@ -1,10 +1,7 @@
-pub mod create_note;
-pub mod deletion;
-pub mod edit_note;
 pub mod info;
-pub mod pin_note;
+pub mod note_creation;
+pub mod note_display;
+pub mod note_edit;
 pub mod search;
-pub mod show_all;
-pub mod show_one;
 pub mod tasks;
 pub mod templates;

@@ -15,7 +15,7 @@ fn get_editor_name() -> String {
 pub fn info() {
   print_item(
     "Database location",
-    config::env::get_string_env_var("DB_PATH"),
+    config::env::require_string_env_var("DB_PATH"),
   );
 
   let can_read_tips = match random_tip() {
@@ -27,9 +27,6 @@ pub fn info() {
   print_item("Can read tips", bool_to_str(can_read_tips));
 
   print_item("Editor", get_editor_name());
-
   print_item("Notes", find_all_notes(false).unwrap().len().to_string());
   print_item("Archived", find_all_notes(true).unwrap().len().to_string());
-
-  // TODO: Add which editor is going to be used.
 }

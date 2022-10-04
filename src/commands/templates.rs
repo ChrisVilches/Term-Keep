@@ -16,8 +16,12 @@ pub fn show_all() {
 
 fn edit(template: Template) {
   let content = edit::edit(template.content.to_string()).unwrap();
-  services::templates::update(template.id.unwrap(), &content).unwrap();
-  println!("Edited template {}", template.name);
+
+  if content == template.content {
+    println!("Not changed");
+  } else {
+    services::templates::update(template.id.unwrap(), &content).unwrap();
+  }
 }
 
 fn create(name: &String) {

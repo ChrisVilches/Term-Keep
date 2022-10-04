@@ -1,16 +1,13 @@
 use crate::config;
+use crate::models::traits::FromSqlRow;
 use rusqlite::Connection;
 
 // TODO: Should be singleton.
 pub fn connection() -> rusqlite::Connection {
-  let db_path = config::env::get_string_env_var("DB_PATH");
+  let db_path = config::env::require_string_env_var("DB_PATH");
   Connection::open(db_path).unwrap()
 }
 
-// Should be idempotent.
-// ^ or just execute it once and with "if not exists"
-//
-// Should be in a different file. This does not belong here.
 pub fn install_database() -> Result<(), rusqlite::Error> {
   connection().execute(
     "
@@ -35,4 +32,43 @@ pub fn install_database() -> Result<(), rusqlite::Error> {
   )?;
 
   Ok(())
+}
+
+pub fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Error> {
+  T::from_row(row)
+}
+
+pub fn rows_to_vec<T: FromSqlRow>(
+  query: &str,
+  params: &[&dyn rusqlite::ToSql],
+) -> Result<Vec<T>, rusqlite::Error> {
+  let conn = connection();
+  let mut stmt = conn.prepare(query)?;
+
+  Ok(
+    stmt
+      .query_map(params, row_to_template::<T>)
+      .unwrap()
+      // TODO: Can I propagate this error from here to the top return of this function?
+      .map(|n| n.unwrap())
+      .collect(),
+  )
+}
+
+pub fn single_row<T: FromSqlRow + Clone>(
+  query: &str,
+  params: &[&dyn rusqlite::ToSql],
+) -> Option<T> {
+  match rows_to_vec::<T>(query, params) {
+    Ok(rows) => rows.first().map(|r| r.clone()),
+    Err(_) => None,
+  }
+}
+
+/// Query that inserts or changes rows.
+pub fn change_rows(query: &str, params: &[&dyn rusqlite::ToSql]) -> Result<usize, rusqlite::Error> {
+  let conn = connection();
+  let stmt = conn.prepare(query);
+  let rows_changed = stmt?.execute(params)?;
+  Ok(rows_changed)
 }

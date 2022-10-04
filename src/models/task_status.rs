@@ -27,7 +27,7 @@ impl FromSql for TaskStatus {
       ValueRef::Integer(0) => Ok(TaskStatus::Todo),
       ValueRef::Integer(1) => Ok(TaskStatus::Progress),
       ValueRef::Integer(2) => Ok(TaskStatus::Done),
-      _ => todo!(), // TODO: What is this? Can I improve this?
+      _ => panic!("Data is corrupted. A task status value is wrong."),
     }
   }
 }
