@@ -7,3 +7,4 @@ pub mod search;
 pub mod show_all;
 pub mod show_one;
 pub mod tasks;
+pub mod templates;

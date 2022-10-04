@@ -1,32 +1,9 @@
+use crate::util::db::rows_to_vec;
 use crate::models::note::Note;
-use crate::models::note_type::NoteType;
 use crate::services::db;
 use crate::services::errors::NotFoundError;
 
 // TODO: This file is a bit messy because each service works a bit differently from each other.
-
-fn row_to_note(row: &rusqlite::Row) -> Result<Note, rusqlite::Error> {
-  let note_type = match row.get(4)? {
-    None => NoteType::Normal,
-    num => NoteType::Task(num.unwrap()), // TODO: wtf?
-  };
-
-  Ok(Note {
-    id: row.get(0)?,
-    content: row.get(1)?,
-    pinned: row.get(2)?,
-    archived: row.get(3)?,
-    note_type,
-  })
-}
-
-fn rows_to_vec(mut stmt: rusqlite::Statement, params: &[&dyn rusqlite::ToSql]) -> Vec<Note> {
-  stmt
-    .query_map(params, row_to_note)
-    .unwrap()
-    .map(|n| n.unwrap())
-    .collect()
-}
 
 // TODO: Flag arguments are difficult to read.
 pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
@@ -37,17 +14,14 @@ pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
   Ok(rows_to_vec(stmt, rusqlite::params![archived]))
 }
 
-pub fn find_one_note(id: u32) -> Result<Note, rusqlite::Error> {
+pub fn find_one_note(id: u32) -> Option<Note> {
   let conn = db::connection();
   let stmt = conn
-    .prepare("SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1")?;
+    .prepare("SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1").unwrap();
 
-  Ok(
-    rows_to_vec(stmt, rusqlite::params![id])
-      .first()
-      .expect(&*format!("Note (ID = {}) not found", id))
-      .clone(),
-  )
+    rows_to_vec::<Note>(stmt, rusqlite::params![id])
+    .first()
+    .map(|t| t.clone())
 }
 
 // TODO: Maybe it'd be better that all functions return a Result, and that it has

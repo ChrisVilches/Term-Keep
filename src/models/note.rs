@@ -1,3 +1,4 @@
+use crate::models::traits::FromSqlRow;
 use crate::models::note_type::NoteType;
 
 #[derive(Debug, Clone)]
@@ -8,6 +9,24 @@ pub struct Note {
   pub note_type: NoteType,
   pub archived: bool,
 }
+
+impl FromSqlRow for Note {
+  fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
+    let note_type = match row.get(4)? {
+      None => NoteType::Normal,
+      num => NoteType::Task(num.unwrap()), // TODO: wtf?
+    };
+
+    Ok(Note {
+      id: row.get(0)?,
+      content: row.get(1)?,
+      pinned: row.get(2)?,
+      archived: row.get(3)?,
+      note_type,
+    })
+  }
+}
+
 
 // https://stackoverflow.com/questions/5299267/how-to-create-enum-type-in-sqlite
 // I can create an enum table (an actual SQL table that contains the possible data).

@@ -1,4 +1,5 @@
 use crate::commands;
+use crate::util::cli::abort_with_message;
 use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser)]
@@ -42,6 +43,12 @@ struct Pin {
 }
 
 #[derive(Args)]
+struct NewNote {
+  #[clap(long = "template", short = 't', help = "Choose a template")]
+  template_name: Option<String>,
+}
+
+#[derive(Args)]
 struct ChangeTaskStatus {
   #[clap(name = "Note (task) ID")]
   id: u32,
@@ -59,6 +66,18 @@ struct Search {
   archived: bool,
 }
 
+#[derive(Args)]
+struct UpsertTemplate {
+  #[clap(name = "Template name")]
+  template_name: String,
+}
+
+#[derive(Args)]
+struct RemoveTemplate {
+  #[clap(name = "Template name")]
+  template_name: String,
+}
+
 #[derive(Subcommand)]
 enum Commands {
   #[command(name = "all", about = "Show all notes")]
@@ -74,10 +93,10 @@ enum Commands {
   EditNote { id: u32 },
 
   #[command(name = "new", about = "Create a new note")]
-  NewNote,
+  NewNote(NewNote),
 
   #[command(about = "Create a new task")]
-  NewTask,
+  NewTask(NewNote),
 
   #[command(about = "Change a task status")]
   ChangeTaskStatus(ChangeTaskStatus),
@@ -88,13 +107,17 @@ enum Commands {
   #[command(about = "Archive a note")]
   Archive(Archive),
 
+  #[command(about = "Show all templates")]
+  Templates,
+
+  #[command(about = "Upsert a template by name")]
+  UpsertTemplate(UpsertTemplate),
+
+  #[command(about = "Remove template by name")]
+  RemoveTemplate(RemoveTemplate),
+
   #[command(about = "Show miscellaneous information")]
   Info,
-}
-
-fn abort_with_message(msg: String) {
-  eprintln!("{}", msg);
-  std::process::exit(1);
 }
 
 /**
@@ -129,11 +152,11 @@ pub fn create_cli() {
     Commands::EditNote { id } => {
       commands::edit_note::edit_note(*id);
     }
-    Commands::NewNote => {
-      commands::create_note::create_note(false);
+    Commands::NewNote(new_note) => {
+      commands::create_note::create_note(false, &new_note.template_name);
     }
-    Commands::NewTask => {
-      commands::create_note::create_note(true);
+    Commands::NewTask(new_note) => {
+      commands::create_note::create_note(true, &new_note.template_name);
     }
     Commands::ChangeTaskStatus(change_task_status) => {
       let result =
@@ -149,6 +172,15 @@ pub fn create_cli() {
     }
     Commands::Archive(archive) => {
       commands::deletion::archive(archive.id, !archive.remove);
+    }
+    Commands::Templates => {
+      commands::templates::show_all();
+    }
+    Commands::UpsertTemplate(upsert) => {
+      commands::templates::upsert(upsert.template_name.to_string());
+    }
+    Commands::RemoveTemplate(remove) => {
+      commands::templates::remove(remove.template_name.to_string());
     }
     Commands::Info => {
       commands::info::info();
