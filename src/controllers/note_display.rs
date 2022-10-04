@@ -1,12 +1,12 @@
 use crate::helpers::note_fmt;
 use crate::services;
-use crate::util::cli::require_note;
 use crate::Note;
 use colored::*;
+use std::error::Error;
 
-fn print_count() {
-  let non_archived_notes: Vec<Note> = services::notes::find_all_notes(false).unwrap();
-  let archived_notes: Vec<Note> = services::notes::find_all_notes(true).unwrap();
+fn print_count() -> Result<(), Box<dyn Error>> {
+  let non_archived_notes: Vec<Note> = services::notes::find_all_notes(false)?;
+  let archived_notes: Vec<Note> = services::notes::find_all_notes(true)?;
 
   println!(
     "{} note(s) ({} archived)",
@@ -14,12 +14,13 @@ fn print_count() {
     archived_notes.len().to_string().bold()
   );
   println!();
+  Ok(())
 }
 
-pub fn show_all(archived: bool) {
-  print_count();
+pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
+  print_count()?;
 
-  let notes: Vec<Note> = services::notes::find_all_notes(archived).unwrap();
+  let notes: Vec<Note> = services::notes::find_all_notes(archived)?;
 
   let pinned: Vec<&Note> = notes.iter().filter(|n| n.pinned).collect();
   let not_pinned: Vec<&Note> = notes.iter().filter(|n| !n.pinned).collect();
@@ -43,10 +44,12 @@ pub fn show_all(archived: bool) {
       note_fmt::format_note_summary(&note)
     );
   }
+
+  Ok(())
 }
 
-pub fn show_one(note_id: u32) {
-  let note: Note = require_note(note_id);
+pub fn show_one(note_id: u32) -> Result<(), Box<dyn Error>> {
+  let note: Note = services::notes::find_one_note(note_id)?;
 
   match note.id {
     None => println!("ID: -"),
@@ -54,4 +57,6 @@ pub fn show_one(note_id: u32) {
   }
 
   println!("{}", note.content);
+
+  Ok(())
 }

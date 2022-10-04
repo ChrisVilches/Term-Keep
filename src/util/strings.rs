@@ -18,9 +18,9 @@ pub fn bool_to_str(b: bool) -> String {
 
 pub fn first_line(s: String) -> String {
   s.split("\n")
-    .collect::<Vec<_>>()
+    .collect::<Vec<&str>>()
     .first()
-    .unwrap()
+    .unwrap_or(&"")
     .to_string()
 }
 

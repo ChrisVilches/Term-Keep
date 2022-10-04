@@ -1,6 +1,6 @@
 mod cli;
-mod commands;
 mod config;
+mod controllers;
 mod helpers;
 mod models;
 mod services;
@@ -28,13 +28,8 @@ fn show_random_tip() {
   }
 }
 
-// TODO: Clean all unwraps (since they can panic).
-
 fn main() {
-  match services::db::install_database() {
-    Ok(_) => {}
-    Err(e) => abort_with_message(format!("Couldn't install database\n{}", e)),
-  };
+  services::db::install_database().unwrap_or_else(|e| abort_with_message(e));
 
   println!("{}", LOGO.green());
   println!();

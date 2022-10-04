@@ -1,7 +1,7 @@
-use crate::commands;
+use crate::abort_with_message;
+use crate::controllers;
 use clap::{Args, Parser, Subcommand};
-
-// TODO: File is too large. Split into smaller files.
+use std::error::Error;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -113,50 +113,35 @@ enum Commands {
   Info,
 }
 
-/**
- * TODO:
- * Some of these things can be improved by passing the entire Command object as argument,
- * since it's still a module related to comments, the modules are still decoupled (this wouldn't
- * be the case if I was passing the objects to the services module).
- */
-
- /**
-  * TODO: Another way of structuring this is by making all commands return an error, and then
-  * the error is handled here. With this structure, I can then in the future easily build an interactive
-  * application that requires you to input a command in the CLI interface (like git-change-date), and then
-  * if it fails, it's handled by simply printing a message but without exiting.
-  * Doing this restructure only requires one little change (in this file, at least, since each command file must
-  * be changed in several places, probably), since all I have to do is get the value evaluated by the "match" in the
-  * command parser, and then handle that error if any.
-  */
-
 pub fn create_cli() {
   let cli = Cli::parse();
 
   let default_cmd = Commands::ShowAllNotes(ShowAllNotes { archived: false });
 
-  match &cli.command.unwrap_or(default_cmd) {
+  let result: Result<(), Box<dyn Error>> = match &cli.command.unwrap_or(default_cmd) {
     // Display
-    Commands::ShowAllNotes(args) => commands::note_display::show_all(args.archived),
-    Commands::Show { id } => commands::note_display::show_one(*id),
-    Commands::Search(args) => commands::search::find_fuzzy(args.text.to_string(), args.archived),
+    Commands::ShowAllNotes(args) => controllers::note_display::show_all(args.archived),
+    Commands::Show { id } => controllers::note_display::show_one(*id),
+    Commands::Search(args) => controllers::search::find_fuzzy(&args.text, args.archived),
 
     // Editing
-    Commands::EditNote { id } => commands::note_edit::edit_content(*id),
-    Commands::NewNote(args) => commands::note_creation::create_note(&args.template_name),
-    Commands::NewTask(args) => commands::note_creation::create_task(&args.template_name),
-    Commands::ChangeTaskStatus(args) => commands::tasks::change_status(args.id, &args.status),
+    Commands::EditNote { id } => controllers::note_edit::edit_content(*id),
+    Commands::NewNote(args) => controllers::note_creation::create_note(&args.template_name),
+    Commands::NewTask(args) => controllers::note_creation::create_task(&args.template_name),
+    Commands::ChangeTaskStatus(args) => controllers::tasks::change_status(args.id, &args.status),
 
     // Pin / Archive
-    Commands::Pin(pin) => commands::note_edit::pin_note(pin.id, !pin.remove),
-    Commands::Archive(archive) => commands::note_edit::archive(archive.id, !archive.remove),
+    Commands::Pin(pin) => controllers::note_edit::pin_note(pin.id, !pin.remove),
+    Commands::Archive(archive) => controllers::note_edit::archive(archive.id, !archive.remove),
 
     // Templates
-    Commands::Templates => commands::templates::show_all(),
-    Commands::UpsertTemplate(args) => commands::templates::upsert(args.template_name.to_string()),
-    Commands::RemoveTemplate(args) => commands::templates::remove(args.template_name.to_string()),
+    Commands::Templates => controllers::templates::show_all(),
+    Commands::UpsertTemplate(args) => controllers::templates::upsert(&args.template_name),
+    Commands::RemoveTemplate(args) => controllers::templates::remove(&args.template_name),
 
     // Misc
-    Commands::Info => commands::info::info(),
-  }
+    Commands::Info => controllers::info::info(),
+  };
+
+  result.unwrap_or_else(|e| abort_with_message(e));
 }

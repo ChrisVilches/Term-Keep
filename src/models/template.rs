@@ -16,3 +16,13 @@ impl FromSqlRow for Template {
     })
   }
 }
+
+impl Default for Template {
+  fn default() -> Self {
+    Template {
+      id: None,
+      name: String::new(),
+      content: String::new(),
+    }
+  }
+}

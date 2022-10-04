@@ -5,6 +5,7 @@ use colored::*;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 use std::cmp::Ordering;
+use std::error::Error;
 
 fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
   let ord = score2.cmp(&score1);
@@ -20,8 +21,8 @@ fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
   }
 }
 
-pub fn find_fuzzy(text: String, archived: bool) {
-  let notes: Vec<Note> = services::notes::find_all_notes(archived).unwrap();
+pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
+  let notes: Vec<Note> = services::notes::find_all_notes(archived)?;
 
   let matcher = SkimMatcherV2::default();
 
@@ -48,4 +49,6 @@ pub fn find_fuzzy(text: String, archived: bool) {
       note_fmt::format_note_summary(&note)
     );
   }
+
+  Ok(())
 }

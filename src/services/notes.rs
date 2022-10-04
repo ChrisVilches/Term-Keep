@@ -2,7 +2,7 @@ use crate::models::note::Note;
 use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
-use crate::services::errors::NotFoundError;
+use crate::services::errors::NotFoundByIdError;
 use std::error::Error;
 
 pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
@@ -12,11 +12,15 @@ pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
   )
 }
 
-pub fn find_one_note(id: u32) -> Option<Note> {
+pub fn find_one_note(id: u32) -> Result<Note, NotFoundByIdError> {
   single_row::<Note>(
     "SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1",
     rusqlite::params![id],
   )
+  .ok_or_else(|| NotFoundByIdError {
+    id,
+    type_name: "note".to_string(),
+  })
 }
 
 pub fn create_note(text: String) -> Result<usize, rusqlite::Error> {
@@ -46,15 +50,16 @@ pub fn pin(id: u32, pinned: bool) -> Result<(), Box<dyn Error>> {
     rusqlite::params![pinned, id],
   );
 
+  // TODO: A little bit verbose, try to refactor and use magic stuff.
   match result {
     Ok(rows_changed) => match rows_changed {
       1 => Ok(()),
-      _ => Err(Box::new(NotFoundError {
+      _ => Err(Box::new(NotFoundByIdError {
         id,
         type_name: "note".to_string(),
       })),
     },
-    Err(db_error) => Err(Box::new(db_error)),
+    Err(db_error) => Err(db_error)?,
   }
 }
 
@@ -67,7 +72,7 @@ pub fn archive(id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
   match result {
     Ok(rows_changed) => match rows_changed {
       1 => Ok(()),
-      _ => Err(Box::new(NotFoundError {
+      _ => Err(Box::new(NotFoundByIdError {
         id,
         type_name: "note".to_string(),
       })),
