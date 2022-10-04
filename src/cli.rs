@@ -120,6 +120,16 @@ enum Commands {
  * be the case if I was passing the objects to the services module).
  */
 
+ /**
+  * TODO: Another way of structuring this is by making all commands return an error, and then
+  * the error is handled here. With this structure, I can then in the future easily build an interactive
+  * application that requires you to input a command in the CLI interface (like git-change-date), and then
+  * if it fails, it's handled by simply printing a message but without exiting.
+  * Doing this restructure only requires one little change (in this file, at least, since each command file must
+  * be changed in several places, probably), since all I have to do is get the value evaluated by the "match" in the
+  * command parser, and then handle that error if any.
+  */
+
 pub fn create_cli() {
   let cli = Cli::parse();
 

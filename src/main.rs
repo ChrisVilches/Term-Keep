@@ -11,6 +11,15 @@ use crate::models::task_status::TaskStatus;
 use crate::services::tips;
 use crate::util::cli::abort_with_message;
 use crate::util::files::lines_from_file;
+use colored::*;
+
+const LOGO: &str = "
+████████╗██╗░░██╗
+╚══██╔══╝██║░██╔╝
+░░░██║░░░█████═╝░
+░░░██║░░░██╔═██╗░
+░░░██║░░░██║░╚██╗
+░░░╚═╝░░░╚═╝░░╚═╝";
 
 fn show_random_tip() {
   if let Some(t) = tips::random_tip() {
@@ -26,6 +35,9 @@ fn main() {
     Ok(_) => {}
     Err(e) => abort_with_message(format!("Couldn't install database\n{}", e)),
   };
+
+  println!("{}", LOGO.green());
+  println!();
 
   create_cli();
   show_random_tip();

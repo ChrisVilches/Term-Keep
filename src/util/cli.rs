@@ -9,6 +9,9 @@ pub fn abort_with_message<S: Display>(msg: S) -> ! {
   std::process::exit(1);
 }
 
+// TODO: I think this function doesn't belong to this module, specially if I restructure
+//       everything so that the commands are not necessarily coupled to the CLI.
+
 /// Fetches a note and prints a CLI friendly error message if it's not found.
 pub fn require_note(id: u32) -> Note {
   match services::notes::find_one_note(id) {
