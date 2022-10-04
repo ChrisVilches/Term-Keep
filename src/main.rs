@@ -1,7 +1,6 @@
 mod cli;
 mod config;
 mod controllers;
-mod helpers;
 mod models;
 mod services;
 mod util;
@@ -10,7 +9,6 @@ use crate::models::note::Note;
 use crate::models::task_status::TaskStatus;
 use crate::services::tips;
 use crate::util::cli::abort_with_message;
-use crate::util::files::lines_from_file;
 use colored::*;
 
 const LOGO: &str = "

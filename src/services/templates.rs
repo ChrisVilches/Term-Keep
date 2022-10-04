@@ -11,6 +11,8 @@ pub fn find_all_templates() -> Result<Vec<Template>, rusqlite::Error> {
   )
 }
 
+// TODO: This is WRONG. It should return:
+//       -> Result<Option<Template>, rusqlite::Error>
 pub fn find_one_template(name: &String) -> Result<Template, NotFoundByFieldError> {
   single_row::<Template>(
     "SELECT id, name, content FROM template WHERE name = ?",

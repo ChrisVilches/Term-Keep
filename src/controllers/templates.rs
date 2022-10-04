@@ -35,6 +35,9 @@ fn create(name: &String) -> Result<(), Box<dyn Error>> {
 
 pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
   // TODO: Does this work? It should, because it compiled, and this is Rust.
+  //       Update: Even if it works, it discards the error, so, should I use this?
+  //       Update: I already commented this function with a TODO. It should return Result of Option,
+  //               plus contain a SQL error (if it happens).
   let template = services::templates::find_one_template(&name).ok();
 
   match template {

@@ -1,10 +1,11 @@
-use crate::lines_from_file;
 use rand::seq::SliceRandom;
 
+static TIPS_FILE: &'static str = include_str!("../../data/tips.txt");
+
 pub fn random_tip() -> Option<String> {
-  // TODO: This only works locally.
-  match lines_from_file("./data/tips.txt") {
-    Ok(tips) => tips.choose(&mut rand::thread_rng()).map(|s| s.to_string()),
-    Err(_) => None,
-  }
+  TIPS_FILE
+    .split("\n")
+    .collect::<Vec<&str>>()
+    .choose(&mut rand::thread_rng())
+    .map(|s| s.to_string())
 }

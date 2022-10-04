@@ -37,7 +37,7 @@ pub fn create_task(text: String) -> Result<usize, rusqlite::Error> {
   )
 }
 
-pub fn update_note(id: u32, text: String) -> Result<usize, rusqlite::Error> {
+pub fn update_note(id: u32, text: &String) -> Result<usize, rusqlite::Error> {
   change_rows(
     "UPDATE note SET content = ? WHERE id = ?",
     rusqlite::params![text, id],

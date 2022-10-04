@@ -68,5 +68,5 @@ pub fn note_icons(note: &Note) -> String {
     icons.push(pin_icon);
   }
 
-  return icons.join(" ");
+  icons.join(" ")
 }

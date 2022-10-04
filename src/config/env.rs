@@ -4,7 +4,7 @@ use std::env;
 const ENV_VAR_PREFIX: &str = "TERM_KEEP_";
 
 fn prefixed_env_var(name: &str) -> String {
-  return format!("{}{}", ENV_VAR_PREFIX, name);
+  format!("{}{}", ENV_VAR_PREFIX, name)
 }
 
 pub fn require_string_env_var(name: &str) -> String {

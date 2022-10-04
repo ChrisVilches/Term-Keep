@@ -1,5 +1,5 @@
-use crate::helpers::note_fmt;
 use crate::services;
+use crate::util::note_fmt;
 use crate::Note;
 use colored::*;
 use std::error::Error;

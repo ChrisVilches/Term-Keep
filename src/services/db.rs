@@ -7,18 +7,6 @@ use rusqlite::Connection;
 pub fn connection() -> rusqlite::Connection {
   let db_path = config::env::require_string_env_var("DB_PATH");
 
-  /*
-  // TODO: Prefer to use a vanilla "panic!" here, because this module shouldn't be using
-  //       methods from the CLI module.
-  //       However, even the config module uses this, and that module may be used in several places,
-  //       so it's possible that this method is used from several places (not necessarily CLI), so
-  //       maybe there should be a "abort_with_message" for CLI (human friendly) and another one
-  //       for system related messages. But actually messages from the config module can come
-  //       from both CLI and services/models, etc, so perhaps the best way is to not care too much
-  //       and just make it global? (like for any kind of error). This should have a negative impact
-  //       on the scalability, project structure, etc.
-   */
-
   Connection::open(db_path).unwrap_or_else(|e| abort_with_message(e))
 }
 
@@ -63,14 +51,19 @@ pub fn rows_to_vec<T: FromSqlRow>(
   Ok(mapped.map(|n| n.unwrap()).collect())
 }
 
+// TODO: Note that this is silencing the error, if any, by converting it to None,
+//       but the error could mean something else (e.g. connection error), not
+//       necessarily that the row doesn't exist.
+//
+//       Workaround: Return a "Result", and then handle it in the component that calls it.
 pub fn single_row<T: FromSqlRow + Clone>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
 ) -> Option<T> {
-  // TODO: I'm not so sure about this...
   rows_to_vec::<T>(query, params)
     .map(|rows| rows.first().map(|r| r.clone()))
-    .ok()?
+    .ok()
+    .flatten()
 }
 
 /// Query that inserts or changes rows.

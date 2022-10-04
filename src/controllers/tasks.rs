@@ -11,9 +11,10 @@ fn change_aux(
 ) -> Result<(), rusqlite::Error> {
   if current_status == status {
     println!("Not changed");
-    return Ok(());
+  } else {
+    services::notes::change_task_status(task.id.unwrap(), status as i32)?;
   }
-  services::notes::change_task_status(task.id.unwrap(), status as i32)?;
+
   Ok(())
 }
 

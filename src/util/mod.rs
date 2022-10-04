@@ -1,3 +1,3 @@
 pub mod cli;
-pub mod files;
+pub mod note_fmt;
 pub mod strings;
