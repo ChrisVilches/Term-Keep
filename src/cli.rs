@@ -94,10 +94,10 @@ enum Commands {
   #[command(about = "Change a task status")]
   ChangeTaskStatus(ChangeTaskStatus),
 
-  #[command(about = "Pin a note")]
+  #[command(about = "Pin a note 📌")]
   Pin(Pin),
 
-  #[command(about = "Archive a note")]
+  #[command(about = "Archive a note 📁")]
   Archive(Archive),
 
   #[command(about = "Show all templates")]

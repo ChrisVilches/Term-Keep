@@ -28,8 +28,8 @@ pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
   for note in &pinned {
     println!(
       "{} {}",
-      note_fmt::note_icons(&note),
-      note_fmt::format_note_summary(&note)
+      note_fmt::format_note_icons(note),
+      note_fmt::format_note_summary(note)
     );
   }
 
@@ -40,7 +40,7 @@ pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
   for note in &not_pinned {
     println!(
       "{} {}",
-      note_fmt::note_icons(&note),
+      note_fmt::format_note_icons(&note),
       note_fmt::format_note_summary(&note)
     );
   }
@@ -51,10 +51,8 @@ pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
 pub fn show_one(note_id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one_note(note_id)?;
 
-  match note.id {
-    None => println!("ID: -"),
-    Some(id) => println!("ID: {}", id),
-  }
+  println!("{}", note_fmt::format_note_description(&note).black());
+  println!();
 
   println!("{}", note.content);
 

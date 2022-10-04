@@ -10,6 +10,7 @@ pub fn connection() -> rusqlite::Connection {
   Connection::open(db_path).unwrap_or_else(|e| abort_with_message(e))
 }
 
+// TODO: Add created_at, updated_at. Can I just use triggers (using SQLite though)?
 pub fn install_database() -> Result<(), rusqlite::Error> {
   connection().execute(
     "

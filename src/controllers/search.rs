@@ -45,7 +45,7 @@ pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
     println!(
       "{} | {} {}",
       format!("{}", format!("score {}", score).purple()),
-      note_fmt::note_icons(&note),
+      note_fmt::format_note_icons(&note),
       note_fmt::format_note_summary(&note)
     );
   }

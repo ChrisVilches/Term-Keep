@@ -5,6 +5,7 @@ static TIPS_FILE: &'static str = include_str!("../../data/tips.txt");
 pub fn random_tip() -> Option<String> {
   TIPS_FILE
     .split("\n")
+    .filter(|line| line.len() > 0)
     .collect::<Vec<&str>>()
     .choose(&mut rand::thread_rng())
     .map(|s| s.to_string())

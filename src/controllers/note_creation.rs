@@ -2,6 +2,9 @@ use crate::models::template::Template;
 use crate::services;
 use colored::*;
 use std::error::Error;
+use std::io::prelude::*;
+use std::io::stdin;
+use std::io::stdout;
 
 const DEFAULT_NOTE_CONTENT: &str = "New note";
 const DEFAULT_TASK_CONTENT: &str = "New task";
@@ -21,11 +24,31 @@ fn template_text(template_name: &Option<String>, task: bool) -> String {
   }
 }
 
+// TODO: Should work without the user having to press ENTER key.
+// TODO: When the user presses CTRL+D the output gets a bit weird. Maybe I can easily
+//       fix this by adding a new line after the prompt message (instead of doing it without
+//       new line and flushing manually).
+fn prompt_confirm(msg: &str) -> bool {
+  print!("{}", msg);
+  stdout().flush().unwrap();
+
+  let mut buff: [u8; 1] = [0];
+  stdin().read(&mut buff).unwrap();
+  let c = buff[0] as char;
+
+  !(c == 'n' || c == 'N')
+}
+
 fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Error>> {
-  // TODO: Should not create if the user closes the editor without saving. Is it possible?
   let content = edit::edit(template_text(&template_name, task))?;
 
   println!("{}", content);
+  println!();
+
+  if !prompt_confirm("Press any key to continue...") {
+    println!("Not saved");
+    return Ok(());
+  }
 
   if task {
     services::notes::create_task(content)?;
