@@ -33,7 +33,7 @@ pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
     );
   }
 
-  if pinned.len() > 0 {
+  if !pinned.is_empty() {
     println!();
   }
 

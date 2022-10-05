@@ -48,11 +48,10 @@ pub fn format_note_description(note: &Note) -> String {
       desc.push(format_task_status_text(task_status).into())
     }
   };
-  
 
   desc
     .into_iter()
-    .filter(|x| x.len() > 0)
+    .filter(|d| !d.is_empty())
     .collect::<Vec<String>>()
     .join("  |  ")
 }
