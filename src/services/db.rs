@@ -1,6 +1,6 @@
 use crate::abort_with_message;
-use crate::util::env;
 use crate::models::traits::FromSqlRow;
+use crate::util::env;
 use rusqlite::Connection;
 
 // TODO: Should be singleton.
@@ -52,19 +52,11 @@ pub fn rows_to_vec<T: FromSqlRow>(
   Ok(mapped.map(|n| n.unwrap()).collect())
 }
 
-// TODO: Note that this is silencing the error, if any, by converting it to None,
-//       but the error could mean something else (e.g. connection error), not
-//       necessarily that the row doesn't exist.
-//
-//       Workaround: Return a "Result", and then handle it in the component that calls it.
 pub fn single_row<T: FromSqlRow + Clone>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
-) -> Option<T> {
-  rows_to_vec::<T>(query, params)
-    .map(|rows| rows.first().map(|r| r.clone()))
-    .ok()
-    .flatten()
+) -> Result<Option<T>, rusqlite::Error> {
+  Ok(rows_to_vec::<T>(query, params)?.first().map(|x| x.clone()))
 }
 
 /// Query that inserts or changes rows.

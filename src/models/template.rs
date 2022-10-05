@@ -1,10 +1,17 @@
 use crate::models::traits::FromSqlRow;
+use crate::models::traits::ModelName;
 
 #[derive(Debug, Clone)]
 pub struct Template {
   pub id: Option<u32>,
   pub name: String,
   pub content: String,
+}
+
+impl ModelName for Template {
+  fn model_name() -> String {
+    "template".to_string()
+  }
 }
 
 impl FromSqlRow for Template {

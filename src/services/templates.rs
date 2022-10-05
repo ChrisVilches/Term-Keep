@@ -1,8 +1,10 @@
 use crate::models::template::Template;
+use crate::models::traits::ModelName;
 use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 use crate::services::errors::NotFoundByFieldError;
+use std::error::Error;
 
 pub fn find_all_templates() -> Result<Vec<Template>, rusqlite::Error> {
   rows_to_vec(
@@ -11,19 +13,12 @@ pub fn find_all_templates() -> Result<Vec<Template>, rusqlite::Error> {
   )
 }
 
-// TODO: This is WRONG. It should return:
-//       -> Result<Option<Template>, rusqlite::Error>
-//       I wrote a more detailed message in the Note service.
-pub fn find_one_template(name: &String) -> Result<Template, NotFoundByFieldError> {
+pub fn find_one_template(name: &String) -> Result<Template, Box<dyn Error>> {
   single_row::<Template>(
     "SELECT id, name, content FROM template WHERE name = ?",
     rusqlite::params![name],
-  )
-  .ok_or_else(|| NotFoundByFieldError {
-    type_name: "template".to_string(),
-    field: "name".to_string(),
-    value: name.to_string(),
-  })
+  )?
+  .ok_or(NotFoundByFieldError::new::<Template>("name".to_string(), name.to_string()).into())
 }
 
 pub fn create(name: &String, content: &String) -> Result<usize, rusqlite::Error> {

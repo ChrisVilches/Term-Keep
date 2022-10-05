@@ -42,3 +42,11 @@ export EDITOR=vim
 
 * Rust (with Cargo)
 * SQLite
+
+### Testing
+
+Run the following command:
+
+```
+cargo test
+```

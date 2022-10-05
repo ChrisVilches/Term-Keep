@@ -1,4 +1,5 @@
 use crate::models::note::Note;
+use crate::models::traits::ModelName;
 use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
@@ -12,23 +13,12 @@ pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
   )
 }
 
-// TODO: I think in this case it also should return a
-//       -> Result<Option<Note>, rusqlite::Error>
-//       Another option would be to return a Result<Note, Box<dyn Error>>, but is it necessary?
-//       I think I can just return Result<Option<Note>, rusqlite::Error> and then handle the None
-//       as an error if I want, in the component that handles this.
-//
-//       Note that single row also silents the rusqlite::Error, so refactoring all of this would require
-//       several changes.
-pub fn find_one_note(id: u32) -> Result<Note, NotFoundByIdError> {
+pub fn find_one_note(id: u32) -> Result<Note, Box<dyn Error>> {
   single_row::<Note>(
     "SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1",
     rusqlite::params![id],
-  )
-  .ok_or_else(|| NotFoundByIdError {
-    id,
-    type_name: "note".to_string(),
-  })
+  )?
+  .ok_or(NotFoundByIdError::new::<Note>(id).into())
 }
 
 pub fn create_note(text: String) -> Result<usize, rusqlite::Error> {
@@ -62,10 +52,7 @@ pub fn pin(id: u32, pinned: bool) -> Result<(), Box<dyn Error>> {
   match result {
     Ok(rows_changed) => match rows_changed {
       1 => Ok(()),
-      _ => Err(Box::new(NotFoundByIdError {
-        id,
-        type_name: "note".to_string(),
-      })),
+      _ => Err(NotFoundByIdError::new::<Note>(id).into()),
     },
     Err(db_error) => Err(db_error)?,
   }
@@ -80,10 +67,7 @@ pub fn archive(id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
   match result {
     Ok(rows_changed) => match rows_changed {
       1 => Ok(()),
-      _ => Err(Box::new(NotFoundByIdError {
-        id,
-        type_name: "note".to_string(),
-      })),
+      _ => Err(NotFoundByIdError::new::<Note>(id).into()),
     },
     Err(db_error) => Err(Box::new(db_error)),
   }

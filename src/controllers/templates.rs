@@ -38,6 +38,19 @@ pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
   //       Update: Even if it works, it discards the error, so, should I use this?
   //       Update: I already commented this function with a TODO. It should return Result of Option,
   //               plus contain a SQL error (if it happens).
+  //
+  // This is a bit tricky to solve. I think the only way is to see which error was returned,
+  // and if it was "Not Found By Field", then dispatch a "create".
+  //
+  // One alternative is to use the "anyhow" library, or simply change the return to:
+  // find_one_template -> Result<Option<Template>, rusqlite::Error>
+  // Then handle the error (propagate using ?), and then, once you get the optional,
+  // use the "match" as below.
+  //
+  // find_one_note(note_id)?; is used in many places (it unwraps the Result, not expecting an Optional
+  // to be inside), so it'd be a bit cumbersome to change all of that.
+  //
+  // So try using "anyhow" (and migrating every Box<dyn Error> to "anyhow" if necessary).
   let template = services::templates::find_one_template(&name).ok();
 
   match template {

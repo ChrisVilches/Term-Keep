@@ -1,6 +1,7 @@
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::models::traits::FromSqlRow;
+use crate::models::traits::ModelName;
 
 #[derive(Debug, Clone)]
 pub struct Note {
@@ -9,6 +10,12 @@ pub struct Note {
   pub pinned: bool,
   pub note_type: NoteType,
   pub archived: bool,
+}
+
+impl ModelName for Note {
+  fn model_name() -> String {
+    "note".to_string()
+  }
 }
 
 impl FromSqlRow for Note {
