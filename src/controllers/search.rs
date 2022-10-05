@@ -8,7 +8,7 @@ use std::cmp::Ordering;
 use std::error::Error;
 
 fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
-  let ord = score2.cmp(&score1);
+  let ord = score2.cmp(score1);
 
   if ord == Ordering::Equal {
     if n1.pinned {
@@ -28,7 +28,7 @@ pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
 
   let mut results: Vec<(i64, &Note)> = notes
     .iter()
-    .map(|note| (matcher.fuzzy_match(&note.content, &text).unwrap_or(0), note))
+    .map(|note| (matcher.fuzzy_match(&note.content, text).unwrap_or(0), note))
     .filter(|pair| pair.0 > 0)
     .collect();
 
@@ -41,12 +41,13 @@ pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
   );
   println!();
 
+  // TODO: This generates an extra space if the icons string is empty.
   for (score, note) in &results {
     println!(
       "{} | {} {}",
-      format!("{}", format!("score {}", score).purple()),
-      note_fmt::format_note_icons(&note),
-      note_fmt::format_note_summary(&note)
+      format!("score {}", score).purple(),
+      note_fmt::format_note_icons(note),
+      note_fmt::format_note_summary(note)
     );
   }
 

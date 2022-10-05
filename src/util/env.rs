@@ -13,7 +13,7 @@ pub fn require_string_env_var(name: &str) -> String {
 
   let result: String = value.unwrap_or_default().trim().to_string();
 
-  if result.len() == 0 {
+  if result.is_empty() {
     abort_with_message(format!("{} (environment variable) must be set.", &var_name));
   }
 

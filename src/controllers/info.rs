@@ -16,10 +16,7 @@ fn get_editor_name() -> Result<String, Box<dyn Error>> {
 pub fn info() -> Result<(), Box<dyn Error>> {
   print_item("Database location", env::require_string_env_var("DB_PATH"));
 
-  let can_read_tips = match random_tip() {
-    Some(_) => true,
-    None => false,
-  };
+  let can_read_tips = random_tip().is_some();
 
   // For debugging.
   print_item("Can read tips", bool_to_str(can_read_tips));

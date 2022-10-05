@@ -17,7 +17,7 @@ pub fn show_all() -> Result<(), Box<dyn Error>> {
 }
 
 fn edit(template: Template) -> Result<(), Box<dyn Error>> {
-  let content = edit::edit(template.content.to_string())?;
+  let content = edit::edit(&template.content)?;
 
   if content == template.content {
     println!("Not changed");
@@ -35,16 +35,16 @@ fn create(name: &String) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
-  let template = services::templates::find_one(&name);
+  let template = services::templates::find_one(name);
 
   match template {
     Ok(t) => edit(t),
-    Err(_) => create(&name),
+    Err(_) => create(name),
   }
 }
 
 pub fn remove(name: &String) -> Result<(), Box<dyn Error>> {
-  let template = services::templates::find_one(&name)?;
+  let template = services::templates::find_one(name)?;
   services::templates::remove(template.id.unwrap())?;
   Ok(())
 }

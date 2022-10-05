@@ -54,7 +54,7 @@ pub fn single_row<T: FromSqlRow + Clone>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
 ) -> Option<T> {
-  rows_to_vec::<T>(query, params).first().map(|x| x.clone())
+  rows_to_vec::<T>(query, params).first().cloned()
 }
 
 pub fn change_row<T: ModelName>(

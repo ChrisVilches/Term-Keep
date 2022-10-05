@@ -45,8 +45,16 @@ export EDITOR=vim
 
 ### Testing
 
-Run the following command:
-
 ```
 cargo test
+```
+
+### Lint & Format
+
+```
+cargo clippy
+```
+
+```
+cargo fmt
 ```

@@ -1,7 +1,7 @@
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Template {
   pub id: Option<u32>,
   pub name: String,
@@ -21,15 +21,5 @@ impl FromSqlRow for Template {
       name: row.get(1)?,
       content: row.get(2)?,
     })
-  }
-}
-
-impl Default for Template {
-  fn default() -> Self {
-    Template {
-      id: None,
-      name: String::new(),
-      content: String::new(),
-    }
   }
 }

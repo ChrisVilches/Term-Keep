@@ -7,7 +7,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(id)?;
   let template = note.content;
 
-  let content = edit::edit(template.to_string())?;
+  let content = edit::edit(&template)?;
 
   if template.eq(&content) {
     println!("{}", "Not changed".black());

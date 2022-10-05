@@ -1,5 +1,5 @@
 pub fn truncate_string_ellipsis(s: String, length: usize) -> String {
-  let mut new_s = String::from(s);
+  let mut new_s = s;
 
   if new_s.len() <= length {
     new_s
@@ -17,7 +17,7 @@ pub fn bool_to_str(b: bool) -> String {
 }
 
 pub fn first_line(s: String) -> String {
-  s.split("\n")
+  s.split('\n')
     .collect::<Vec<&str>>()
     .first()
     .unwrap_or(&"")

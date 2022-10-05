@@ -33,14 +33,14 @@ fn prompt_confirm(msg: &str) -> bool {
   stdout().flush().unwrap();
 
   let mut buff: [u8; 1] = [0];
-  stdin().read(&mut buff).unwrap();
+  let _ = stdin().read(&mut buff).unwrap();
   let c = buff[0] as char;
 
   !(c == 'n' || c == 'N')
 }
 
 fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Error>> {
-  let content = edit::edit(template_text(&template_name, task))?;
+  let content = edit::edit(template_text(template_name, task))?;
 
   println!("{}", content);
   println!();
