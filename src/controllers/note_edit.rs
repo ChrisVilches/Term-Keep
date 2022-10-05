@@ -12,7 +12,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   if template.eq(&content) {
     println!("{}", "Not changed".black());
   } else {
-    services::notes::update(id, &content);
+    services::notes::update(id, &content)?;
     println!("{}", content);
     println!("{}", "Updated".blue());
   }

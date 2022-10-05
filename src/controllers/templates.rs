@@ -22,14 +22,14 @@ fn edit(template: Template) -> Result<(), Box<dyn Error>> {
   if content == template.content {
     println!("Not changed");
   } else {
-    services::templates::update(template.id.unwrap(), &content);
+    services::templates::update(template.id.unwrap(), &content)?;
   }
   Ok(())
 }
 
 fn create(name: &String) -> Result<(), Box<dyn Error>> {
   let content = edit::edit("")?;
-  services::templates::create(name, &content);
+  services::templates::create(name, &content)?;
   println!("Created a new template");
   Ok(())
 }
@@ -45,6 +45,6 @@ pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
 
 pub fn remove(name: &String) -> Result<(), Box<dyn Error>> {
   let template = services::templates::find_one(&name)?;
-  services::templates::remove(template.id.unwrap());
+  services::templates::remove(template.id.unwrap())?;
   Ok(())
 }

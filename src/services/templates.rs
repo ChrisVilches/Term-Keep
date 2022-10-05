@@ -1,8 +1,9 @@
 use crate::models::template::Template;
-use crate::services::db::change_rows;
+use crate::services::db::change_row;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 use crate::services::errors::NotFoundByFieldError;
+use crate::services::errors::RowNotChangedError;
 
 pub fn find_all() -> Vec<Template> {
   rows_to_vec(
@@ -19,20 +20,20 @@ pub fn find_one(name: &String) -> Result<Template, NotFoundByFieldError> {
   .ok_or_else(|| NotFoundByFieldError::new::<Template>("name".to_string(), name.to_string()))
 }
 
-pub fn create(name: &String, content: &String) -> usize {
-  change_rows(
+pub fn create(name: &String, content: &String) -> Result<(), RowNotChangedError> {
+  change_row::<Template>(
     "INSERT INTO template (name, content) VALUES (?, ?)",
     rusqlite::params![name, content],
   )
 }
 
-pub fn update(id: u32, content: &String) -> usize {
-  change_rows(
+pub fn update(id: u32, content: &String) -> Result<(), RowNotChangedError> {
+  change_row::<Template>(
     "UPDATE template SET content = ? WHERE id = ?",
     rusqlite::params![content, id],
   )
 }
 
-pub fn remove(id: u32) -> usize {
-  change_rows("DELETE FROM template WHERE id = ?", rusqlite::params![id])
+pub fn remove(id: u32) -> Result<(), RowNotChangedError> {
+  change_row::<Template>("DELETE FROM template WHERE id = ?", rusqlite::params![id])
 }

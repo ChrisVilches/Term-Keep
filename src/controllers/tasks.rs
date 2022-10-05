@@ -1,3 +1,4 @@
+use crate::services::errors::RowNotChangedError;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::services;
@@ -8,11 +9,11 @@ fn change_aux(
   task: &Note,
   current_status: TaskStatus,
   status: TaskStatus,
-) -> Result<(), rusqlite::Error> {
+) -> Result<(), RowNotChangedError> {
   if current_status == status {
     println!("Not changed");
   } else {
-    services::notes::change_task_status(task.id.unwrap(), status as i32);
+    services::notes::change_task_status(task.id.unwrap(), status as i32)?;
   }
 
   Ok(())

@@ -51,9 +51,9 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
   }
 
   if task {
-    services::notes::create_task(content);
+    services::notes::create_task(content)?;
   } else {
-    services::notes::create_note(content);
+    services::notes::create_note(content)?;
   }
 
   // TODO: I think it'd be better if the create/update methods

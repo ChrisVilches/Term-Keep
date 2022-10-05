@@ -1,5 +1,7 @@
 use crate::abort_with_message;
 use crate::models::traits::FromSqlRow;
+use crate::models::traits::ModelName;
+use crate::services::errors::RowNotChangedError;
 use crate::util::env;
 use rusqlite::Connection;
 
@@ -48,7 +50,6 @@ pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) 
   mapped.map(|n| n.unwrap()).collect()
 }
 
-
 pub fn single_row<T: FromSqlRow + Clone>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
@@ -56,10 +57,16 @@ pub fn single_row<T: FromSqlRow + Clone>(
   rows_to_vec::<T>(query, params).first().map(|x| x.clone())
 }
 
-/// Query that inserts or changes rows.
-pub fn change_rows(query: &str, params: &[&dyn rusqlite::ToSql]) -> usize {
+pub fn change_row<T: ModelName>(
+  query: &str,
+  params: &[&dyn rusqlite::ToSql],
+) -> Result<(), RowNotChangedError> {
   let conn = connection();
   let stmt = conn.prepare(query);
   let rows_changed = stmt.unwrap().execute(params).unwrap();
-  rows_changed
+
+  match rows_changed {
+    1 => Ok(()),
+    _ => Err(RowNotChangedError::new::<T>()),
+  }
 }
