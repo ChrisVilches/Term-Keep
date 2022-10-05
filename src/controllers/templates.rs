@@ -4,7 +4,7 @@ use colored::*;
 use std::error::Error;
 
 pub fn show_all() -> Result<(), Box<dyn Error>> {
-  let templates = services::templates::find_all_templates()?;
+  let templates = services::templates::find_all()?;
 
   println!("{} template(s)", templates.len().to_string().bold());
   println!();
@@ -51,7 +51,7 @@ pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
   // to be inside), so it'd be a bit cumbersome to change all of that.
   //
   // So try using "anyhow" (and migrating every Box<dyn Error> to "anyhow" if necessary).
-  let template = services::templates::find_one_template(&name).ok();
+  let template = services::templates::find_one(&name).ok();
 
   match template {
     Some(t) => edit(t),
@@ -60,7 +60,7 @@ pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn remove(name: &String) -> Result<(), Box<dyn Error>> {
-  let template = services::templates::find_one_template(&name)?;
+  let template = services::templates::find_one(&name)?;
   services::templates::remove(template.id.unwrap())
     .map(|_| ())
     .map_err(|e| e.into())

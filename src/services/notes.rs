@@ -1,19 +1,18 @@
 use crate::models::note::Note;
-use crate::models::traits::ModelName;
 use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 use crate::services::errors::NotFoundByIdError;
 use std::error::Error;
 
-pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
+pub fn find_all(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
   rows_to_vec(
     "SELECT id, content, pinned, archived, task_status FROM note WHERE archived = ?",
     rusqlite::params![archived],
   )
 }
 
-pub fn find_one_note(id: u32) -> Result<Note, Box<dyn Error>> {
+pub fn find_one(id: u32) -> Result<Note, Box<dyn Error>> {
   single_row::<Note>(
     "SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1",
     rusqlite::params![id],
@@ -35,7 +34,7 @@ pub fn create_task(text: String) -> Result<usize, rusqlite::Error> {
   )
 }
 
-pub fn update_note(id: u32, text: &String) -> Result<usize, rusqlite::Error> {
+pub fn update(id: u32, text: &String) -> Result<usize, rusqlite::Error> {
   change_rows(
     "UPDATE note SET content = ? WHERE id = ?",
     rusqlite::params![text, id],

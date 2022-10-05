@@ -1,19 +1,18 @@
 use crate::models::template::Template;
-use crate::models::traits::ModelName;
 use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 use crate::services::errors::NotFoundByFieldError;
 use std::error::Error;
 
-pub fn find_all_templates() -> Result<Vec<Template>, rusqlite::Error> {
+pub fn find_all() -> Result<Vec<Template>, rusqlite::Error> {
   rows_to_vec(
     "SELECT id, name, content FROM template",
     rusqlite::params![],
   )
 }
 
-pub fn find_one_template(name: &String) -> Result<Template, Box<dyn Error>> {
+pub fn find_one(name: &String) -> Result<Template, Box<dyn Error>> {
   single_row::<Template>(
     "SELECT id, name, content FROM template WHERE name = ?",
     rusqlite::params![name],

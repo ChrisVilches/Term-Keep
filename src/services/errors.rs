@@ -15,20 +15,18 @@ pub struct NotFoundByFieldError {
   value: String,
 }
 
-// TODO: Is this how constructors are supposed to be made?
 impl NotFoundByIdError {
   pub fn new<T: ModelName>(id: u32) -> Self {
-    NotFoundByIdError {
+    Self {
       id,
       model_name: T::model_name(),
     }
   }
 }
 
-// TODO: Is this how constructors are supposed to be made?
 impl NotFoundByFieldError {
   pub fn new<T: ModelName>(field: String, value: String) -> Self {
-    NotFoundByFieldError {
+    Self {
       model_name: T::model_name(),
       field,
       value,

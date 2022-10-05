@@ -19,7 +19,7 @@ fn change_aux(
 }
 
 pub fn change_status(task_id: u32, status_str: &str) -> Result<(), Box<dyn Error>> {
-  let task = services::notes::find_one_note(task_id)?;
+  let task = services::notes::find_one(task_id)?;
 
   match task.note_type {
     NoteType::Task(current_status) => TaskStatus::from_string(status_str)

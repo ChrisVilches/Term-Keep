@@ -22,7 +22,7 @@ fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
 }
 
 pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
-  let notes: Vec<Note> = services::notes::find_all_notes(archived)?;
+  let notes: Vec<Note> = services::notes::find_all(archived)?;
 
   let matcher = SkimMatcherV2::default();
 

@@ -12,7 +12,7 @@ const DEFAULT_TASK_CONTENT: &str = "New task";
 fn template_text(template_name: &Option<String>, task: bool) -> String {
   match template_name {
     Some(t) => {
-      let template: Template = services::templates::find_one_template(t).unwrap_or_default();
+      let template: Template = services::templates::find_one(t).unwrap_or_default();
       template.content
     }
     None => if task {

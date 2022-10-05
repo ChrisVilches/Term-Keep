@@ -1,4 +1,4 @@
-use crate::services::notes::find_all_notes;
+use crate::services::notes;
 use crate::tips::random_tip;
 use crate::util::env;
 use crate::util::strings::bool_to_str;
@@ -25,8 +25,8 @@ pub fn info() -> Result<(), Box<dyn Error>> {
   print_item("Can read tips", bool_to_str(can_read_tips));
 
   print_item("Editor", get_editor_name()?);
-  print_item("Notes", find_all_notes(false)?.len().to_string());
-  print_item("Archived", find_all_notes(true)?.len().to_string());
+  print_item("Notes", notes::find_all(false)?.len().to_string());
+  print_item("Archived", notes::find_all(true)?.len().to_string());
 
   Ok(())
 }
