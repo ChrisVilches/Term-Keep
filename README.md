@@ -49,11 +49,13 @@ export EDITOR=vim
 cargo test
 ```
 
-### Lint & Format
+### Lint
 
 ```
 cargo clippy
 ```
+
+### Format
 
 ```
 cargo fmt
