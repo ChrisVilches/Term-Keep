@@ -1,11 +1,11 @@
 use crate::abort_with_message;
-use crate::config;
+use crate::util::env;
 use crate::models::traits::FromSqlRow;
 use rusqlite::Connection;
 
 // TODO: Should be singleton.
 pub fn connection() -> rusqlite::Connection {
-  let db_path = config::env::require_string_env_var("DB_PATH");
+  let db_path = env::require_string_env_var("DB_PATH");
 
   Connection::open(db_path).unwrap_or_else(|e| abort_with_message(e))
 }

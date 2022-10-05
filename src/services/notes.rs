@@ -12,6 +12,14 @@ pub fn find_all_notes(archived: bool) -> Result<Vec<Note>, rusqlite::Error> {
   )
 }
 
+// TODO: I think in this case it also should return a
+//       -> Result<Option<Note>, rusqlite::Error>
+//       Another option would be to return a Result<Note, Box<dyn Error>>, but is it necessary?
+//       I think I can just return Result<Option<Note>, rusqlite::Error> and then handle the None
+//       as an error if I want, in the component that handles this.
+//
+//       Note that single row also silents the rusqlite::Error, so refactoring all of this would require
+//       several changes.
 pub fn find_one_note(id: u32) -> Result<Note, NotFoundByIdError> {
   single_row::<Note>(
     "SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1",

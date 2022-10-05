@@ -1,6 +1,6 @@
-use crate::config;
 use crate::services::notes::find_all_notes;
 use crate::tips::random_tip;
+use crate::util::env;
 use crate::util::strings::bool_to_str;
 use colored::*;
 use std::error::Error;
@@ -16,7 +16,7 @@ fn get_editor_name() -> Result<String, Box<dyn Error>> {
 pub fn info() -> Result<(), Box<dyn Error>> {
   print_item(
     "Database location",
-    config::env::require_string_env_var("DB_PATH"),
+    env::require_string_env_var("DB_PATH"),
   );
 
   let can_read_tips = match random_tip() {
