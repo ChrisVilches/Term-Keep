@@ -12,7 +12,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   if template.eq(&content) {
     println!("{}", "Not changed".black());
   } else {
-    services::notes::update(id, &content)?;
+    services::notes::update(id, &content);
     println!("{}", content);
     println!("{}", "Updated".blue());
   }
@@ -25,10 +25,11 @@ pub fn pin_note(id: u32, pinned: bool) -> Result<(), Box<dyn Error>> {
 
   if note.pinned == pinned {
     println!("Not changed");
-    Ok(())
   } else {
-    services::notes::pin(id, pinned)
+    services::notes::pin(id, pinned)?;
   }
+
+  Ok(())
 }
 
 pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
@@ -36,8 +37,9 @@ pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
 
   if note.archived == archived {
     println!("Not changed");
-    Ok(())
   } else {
-    services::notes::archive(note_id, archived)
+    services::notes::archive(note_id, archived)?
   }
+
+  Ok(())
 }

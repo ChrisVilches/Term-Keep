@@ -37,32 +37,29 @@ pub fn install_database() -> Result<(), rusqlite::Error> {
   Ok(())
 }
 
-pub fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Error> {
+fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Error> {
   T::from_row(row)
 }
 
-pub fn rows_to_vec<T: FromSqlRow>(
-  query: &str,
-  params: &[&dyn rusqlite::ToSql],
-) -> Result<Vec<T>, rusqlite::Error> {
+pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) -> Vec<T> {
   let conn = connection();
-  let mut stmt = conn.prepare(query)?;
-  let mapped = stmt.query_map(params, row_to_template::<T>)?;
-
-  Ok(mapped.map(|n| n.unwrap()).collect())
+  let mut stmt = conn.prepare(query).unwrap();
+  let mapped = stmt.query_map(params, row_to_template::<T>).unwrap();
+  mapped.map(|n| n.unwrap()).collect()
 }
+
 
 pub fn single_row<T: FromSqlRow + Clone>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
-) -> Result<Option<T>, rusqlite::Error> {
-  Ok(rows_to_vec::<T>(query, params)?.first().map(|x| x.clone()))
+) -> Option<T> {
+  rows_to_vec::<T>(query, params).first().map(|x| x.clone())
 }
 
 /// Query that inserts or changes rows.
-pub fn change_rows(query: &str, params: &[&dyn rusqlite::ToSql]) -> Result<usize, rusqlite::Error> {
+pub fn change_rows(query: &str, params: &[&dyn rusqlite::ToSql]) -> usize {
   let conn = connection();
   let stmt = conn.prepare(query);
-  let rows_changed = stmt?.execute(params)?;
-  Ok(rows_changed)
+  let rows_changed = stmt.unwrap().execute(params).unwrap();
+  rows_changed
 }

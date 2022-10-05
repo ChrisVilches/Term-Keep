@@ -12,7 +12,7 @@ fn change_aux(
   if current_status == status {
     println!("Not changed");
   } else {
-    services::notes::change_task_status(task.id.unwrap(), status as i32)?;
+    services::notes::change_task_status(task.id.unwrap(), status as i32);
   }
 
   Ok(())
