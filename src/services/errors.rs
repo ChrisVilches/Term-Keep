@@ -2,6 +2,8 @@ use crate::models::traits::ModelName;
 use std::error::Error;
 use std::fmt;
 
+// TODO: Split into one file for each error?.
+
 #[derive(Debug, Clone)]
 pub struct NotFoundByIdError {
   id: u32,

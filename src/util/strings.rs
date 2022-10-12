@@ -40,4 +40,10 @@ mod tests {
     assert_eq!(truncate_string_ellipsis("abcde".to_string(), 2), "ab...");
     assert_eq!(truncate_string_ellipsis("abcde".to_string(), 7), "abcde");
   }
+
+  #[test]
+  fn test_bool_to_str() {
+    assert_eq!(bool_to_str(true), "Yes");
+    assert_eq!(bool_to_str(false), "No");
+  }
 }

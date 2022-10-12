@@ -13,6 +13,8 @@ pub fn connection() -> rusqlite::Connection {
 }
 
 // TODO: Add created_at, updated_at. Can I just use triggers (using SQLite though)?
+// TODO: Add install SQL as .sql file in /data folder. Load using the static string loader.
+//       But only do it if it's possible to execute multiple statements at once.
 pub fn install_database() -> Result<(), rusqlite::Error> {
   connection().execute(
     "

@@ -3,6 +3,8 @@ use crate::controllers;
 use clap::{Args, Parser, Subcommand};
 use std::error::Error;
 
+// TODO: Split into smaller files.
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 #[command(propagate_version = true)]
