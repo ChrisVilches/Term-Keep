@@ -64,10 +64,8 @@ fn format_task_summary(note: &Note, status: TaskStatus) -> String {
 
   let color_summary = match status {
     TaskStatus::Todo => summary_text.red(),
-    TaskStatus::Progress => summary_text.on_truecolor(207, 199, 132),
-    TaskStatus::Done => summary_text
-      .truecolor(160, 160, 160)
-      .on_truecolor(91, 168, 72),
+    TaskStatus::Progress => summary_text.black().on_truecolor(207, 199, 132),
+    TaskStatus::Done => summary_text.black().on_truecolor(91, 168, 72),
   };
 
   format!(
