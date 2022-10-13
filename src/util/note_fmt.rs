@@ -1,13 +1,16 @@
 use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
+use crate::util::env::get_env_var;
 use crate::util::strings;
 use colored::*;
 
-const NOTE_SUMMARY_MAX_LENGTH: usize = 50;
+fn note_summary_max_length() -> usize {
+  get_env_var::<usize>("SUMMARY_MAX_LENGTH").unwrap_or(50)
+}
 
 fn format_content(content: String) -> String {
-  strings::truncate_string_ellipsis(strings::first_line(content), NOTE_SUMMARY_MAX_LENGTH)
+  strings::truncate_string_ellipsis(strings::first_line(content), note_summary_max_length())
 }
 
 fn format_normal_note_summary(note: &Note) -> String {
@@ -61,8 +64,10 @@ fn format_task_summary(note: &Note, status: TaskStatus) -> String {
 
   let color_summary = match status {
     TaskStatus::Todo => summary_text.red(),
-    TaskStatus::Progress => summary_text.yellow(),
-    TaskStatus::Done => summary_text.black(),
+    TaskStatus::Progress => summary_text.on_truecolor(207, 199, 132),
+    TaskStatus::Done => summary_text
+      .truecolor(160, 160, 160)
+      .on_truecolor(91, 168, 72),
   };
 
   format!(

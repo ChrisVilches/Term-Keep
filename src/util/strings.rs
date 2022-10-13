@@ -18,6 +18,7 @@ pub fn bool_to_str(b: bool) -> String {
 
 pub fn first_line(s: String) -> String {
   s.split('\n')
+    .filter(|s| !s.trim().is_empty())
     .collect::<Vec<&str>>()
     .first()
     .unwrap_or(&"")
@@ -33,6 +34,15 @@ mod tests {
     assert_eq!(first_line("hello\nworld".to_string()), "hello");
     assert_eq!(first_line("  a \n b".to_string()), "  a ");
     assert_eq!(first_line(" only one line ".to_string()), " only one line ");
+    assert_eq!(
+      first_line("  \n first line is blank ".to_string()),
+      " first line is blank "
+    );
+    assert_eq!(
+      first_line("\n first line is blank ".to_string()),
+      " first line is blank "
+    );
+    assert_eq!(first_line("\n \n   ".to_string()), "");
   }
 
   #[test]

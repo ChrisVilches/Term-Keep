@@ -41,13 +41,19 @@ pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
   );
   println!();
 
-  // TODO: This generates an extra space if the icons string is empty.
   for (score, note) in &results {
     println!(
-      "{} | {} {}",
+      "{} | {}",
       format!("score {}", score).purple(),
-      note_fmt::format_note_icons(note),
-      note_fmt::format_note_summary(note)
+      vec![
+        note_fmt::format_note_icons(note),
+        note_fmt::format_note_summary(note)
+      ]
+      .iter()
+      .filter(|s| !s.is_empty())
+      .cloned()
+      .collect::<Vec<String>>()
+      .join(" ")
     );
   }
 
