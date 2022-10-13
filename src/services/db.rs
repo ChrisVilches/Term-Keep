@@ -5,6 +5,22 @@ use crate::services::errors::RowNotChangedError;
 use crate::util::env;
 use rusqlite::Connection;
 
+const CREATE_NOTE_TABLE_SQL: &str = "
+CREATE TABLE IF NOT EXISTS note (
+  id          INTEGER PRIMARY KEY,
+  content     TEXT NOT NULL,
+  task_status INTEGER,
+  archived    BOOLEAN NOT NULL DEFAULT false,
+  pinned      BOOLEAN NOT NULL DEFAULT false
+);";
+
+const CREATE_TEMPLATE_TABLE_SQL: &str = "
+CREATE TABLE IF NOT EXISTS template (
+  id      INTEGER PRIMARY KEY,
+  name    VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL
+);";
+
 // TODO: Should be singleton.
 pub fn connection() -> rusqlite::Connection {
   let db_path = env::require_string_env_var("DB_PATH");
@@ -16,27 +32,8 @@ pub fn connection() -> rusqlite::Connection {
 // TODO: Add install SQL as .sql file in /data folder. Load using the static string loader.
 //       But only do it if it's possible to execute multiple statements at once.
 pub fn install_database() -> Result<(), rusqlite::Error> {
-  connection().execute(
-    "
-  CREATE TABLE IF NOT EXISTS note (
-    id          INTEGER PRIMARY KEY,
-    content     TEXT NOT NULL,
-    task_status INTEGER,
-    archived    BOOLEAN NOT NULL DEFAULT false, 
-    pinned      BOOLEAN NOT NULL DEFAULT false
-  );",
-    (),
-  )?;
-
-  connection().execute(
-    "
-  CREATE TABLE IF NOT EXISTS template (
-    id      INTEGER PRIMARY KEY,
-    name    VARCHAR(255) NOT NULL,
-    content TEXT NOT NULL
-  );",
-    (),
-  )?;
+  connection().execute(CREATE_NOTE_TABLE_SQL, ())?;
+  connection().execute(CREATE_TEMPLATE_TABLE_SQL, ())?;
 
   Ok(())
 }
@@ -49,7 +46,7 @@ pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) 
   let conn = connection();
   let mut stmt = conn.prepare(query).unwrap();
   let mapped = stmt.query_map(params, row_to_template::<T>).unwrap();
-  mapped.map(|n| n.unwrap()).collect()
+  mapped.map(std::result::Result::unwrap).collect()
 }
 
 pub fn single_row<T: FromSqlRow + Clone>(

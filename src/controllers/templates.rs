@@ -1,9 +1,9 @@
 use crate::models::template::Template;
 use crate::services;
-use colored::*;
+use colored::Colorize;
 use std::error::Error;
 
-pub fn show_all() -> Result<(), Box<dyn Error>> {
+pub fn show_all() {
   let templates = services::templates::find_all();
 
   println!("{} template(s)", templates.len().to_string().bold());
@@ -12,11 +12,9 @@ pub fn show_all() -> Result<(), Box<dyn Error>> {
   for template in templates {
     println!("{}", template.name);
   }
-
-  Ok(())
 }
 
-fn edit(template: Template) -> Result<(), Box<dyn Error>> {
+fn edit(template: &Template) -> Result<(), Box<dyn Error>> {
   let content = edit::edit(&template.content)?;
 
   if content == template.content {
@@ -38,7 +36,7 @@ pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
   let template = services::templates::find_one(name);
 
   match template {
-    Ok(t) => edit(t),
+    Ok(t) => edit(&t),
     Err(_) => create(name),
   }
 }

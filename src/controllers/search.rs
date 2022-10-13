@@ -1,11 +1,10 @@
 use crate::services;
 use crate::util::note_fmt;
 use crate::Note;
-use colored::*;
+use colored::Colorize;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
 use std::cmp::Ordering;
-use std::error::Error;
 
 fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
   let ord = score2.cmp(score1);
@@ -21,7 +20,23 @@ fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
   }
 }
 
-pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
+fn format_result(score: i64, note: &Note) -> String {
+  format!(
+    "{} | {}",
+    format!("score {}", score).purple(),
+    vec![
+      note_fmt::format_note_icons(note),
+      note_fmt::format_note_summary(note)
+    ]
+    .iter()
+    .filter(|s| !s.is_empty())
+    .cloned()
+    .collect::<Vec<String>>()
+    .join(" ")
+  )
+}
+
+pub fn find_fuzzy(text: &String, archived: bool) {
   let notes: Vec<Note> = services::notes::find_all(archived);
 
   let matcher = SkimMatcherV2::default();
@@ -42,20 +57,6 @@ pub fn find_fuzzy(text: &String, archived: bool) -> Result<(), Box<dyn Error>> {
   println!();
 
   for (score, note) in &results {
-    println!(
-      "{} | {}",
-      format!("score {}", score).purple(),
-      vec![
-        note_fmt::format_note_icons(note),
-        note_fmt::format_note_summary(note)
-      ]
-      .iter()
-      .filter(|s| !s.is_empty())
-      .cloned()
-      .collect::<Vec<String>>()
-      .join(" ")
-    );
+    println!("{}", format_result(*score, note));
   }
-
-  Ok(())
 }

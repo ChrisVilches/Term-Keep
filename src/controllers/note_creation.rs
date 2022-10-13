@@ -1,6 +1,6 @@
 use crate::models::template::Template;
 use crate::services;
-use colored::*;
+use colored::Colorize;
 use std::error::Error;
 
 fn template_text(template_name: &Option<String>) -> String {
@@ -25,9 +25,9 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
   println!();
 
   if task {
-    services::notes::create_task(content)?;
+    services::notes::create_task(&content)?;
   } else {
-    services::notes::create_note(content)?;
+    services::notes::create_note(&content)?;
   }
 
   // TODO: I think it'd be better if the create/update methods

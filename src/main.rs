@@ -1,14 +1,15 @@
+#![deny(clippy::all, clippy::pedantic)]
+
 mod cli;
 mod controllers;
 mod models;
 mod services;
 mod util;
-use crate::cli::create_cli;
 use crate::models::note::Note;
 use crate::models::task_status::TaskStatus;
 use crate::services::tips;
 use crate::util::cli::abort_with_message;
-use colored::*;
+use colored::Colorize;
 
 const LOGO: &str = "
 ████████╗██╗░░██╗
@@ -31,6 +32,6 @@ fn main() {
   println!("{}", LOGO.green());
   println!();
 
-  create_cli();
+  cli::create();
   show_random_tip();
 }

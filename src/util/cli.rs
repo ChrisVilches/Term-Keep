@@ -1,4 +1,4 @@
-use colored::*;
+use colored::Colorize;
 use std::fmt::Display;
 
 pub fn abort_with_message<S: Display>(msg: S) -> ! {

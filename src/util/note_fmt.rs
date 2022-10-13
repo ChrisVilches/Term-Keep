@@ -3,13 +3,13 @@ use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::util::env::get_env_var;
 use crate::util::strings;
-use colored::*;
+use colored::Colorize;
 
 fn note_summary_max_length() -> usize {
   get_env_var::<usize>("SUMMARY_MAX_LENGTH").unwrap_or(50)
 }
 
-fn format_content(content: String) -> String {
+fn format_content(content: &str) -> String {
   strings::truncate_string_ellipsis(strings::first_line(content), note_summary_max_length())
 }
 
@@ -17,7 +17,7 @@ fn format_normal_note_summary(note: &Note) -> String {
   format!(
     "{} | {}",
     note.id.unwrap().to_string().white(),
-    format_content(note.content.to_string()).cyan()
+    format_content(&note.content).cyan()
   )
 }
 
@@ -48,7 +48,7 @@ pub fn format_note_description(note: &Note) -> String {
     NoteType::Normal => desc.push("Note".into()),
     NoteType::Task(task_status) => {
       desc.push("Task".into());
-      desc.push(format_task_status_text(task_status).into())
+      desc.push(format_task_status_text(task_status).into());
     }
   };
 
@@ -60,7 +60,7 @@ pub fn format_note_description(note: &Note) -> String {
 }
 
 fn format_task_summary(note: &Note, status: TaskStatus) -> String {
-  let summary_text = format_content(note.content.to_string());
+  let summary_text = format_content(&note.content);
 
   let color_summary = match status {
     TaskStatus::Todo => summary_text.red(),

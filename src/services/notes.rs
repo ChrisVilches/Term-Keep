@@ -20,14 +20,14 @@ pub fn find_one(id: u32) -> Result<Note, NotFoundByIdError> {
   .ok_or_else(|| NotFoundByIdError::new::<Note>(id))
 }
 
-pub fn create_note(text: String) -> Result<(), RowNotChangedError> {
+pub fn create_note(text: &str) -> Result<(), RowNotChangedError> {
   change_row::<Note>(
     "INSERT INTO note (content) VALUES (?)",
     rusqlite::params![text],
   )
 }
 
-pub fn create_task(text: String) -> Result<(), RowNotChangedError> {
+pub fn create_task(text: &str) -> Result<(), RowNotChangedError> {
   change_row::<Note>(
     "INSERT INTO note (content, task_status) VALUES (?, 0)",
     rusqlite::params![text],

@@ -1,10 +1,10 @@
 use crate::services;
 use crate::util::note_fmt;
 use crate::Note;
-use colored::*;
+use colored::Colorize;
 use std::error::Error;
 
-fn print_count() -> Result<(), Box<dyn Error>> {
+fn print_count() {
   let non_archived_notes: Vec<Note> = services::notes::find_all(false);
   let archived_notes: Vec<Note> = services::notes::find_all(true);
 
@@ -14,11 +14,18 @@ fn print_count() -> Result<(), Box<dyn Error>> {
     archived_notes.len().to_string().bold()
   );
   println!();
-  Ok(())
 }
 
-pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
-  print_count()?;
+fn format_note_aux(note: &Note) -> String {
+  format!(
+    "{} {}",
+    note_fmt::format_note_icons(note),
+    note_fmt::format_note_summary(note)
+  )
+}
+
+pub fn show_all(archived: bool) {
+  print_count();
 
   let notes: Vec<Note> = services::notes::find_all(archived);
 
@@ -26,11 +33,7 @@ pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
   let not_pinned: Vec<&Note> = notes.iter().filter(|n| !n.pinned).collect();
 
   for note in &pinned {
-    println!(
-      "{} {}",
-      note_fmt::format_note_icons(note),
-      note_fmt::format_note_summary(note)
-    );
+    println!("{}", format_note_aux(note));
   }
 
   if !pinned.is_empty() {
@@ -38,14 +41,8 @@ pub fn show_all(archived: bool) -> Result<(), Box<dyn Error>> {
   }
 
   for note in &not_pinned {
-    println!(
-      "{} {}",
-      note_fmt::format_note_icons(note),
-      note_fmt::format_note_summary(note)
-    );
+    println!("{}", format_note_aux(note));
   }
-
-  Ok(())
 }
 
 pub fn show_one(note_id: u32) -> Result<(), Box<dyn Error>> {

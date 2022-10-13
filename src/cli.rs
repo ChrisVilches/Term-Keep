@@ -115,16 +115,18 @@ enum Commands {
   Info,
 }
 
-pub fn create_cli() {
-  let cli = Cli::parse();
-
-  let default_cmd = Commands::ShowAllNotes(ShowAllNotes { archived: false });
-
-  let result: Result<(), Box<dyn Error>> = match &cli.command.unwrap_or(default_cmd) {
+fn command_result(cmd: &Commands) -> Result<(), Box<dyn Error>> {
+  match cmd {
     // Display
-    Commands::ShowAllNotes(args) => controllers::note_display::show_all(args.archived),
+    Commands::ShowAllNotes(args) => {
+      controllers::note_display::show_all(args.archived);
+      Ok(())
+    }
     Commands::Show { id } => controllers::note_display::show_one(*id),
-    Commands::Search(args) => controllers::search::find_fuzzy(&args.text, args.archived),
+    Commands::Search(args) => {
+      controllers::search::find_fuzzy(&args.text, args.archived);
+      Ok(())
+    }
 
     // Editing
     Commands::EditNote { id } => controllers::note_edit::edit_content(*id),
@@ -137,13 +139,24 @@ pub fn create_cli() {
     Commands::Archive(archive) => controllers::note_edit::archive(archive.id, !archive.remove),
 
     // Templates
-    Commands::Templates => controllers::templates::show_all(),
+    Commands::Templates => {
+      controllers::templates::show_all();
+      Ok(())
+    }
     Commands::UpsertTemplate(args) => controllers::templates::upsert(&args.template_name),
     Commands::RemoveTemplate(args) => controllers::templates::remove(&args.template_name),
 
     // Misc
     Commands::Info => controllers::info::info(),
-  };
+  }
+}
+
+pub fn create() {
+  let cli = Cli::parse();
+
+  let default_cmd = Commands::ShowAllNotes(ShowAllNotes { archived: false });
+
+  let result: Result<(), Box<dyn Error>> = command_result(&cli.command.unwrap_or(default_cmd));
 
   result.unwrap_or_else(|e| abort_with_message(e));
 }

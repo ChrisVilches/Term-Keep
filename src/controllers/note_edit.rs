@@ -1,6 +1,6 @@
 use crate::services;
 use crate::Note;
-use colored::*;
+use colored::Colorize;
 use std::error::Error;
 
 pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
@@ -38,7 +38,7 @@ pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
   if note.archived == archived {
     println!("Not changed");
   } else {
-    services::notes::archive(note_id, archived)?
+    services::notes::archive(note_id, archived)?;
   }
 
   Ok(())
