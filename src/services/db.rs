@@ -5,21 +5,7 @@ use crate::models::traits::ModelName;
 use crate::util::env;
 use rusqlite::Connection;
 
-const CREATE_NOTE_TABLE_SQL: &str = "
-CREATE TABLE IF NOT EXISTS note (
-  id          INTEGER PRIMARY KEY,
-  content     TEXT NOT NULL,
-  task_status INTEGER,
-  archived    BOOLEAN NOT NULL DEFAULT false,
-  pinned      BOOLEAN NOT NULL DEFAULT false
-);";
-
-const CREATE_TEMPLATE_TABLE_SQL: &str = "
-CREATE TABLE IF NOT EXISTS template (
-  id      INTEGER PRIMARY KEY,
-  name    VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL
-);";
+const INSTALL_DATABASE_SQL: &str = include_str!("../../data/install.sql");
 
 // TODO: Should be singleton.
 pub fn connection() -> rusqlite::Connection {
@@ -29,13 +15,8 @@ pub fn connection() -> rusqlite::Connection {
 }
 
 // TODO: Add created_at, updated_at. Can I just use triggers (using SQLite though)?
-// TODO: Add install SQL as .sql file in /data folder. Load using the static string loader.
-//       But only do it if it's possible to execute multiple statements at once.
 pub fn install_database() -> Result<(), rusqlite::Error> {
-  connection().execute(CREATE_NOTE_TABLE_SQL, ())?;
-  connection().execute(CREATE_TEMPLATE_TABLE_SQL, ())?;
-
-  Ok(())
+  connection().execute_batch(INSTALL_DATABASE_SQL)
 }
 
 fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Error> {
