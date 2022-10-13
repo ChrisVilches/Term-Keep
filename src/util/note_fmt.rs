@@ -103,3 +103,10 @@ fn note_icons(note: &Note) -> Vec<&str> {
 pub fn format_note_icons(note: &Note) -> String {
   note_icons(note).join(" ")
 }
+
+pub fn print_note(note: &Note) {
+  println!("{}", format_note_description(note).blue());
+  println!();
+
+  println!("{}", note.content);
+}

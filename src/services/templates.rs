@@ -1,9 +1,9 @@
+use crate::errors::not_found_by_field_error::NotFoundByFieldError;
+use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::template::Template;
 use crate::services::db::change_row;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
-use crate::services::errors::NotFoundByFieldError;
-use crate::services::errors::RowNotChangedError;
 
 pub fn find_all() -> Vec<Template> {
   rows_to_vec(

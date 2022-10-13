@@ -1,7 +1,7 @@
 use crate::abort_with_message;
+use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
-use crate::services::errors::RowNotChangedError;
 use crate::util::env;
 use rusqlite::Connection;
 

@@ -1,5 +1,6 @@
 use crate::models::template::Template;
 use crate::services;
+use crate::util::note_fmt;
 use colored::Colorize;
 use std::error::Error;
 
@@ -21,18 +22,13 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
     return Ok(());
   }
 
-  println!("{}", content);
-  println!();
-
   if task {
     services::notes::create_task(&content)?;
   } else {
     services::notes::create_note(&content)?;
   }
 
-  // TODO: I think it'd be better if the create/update methods
-  // showed the result after creating using the same logic as the "show_one",
-  // because that one shows a lot of data with a nice format.
+  note_fmt::print_note(&services::notes::find_latest().unwrap());
 
   println!("{}", "Created".blue());
   Ok(())

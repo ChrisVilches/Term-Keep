@@ -2,6 +2,7 @@
 
 mod cli;
 mod controllers;
+mod errors;
 mod models;
 mod services;
 mod util;
@@ -11,13 +12,7 @@ use crate::services::tips;
 use crate::util::cli::abort_with_message;
 use colored::Colorize;
 
-const LOGO: &str = "
-████████╗██╗░░██╗
-╚══██╔══╝██║░██╔╝
-░░░██║░░░█████═╝░
-░░░██║░░░██╔═██╗░
-░░░██║░░░██║░╚██╗
-░░░╚═╝░░░╚═╝░░╚═╝";
+static LOGO: &str = include_str!("../data/logo.txt");
 
 fn show_random_tip() {
   if let Some(t) = tips::random_tip() {
@@ -29,9 +24,9 @@ fn show_random_tip() {
 fn main() {
   services::db::install_database().unwrap_or_else(|e| abort_with_message(e));
 
-  println!("{}", LOGO.green());
+  println!("{}", LOGO.trim().green());
   println!();
 
-  cli::create();
+  cli::parser::create();
   show_random_tip();
 }

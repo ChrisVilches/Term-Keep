@@ -1,7 +1,7 @@
+use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::services;
-use crate::services::errors::RowNotChangedError;
 use crate::Note;
 use std::error::Error;
 

@@ -1,4 +1,5 @@
 use crate::services;
+use crate::util::note_fmt;
 use crate::Note;
 use colored::Colorize;
 use std::error::Error;
@@ -9,11 +10,17 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
 
   let content = edit::edit(&template)?;
 
-  if template.eq(&content) {
+  let same_content = template.eq(&content);
+
+  if !same_content {
+    services::notes::update(id, &content)?;
+  }
+
+  note_fmt::print_note(&services::notes::find_one(id)?);
+
+  if same_content {
     println!("{}", "Not changed".black());
   } else {
-    services::notes::update(id, &content)?;
-    println!("{}", content);
     println!("{}", "Updated".blue());
   }
 

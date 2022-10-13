@@ -1,9 +1,9 @@
+use crate::errors::not_found_by_id_error::NotFoundByIdError;
+use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::note::Note;
 use crate::services::db::change_row;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
-use crate::services::errors::NotFoundByIdError;
-use crate::services::errors::RowNotChangedError;
 
 pub fn find_all(archived: bool) -> Vec<Note> {
   rows_to_vec(
@@ -18,6 +18,13 @@ pub fn find_one(id: u32) -> Result<Note, NotFoundByIdError> {
     rusqlite::params![id],
   )
   .ok_or_else(|| NotFoundByIdError::new::<Note>(id))
+}
+
+pub fn find_latest() -> Option<Note> {
+  single_row::<Note>(
+    "SELECT id, content, pinned, archived, task_status FROM note ORDER BY id DESC LIMIT 1",
+    rusqlite::params![],
+  )
 }
 
 pub fn create_note(text: &str) -> Result<(), RowNotChangedError> {

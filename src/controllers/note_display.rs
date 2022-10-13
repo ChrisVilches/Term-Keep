@@ -48,10 +48,7 @@ pub fn show_all(archived: bool) {
 pub fn show_one(note_id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(note_id)?;
 
-  println!("{}", note_fmt::format_note_description(&note).blue());
-  println!();
-
-  println!("{}", note.content);
+  note_fmt::print_note(&note);
 
   Ok(())
 }
