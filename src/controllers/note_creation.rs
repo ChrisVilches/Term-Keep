@@ -3,26 +3,18 @@ use crate::services;
 use colored::*;
 use std::error::Error;
 
-const DEFAULT_NOTE_CONTENT: &str = "New note";
-const DEFAULT_TASK_CONTENT: &str = "New task";
-
-fn template_text(template_name: &Option<String>, task: bool) -> String {
+fn template_text(template_name: &Option<String>) -> String {
   match template_name {
     Some(t) => {
       let template: Template = services::templates::find_one(t).unwrap_or_default();
       template.content
     }
-    None => if task {
-      DEFAULT_TASK_CONTENT
-    } else {
-      DEFAULT_NOTE_CONTENT
-    }
-    .to_string(),
+    None => "".to_string(),
   }
 }
 
 fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Error>> {
-  let content = edit::edit(template_text(template_name, task))?;
+  let content = edit::edit(template_text(template_name))?;
 
   if content.trim().is_empty() {
     println!("Not saved");
