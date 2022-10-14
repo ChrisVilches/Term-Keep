@@ -9,6 +9,13 @@ pub fn truncate_string_ellipsis(s: String, length: usize) -> String {
   }
 }
 
+pub fn count_lines(s: &str) -> usize {
+  s.split('\n')
+    .map(str::trim)
+    .filter(|line| !line.is_empty())
+    .count()
+}
+
 pub fn bool_to_str(b: bool) -> String {
   if b {
     "Yes".to_string()
@@ -30,6 +37,19 @@ pub fn first_line(s: &str) -> String {
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[test]
+  fn test_count_lines() {
+    assert_eq!(count_lines(""), 0);
+    assert_eq!(count_lines("a"), 1);
+    assert_eq!(count_lines(" a \n b "), 2);
+    assert_eq!(count_lines(" a \n b \n "), 2);
+    assert_eq!(count_lines(" a \n  \n b"), 2);
+    assert_eq!(count_lines(" a \n  \n b \n"), 2);
+    assert_eq!(count_lines(" a \n b \n c \n"), 3);
+    assert_eq!(count_lines(" a \n b \n c \n d"), 4);
+    assert_eq!(count_lines(" \n\n\n\nx\n\n\n"), 1);
+  }
 
   #[test]
   fn test_first_line() {

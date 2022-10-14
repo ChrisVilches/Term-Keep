@@ -3,6 +3,7 @@ use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::util::env::get_env_var;
 use crate::util::strings;
+use crate::util::strings::count_lines;
 use colored::Colorize;
 
 fn note_summary_max_length() -> usize {
@@ -55,11 +56,22 @@ pub fn format_note_description(note: &Note) -> String {
     .join("  |  ")
 }
 
+fn lines_amount_info(note: &Note) -> String {
+  let lines = count_lines(&note.content);
+
+  if lines == 1 {
+    "".to_string()
+  } else {
+    format!(" ({} lines)", lines).dimmed().to_string()
+  }
+}
+
 fn format_normal_note_summary(note: &Note) -> String {
   format!(
-    "{: >3}\t{}",
+    "{: >3}\t{}{}",
     note.id.unwrap().to_string().bold(),
-    format_content(&note.content)
+    format_content(&note.content),
+    lines_amount_info(note)
   )
 }
 
@@ -70,10 +82,11 @@ fn format_task_summary(note: &Note, status: TaskStatus) -> String {
   };
 
   format!(
-    "{: >3}\t{} {}",
+    "{: >3}\t{} {}{}",
     note.id.unwrap().to_string().bold(),
     format_task_status_icon(status),
-    task_summary
+    task_summary,
+    lines_amount_info(note)
   )
 }
 
