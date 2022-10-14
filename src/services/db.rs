@@ -7,14 +7,12 @@ use rusqlite::Connection;
 
 const INSTALL_DATABASE_SQL: &str = include_str!("../../data/install.sql");
 
-// TODO: Should be singleton.
 pub fn connection() -> rusqlite::Connection {
   let db_path = env::require_string_env_var("DB_PATH");
 
   Connection::open(db_path).unwrap_or_else(|e| abort_with_message(e))
 }
 
-// TODO: Add created_at, updated_at. Can I just use triggers (using SQLite though)?
 pub fn install_database() -> Result<(), rusqlite::Error> {
   connection().execute_batch(INSTALL_DATABASE_SQL)
 }

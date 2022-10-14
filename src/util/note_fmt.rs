@@ -51,9 +51,6 @@ pub fn format_note_description(note: &Note) -> String {
     .join("  |  ")
 }
 
-// TODO: Leading space number is hardcoded to be 3. If the user has 10,000 notes,
-//       then it will look bad.
-
 fn format_normal_note_summary(note: &Note) -> String {
   format!(
     "{: >3}\t{}",
