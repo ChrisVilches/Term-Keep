@@ -10,23 +10,15 @@ fn note_summary_max_length() -> usize {
 }
 
 fn format_content(content: &str) -> String {
-  strings::truncate_string_ellipsis(strings::first_line(content), note_summary_max_length())
+  strings::truncate_string_ellipsis(strings::first_line(content).trim().to_string(), note_summary_max_length())
 }
 
-fn format_normal_note_summary(note: &Note) -> String {
-  format!(
-    "{} | {}",
-    note.id.unwrap().to_string().white(),
-    format_content(&note.content).cyan()
-  )
-}
-
-fn format_task_status_icon(task_status: TaskStatus) -> &'static str {
+fn format_task_status_icon(task_status: TaskStatus) -> String {
   match task_status {
-    TaskStatus::Todo => "❐",
-    TaskStatus::Progress => "△",
-    TaskStatus::Done => "✔",
-  }
+    TaskStatus::Todo => "[   ]".red().bold(),
+    TaskStatus::Progress => "[ - ]".yellow().bold(),
+    TaskStatus::Done => "[ ✔ ]".green().bold(),
+  }.to_string()
 }
 
 fn format_task_status_text(task_status: TaskStatus) -> &'static str {
@@ -59,20 +51,28 @@ pub fn format_note_description(note: &Note) -> String {
     .join("  |  ")
 }
 
-fn format_task_summary(note: &Note, status: TaskStatus) -> String {
-  let summary_text = format_content(&note.content);
+// TODO: Leading space number is hardcoded to be 3. If the user has 10,000 notes,
+//       then it will look bad.
 
-  let color_summary = match status {
-    TaskStatus::Todo => summary_text.red(),
-    TaskStatus::Progress => summary_text.black().on_truecolor(207, 199, 132),
-    TaskStatus::Done => summary_text.black().on_truecolor(91, 168, 72),
+fn format_normal_note_summary(note: &Note) -> String {
+  format!(
+    "{: >3}\t{}",
+    note.id.unwrap().to_string().bold(),
+    format_content(&note.content)
+  )
+}
+
+fn format_task_summary(note: &Note, status: TaskStatus) -> String {
+  let task_summary = match status {
+    TaskStatus::Done => format_content(&note.content).dimmed().to_string(),
+    TaskStatus::Todo | TaskStatus::Progress => format_content(&note.content),
   };
 
   format!(
-    "{} | {} | {}",
-    note.id.unwrap().to_string().white(),
+    "{: >3}\t{} {}",
+    note.id.unwrap().to_string().bold(),
     format_task_status_icon(status),
-    color_summary
+    task_summary
   )
 }
 
