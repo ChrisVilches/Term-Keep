@@ -20,7 +20,7 @@ fn command_result(cmd: &Commands) -> Result<(), Box<dyn Error>> {
       controllers::note_display::show_all(args.archived);
       Ok(())
     }
-    Commands::Show { id } => controllers::note_display::show_one(*id),
+    Commands::Show(args) => controllers::note_display::show_one(args.id, args.less),
     Commands::Search(args) => {
       controllers::search::find_fuzzy(&args.text, args.archived);
       Ok(())

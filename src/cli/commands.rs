@@ -7,6 +7,19 @@ pub struct ShowAllNotes {
 }
 
 #[derive(Args)]
+pub struct ShowOne {
+  #[clap(name = "Note ID")]
+  pub id: u32,
+
+  #[clap(
+    long = "less",
+    short = 'l',
+    help = "Use the 'less' command to display the content"
+  )]
+  pub less: bool,
+}
+
+#[derive(Args)]
 pub struct Archive {
   #[clap(name = "Note ID")]
   pub id: u32,
@@ -66,7 +79,7 @@ pub enum Commands {
   ShowAllNotes(ShowAllNotes),
 
   #[command(about = "Show one note")]
-  Show { id: u32 },
+  Show(ShowOne),
 
   #[command(about = "Find notes (text search)", alias = "find")]
   Search(Search),

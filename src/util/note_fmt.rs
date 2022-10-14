@@ -10,7 +10,10 @@ fn note_summary_max_length() -> usize {
 }
 
 fn format_content(content: &str) -> String {
-  strings::truncate_string_ellipsis(strings::first_line(content).trim().to_string(), note_summary_max_length())
+  strings::truncate_string_ellipsis(
+    strings::first_line(content).trim().to_string(),
+    note_summary_max_length(),
+  )
 }
 
 fn format_task_status_icon(task_status: TaskStatus) -> String {
@@ -18,7 +21,8 @@ fn format_task_status_icon(task_status: TaskStatus) -> String {
     TaskStatus::Todo => "[   ]".red().bold(),
     TaskStatus::Progress => "[ - ]".yellow().bold(),
     TaskStatus::Done => "[ ✔ ]".green().bold(),
-  }.to_string()
+  }
+  .to_string()
 }
 
 fn format_task_status_text(task_status: TaskStatus) -> &'static str {
@@ -105,5 +109,5 @@ pub fn print_note(note: &Note) {
   println!("{}", format_note_description(note).blue());
   println!();
 
-  println!("{}", note.content);
+  println!("{}", note.content.trim());
 }

@@ -1,4 +1,5 @@
 use crate::services;
+use crate::util::cli;
 use crate::util::note_fmt;
 use crate::Note;
 use colored::Colorize;
@@ -45,10 +46,14 @@ pub fn show_all(archived: bool) {
   }
 }
 
-pub fn show_one(note_id: u32) -> Result<(), Box<dyn Error>> {
+pub fn show_one(note_id: u32, use_less: bool) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(note_id)?;
 
-  note_fmt::print_note(&note);
+  if use_less {
+    cli::less(&note.content);
+  } else {
+    note_fmt::print_note(&note);
+  }
 
   Ok(())
 }
