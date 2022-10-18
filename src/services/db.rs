@@ -48,3 +48,9 @@ pub fn change_row<T: ModelName>(
     _ => Err(RowNotChangedError::new::<T>()),
   }
 }
+
+pub fn change_rows<T: ModelName>(query: &str, params: &[&dyn rusqlite::ToSql]) -> usize {
+  let conn = connection();
+  let mut stmt = conn.prepare(query).unwrap();
+  stmt.execute(params).unwrap()
+}

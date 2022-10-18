@@ -1,6 +1,7 @@
 use rusqlite::types::FromSql;
 use rusqlite::types::FromSqlResult;
 use rusqlite::types::ValueRef;
+use rusqlite::ToSql;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum TaskStatus {
@@ -29,5 +30,11 @@ impl FromSql for TaskStatus {
       ValueRef::Integer(2) => Ok(TaskStatus::Done),
       _ => panic!("Data is corrupted. A task status value is wrong."),
     }
+  }
+}
+
+impl ToSql for TaskStatus {
+  fn to_sql(&self) -> std::result::Result<rusqlite::types::ToSqlOutput<'_>, rusqlite::Error> {
+    Ok((*self as i32).into())
   }
 }

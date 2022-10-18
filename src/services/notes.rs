@@ -1,7 +1,9 @@
 use crate::errors::not_found_by_id_error::NotFoundByIdError;
 use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::note::Note;
+use crate::models::task_status::TaskStatus;
 use crate::services::db::change_row;
+use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 
@@ -66,5 +68,12 @@ pub fn change_task_status(id: u32, status: i32) -> Result<(), RowNotChangedError
   change_row::<Note>(
     "UPDATE note SET task_status = ? WHERE id = ?",
     rusqlite::params![status, id],
+  )
+}
+
+pub fn archive_all_done() -> usize {
+  change_rows::<Note>(
+    "UPDATE note SET archived = true WHERE task_status = ? AND archived = false",
+    rusqlite::params![TaskStatus::Done],
   )
 }

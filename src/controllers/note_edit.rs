@@ -19,7 +19,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   note_fmt::print_note(&services::notes::find_one(id)?);
 
   if same_content {
-    println!("{}", "Not changed".black());
+    println!("{}", "Not changed".dimmed());
   } else {
     println!("{}", "Updated".blue());
   }
@@ -49,4 +49,10 @@ pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
   }
 
   Ok(())
+}
+
+pub fn archive_all_done() {
+  let changed = services::notes::archive_all_done();
+
+  println!("{} note(s) were archived", changed);
 }

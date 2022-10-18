@@ -31,6 +31,10 @@ fn command_result(cmd: &Commands) -> Result<(), Box<dyn Error>> {
     Commands::NewNote(args) => controllers::note_creation::create_note(&args.template_name),
     Commands::NewTask(args) => controllers::note_creation::create_task(&args.template_name),
     Commands::ChangeTaskStatus(args) => controllers::tasks::change_status(args.id, &args.status),
+    Commands::ArchiveAllDone => {
+      controllers::note_edit::archive_all_done();
+      Ok(())
+    }
 
     // Pin / Archive
     Commands::Pin(pin) => controllers::note_edit::pin_note(pin.id, !pin.remove),

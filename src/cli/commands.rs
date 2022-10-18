@@ -111,6 +111,9 @@ pub enum Commands {
   #[command(about = "Remove template by name")]
   RemoveTemplate(RemoveTemplate),
 
+  #[command(about = "Archive all completed tasks")]
+  ArchiveAllDone,
+
   #[command(about = "Show miscellaneous information")]
   Info,
 }
