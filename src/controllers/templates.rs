@@ -1,5 +1,6 @@
 use crate::models::template::Template;
 use crate::services;
+use crate::util::cli;
 use colored::Colorize;
 use std::error::Error;
 
@@ -18,7 +19,7 @@ fn edit(template: &Template) -> Result<(), Box<dyn Error>> {
   let content = edit::edit(&template.content)?;
 
   if content == template.content {
-    println!("Not changed");
+    println!("{}", cli::color_secondary("Not changed"));
   } else {
     services::templates::update(template.id.unwrap(), &content)?;
   }
@@ -28,7 +29,7 @@ fn edit(template: &Template) -> Result<(), Box<dyn Error>> {
 fn create(name: &String) -> Result<(), Box<dyn Error>> {
   let content = edit::edit("")?;
   services::templates::create(name, &content)?;
-  println!("Created a new template");
+  println!("{}", cli::color_primary("Created a new template"));
   Ok(())
 }
 

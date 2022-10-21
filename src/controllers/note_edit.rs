@@ -1,7 +1,7 @@
 use crate::services;
+use crate::util::cli;
 use crate::util::note_fmt;
 use crate::Note;
-use colored::Colorize;
 use std::error::Error;
 
 pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
@@ -18,10 +18,12 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
 
   note_fmt::print_note(&services::notes::find_one(id)?);
 
+  println!();
+
   if same_content {
-    println!("{}", "Not changed".dimmed());
+    println!("{}", cli::color_secondary("Not changed"));
   } else {
-    println!("{}", "Updated".blue());
+    println!("{}", cli::color_primary("Updated"));
   }
 
   Ok(())
@@ -31,7 +33,7 @@ pub fn pin_note(id: u32, pinned: bool) -> Result<(), Box<dyn Error>> {
   let note = services::notes::find_one(id)?;
 
   if note.pinned == pinned {
-    println!("Not changed");
+    println!("{}", cli::color_secondary("Not changed"));
   } else {
     services::notes::pin(id, pinned)?;
   }
@@ -43,7 +45,7 @@ pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if note.archived == archived {
-    println!("Not changed");
+    println!("{}", cli::color_secondary("Not changed"));
   } else {
     services::notes::archive(note_id, archived)?;
   }
@@ -54,5 +56,8 @@ pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
 pub fn archive_all_done() {
   let changed = services::notes::archive_all_done();
 
-  println!("{} note(s) were archived", changed);
+  println!(
+    "{}",
+    cli::color_primary(&format!("{} note(s) were archived", changed))
+  );
 }

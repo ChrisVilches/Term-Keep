@@ -26,6 +26,14 @@ fn less_aux(text: &String) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
+pub fn color_primary(text: &str) -> String {
+  text.blue().to_string()
+}
+
+pub fn color_secondary(text: &str) -> String {
+  text.dimmed().to_string()
+}
+
 pub fn less(text: &String) {
   less_aux(text).unwrap_or_else(|e| abort_with_message(format!("Couldn't use 'less' ({})", e)));
 }

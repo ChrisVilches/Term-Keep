@@ -1,7 +1,7 @@
 use crate::models::template::Template;
 use crate::services;
+use crate::util::cli;
 use crate::util::note_fmt;
-use colored::Colorize;
 use std::error::Error;
 
 fn template_text(template_name: &Option<String>) -> String {
@@ -30,7 +30,7 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
 
   note_fmt::print_note(&services::notes::find_latest().unwrap());
 
-  println!("{}", "Created".blue());
+  println!("{}", cli::color_primary("Created"));
   Ok(())
 }
 
