@@ -1,21 +1,17 @@
-use crate::models::template::Template;
 use crate::services;
 use crate::util::cli;
 use crate::util::note_fmt;
 use std::error::Error;
 
-fn template_text(template_name: &Option<String>) -> String {
-  match template_name {
-    Some(t) => {
-      let template: Template = services::templates::find_one(t).unwrap_or_default();
-      template.content
-    }
-    None => "".to_string(),
-  }
+fn template_text(template_name: &Option<String>) -> Result<String, Box<dyn Error>> {
+  Ok(match template_name {
+    Some(name) => services::templates::find_one(name)?.content,
+    None => String::new(),
+  })
 }
 
 fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Error>> {
-  let content = edit::edit(template_text(template_name))?;
+  let content = edit::edit(template_text(template_name)?)?;
 
   if content.trim().is_empty() {
     println!("{}", cli::color_secondary("Not saved"));
