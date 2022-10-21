@@ -18,7 +18,7 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
   let content = edit::edit(template_text(template_name))?;
 
   if content.trim().is_empty() {
-    println!("Not saved");
+    println!("{}", cli::color_secondary("Not saved"));
     return Ok(());
   }
 
