@@ -9,14 +9,14 @@ use crate::services::db::single_row;
 
 pub fn find_all(archived: bool) -> Vec<Note> {
   rows_to_vec(
-    "SELECT id, content, pinned, archived, task_status FROM note WHERE archived = ?",
+    "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note WHERE archived = ?",
     rusqlite::params![archived],
   )
 }
 
 pub fn find_one(id: u32) -> Result<Note, NotFoundByIdError> {
   single_row::<Note>(
-    "SELECT id, content, pinned, archived, task_status FROM note WHERE id = ? LIMIT 1",
+    "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note WHERE id = ? LIMIT 1",
     rusqlite::params![id],
   )
   .ok_or_else(|| NotFoundByIdError::new::<Note>(id))
@@ -24,7 +24,7 @@ pub fn find_one(id: u32) -> Result<Note, NotFoundByIdError> {
 
 pub fn find_latest() -> Option<Note> {
   single_row::<Note>(
-    "SELECT id, content, pinned, archived, task_status FROM note ORDER BY id DESC LIMIT 1",
+    "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note ORDER BY id DESC LIMIT 1",
     rusqlite::params![],
   )
 }

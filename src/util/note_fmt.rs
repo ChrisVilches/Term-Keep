@@ -120,6 +120,16 @@ pub fn format_note_icons(note: &Note) -> String {
 
 pub fn print_note(note: &Note) {
   println!("{}", format_note_description(note).blue());
+
+  // TODO: Date display is beta. Might need to change the DateTime<Utc> to something else?
+  //       Also, formatting will be good (both the date itself and the "Created/Updated" labels).
+
+  println!("Created: {}", note.created_at);
+
+  if note.created_at != note.updated_at {
+    println!("Updated: {}", note.updated_at);
+  }
+
   println!();
 
   println!("{}", note.content.trim());

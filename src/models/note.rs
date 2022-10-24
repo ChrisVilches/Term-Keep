@@ -2,6 +2,7 @@ use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
+use chrono::{DateTime, Utc};
 
 #[derive(Debug, Clone)]
 pub struct Note {
@@ -10,6 +11,9 @@ pub struct Note {
   pub pinned: bool,
   pub note_type: NoteType,
   pub archived: bool,
+  // TODO: Is "Utc" good for this use case?
+  pub created_at: DateTime<Utc>,
+  pub updated_at: DateTime<Utc>,
 }
 
 impl ModelName for Note {
@@ -31,6 +35,8 @@ impl FromSqlRow for Note {
       pinned: row.get(2)?,
       archived: row.get(3)?,
       note_type,
+      created_at: row.get(5)?,
+      updated_at: row.get(6)?,
     })
   }
 }

@@ -26,6 +26,8 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
 
   note_fmt::print_note(&services::notes::find_latest().unwrap());
 
+  println!();
+
   println!("{}", cli::color_primary("Created"));
   Ok(())
 }
