@@ -6,6 +6,8 @@ use crate::util::strings;
 use crate::util::strings::count_lines;
 use colored::Colorize;
 
+const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
+
 fn note_summary_max_length() -> usize {
   get_env_var::<usize>("SUMMARY_MAX_LENGTH").unwrap_or(50)
 }
@@ -122,13 +124,15 @@ pub fn print_note(note: &Note) {
   println!("{}", format_note_description(note).blue());
 
   // TODO: Date display is beta. Might need to change the DateTime<Utc> to something else?
-  //       Also, formatting will be good (both the date itself and the "Created/Updated" labels).
 
-  println!("Created: {}", note.created_at);
+  let mut date_display = String::new();
+  date_display += &format!("{}", note.created_at.format(DATE_FORMAT));
 
   if note.created_at != note.updated_at {
-    println!("Updated: {}", note.updated_at);
+    date_display += &format!(" (Updated: {})", note.updated_at.format(DATE_FORMAT));
   }
+
+  println!("{}", date_display.dimmed());
 
   println!();
 
