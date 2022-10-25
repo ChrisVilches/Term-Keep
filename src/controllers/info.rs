@@ -19,7 +19,7 @@ pub fn info() -> Result<(), Box<dyn Error>> {
   let can_read_tips = random_tip().is_some();
 
   // For debugging.
-  print_item("Can read tips", &bool_to_str(can_read_tips));
+  print_item("Can read tips", bool_to_str(can_read_tips));
 
   print_item("Editor", &get_editor_name()?);
   print_item("Notes", &notes::find_all(false).len().to_string());

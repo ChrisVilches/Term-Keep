@@ -16,11 +16,11 @@ pub fn count_lines(s: &str) -> usize {
     .count()
 }
 
-pub fn bool_to_str(b: bool) -> String {
+pub fn bool_to_str<'a>(b: bool) -> &'a str {
   if b {
-    "Yes".to_string()
+    "Yes"
   } else {
-    "No".to_string()
+    "No"
   }
 }
 
