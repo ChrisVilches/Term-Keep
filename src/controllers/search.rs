@@ -54,6 +54,11 @@ pub fn find_fuzzy(text: &String, archived: bool) {
     results.len().to_string().bold(),
     text.bold()
   );
+
+  if results.is_empty() {
+    return;
+  }
+
   println!();
 
   for (score, note) in &results {
