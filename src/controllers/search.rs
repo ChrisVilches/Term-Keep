@@ -22,8 +22,8 @@ fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
 
 fn format_result(score: i64, note: &Note) -> String {
   format!(
-    "{} | {}",
-    format!("score {}", score).purple(),
+    "{}\t{}",
+    format!("(score {: >3})", score).purple().bold(),
     vec![
       note_fmt::format_note_icons(note),
       note_fmt::format_note_summary(note)
