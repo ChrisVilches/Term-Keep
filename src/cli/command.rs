@@ -74,7 +74,7 @@ pub struct RemoveTemplate {
 }
 
 #[derive(Subcommand)]
-pub enum Commands {
+pub enum Command {
   #[command(name = "all", about = "Show all notes")]
   ShowAllNotes(ShowAllNotes),
 

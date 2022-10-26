@@ -1,2 +1,2 @@
-mod commands;
+mod command;
 pub mod parser;

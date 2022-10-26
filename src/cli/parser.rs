@@ -1,64 +1,85 @@
 use crate::abort_with_message;
-use crate::cli::commands::Commands;
-use crate::cli::commands::ShowAllNotes;
+use crate::cli::command::Command;
+use crate::cli::command::ShowAllNotes;
 use crate::controllers;
+use crate::util;
 use clap::Parser;
+use colored::Colorize;
 use std::error::Error;
+
+static LOGO: &str = include_str!("../../data/logo.txt");
+const DEFAULT_CMD: Command = Command::ShowAllNotes(ShowAllNotes { archived: false });
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 #[command(propagate_version = true)]
 struct Cli {
   #[command(subcommand)]
-  command: Option<Commands>,
+  command: Option<Command>,
 }
 
-fn command_result(cmd: &Commands) -> Result<(), Box<dyn Error>> {
+fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
   match cmd {
     // Display
-    Commands::ShowAllNotes(args) => {
+    Command::ShowAllNotes(args) => {
       controllers::note_display::show_all(args.archived);
       Ok(())
     }
-    Commands::Show(args) => controllers::note_display::show_one(args.id, args.less),
-    Commands::Search(args) => {
+    Command::Show(args) => controllers::note_display::show_one(args.id, args.less),
+    Command::Search(args) => {
       controllers::search::find_fuzzy(&args.text, args.archived);
       Ok(())
     }
 
     // Editing
-    Commands::EditNote { id } => controllers::note_edit::edit_content(*id),
-    Commands::NewNote(args) => controllers::note_creation::create_note(&args.template_name),
-    Commands::NewTask(args) => controllers::note_creation::create_task(&args.template_name),
-    Commands::ChangeTaskStatus(args) => controllers::tasks::change_status(args.id, &args.status),
-    Commands::ArchiveAllDone => {
+    Command::EditNote { id } => controllers::note_edit::edit_content(*id),
+    Command::NewNote(args) => controllers::note_creation::create_note(&args.template_name),
+    Command::NewTask(args) => controllers::note_creation::create_task(&args.template_name),
+    Command::ChangeTaskStatus(args) => controllers::tasks::change_status(args.id, &args.status),
+    Command::ArchiveAllDone => {
       controllers::note_edit::archive_all_done();
       Ok(())
     }
 
     // Pin / Archive
-    Commands::Pin(pin) => controllers::note_edit::pin_note(pin.id, !pin.remove),
-    Commands::Archive(archive) => controllers::note_edit::archive(archive.id, !archive.remove),
+    Command::Pin(pin) => controllers::note_edit::pin_note(pin.id, !pin.remove),
+    Command::Archive(archive) => controllers::note_edit::archive(archive.id, !archive.remove),
 
     // Templates
-    Commands::Templates => {
+    Command::Templates => {
       controllers::templates::show_all();
       Ok(())
     }
-    Commands::UpsertTemplate(args) => controllers::templates::upsert(&args.template_name),
-    Commands::RemoveTemplate(args) => controllers::templates::remove(&args.template_name),
+    Command::UpsertTemplate(args) => controllers::templates::upsert(&args.template_name),
+    Command::RemoveTemplate(args) => controllers::templates::remove(&args.template_name),
 
     // Misc
-    Commands::Info => controllers::info::info(),
+    Command::Info => controllers::info::info(),
   }
 }
 
-pub fn create() {
+fn should_show_logo(cmd: &Command) -> bool {
+  matches!(cmd, Command::ShowAllNotes(_) | Command::Info)
+}
+
+fn should_show_tips(cmd: &Command) -> bool {
+  matches!(cmd, Command::ShowAllNotes(_) | Command::Info)
+}
+
+pub fn execute() {
   let cli = Cli::parse();
+  let cmd: Command = cli.command.unwrap_or(DEFAULT_CMD);
 
-  let default_cmd = Commands::ShowAllNotes(ShowAllNotes { archived: false });
+  if should_show_logo(&cmd) {
+    println!("{}", LOGO.trim().green());
+    println!();
+  }
 
-  let result: Result<(), Box<dyn Error>> = command_result(&cli.command.unwrap_or(default_cmd));
+  let result: Result<(), Box<dyn Error>> = command_result(&cmd);
 
   result.unwrap_or_else(|e| abort_with_message(e));
+
+  if should_show_tips(&cmd) {
+    util::cli::show_random_tip();
+  }
 }

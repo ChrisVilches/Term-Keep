@@ -1,8 +1,16 @@
+use crate::services::tips;
 use colored::Colorize;
 use std::error::Error;
 use std::fmt::Display;
 use std::io::prelude::*;
 use std::process::{Command, Stdio};
+
+pub fn show_random_tip() {
+  if let Some(t) = tips::random_tip() {
+    println!();
+    println!("💡 Tip: {}", t);
+  }
+}
 
 pub fn abort_with_message<S: Display>(msg: S) -> ! {
   eprintln!("{}", format!("Error: {}", msg).red().bold());
