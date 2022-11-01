@@ -1,4 +1,3 @@
-use termimad::MadSkin;
 use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
@@ -7,6 +6,7 @@ use crate::util::env::get_env_var;
 use crate::util::strings;
 use crate::util::strings::count_lines;
 use colored::Colorize;
+use termimad::MadSkin;
 
 const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
@@ -146,7 +146,11 @@ fn format_note_content(s: &str) -> String {
   // TODO: Note that this functionality (printing using markdown) should be a different feature, and not be in
   //       this branch (subtasks), so move it. I already confirmed that markdown and my custom checklists can coexist.
   let skin = MadSkin::default();
-  skin.text(&checklists::format_checklist(s), None).to_string().trim().into()
+  skin
+    .text(&checklists::format_checklist(s), None)
+    .to_string()
+    .trim()
+    .into()
 }
 
 pub fn print_note(note: &Note) {
