@@ -135,18 +135,11 @@ pub fn format_note_icons(note: &Note) -> String {
 
 fn format_note_content(s: &str) -> String {
   // TODO: There are some better (smarter) ways to use termimad:
-  //       - Use templates (similar to ERB, EJS)
+  //       - Use a different skin, or use different colors.
   //       - Don't convert to string, but instead, use the builtin "print" function,
-  //         which makes the terminal scrollable. I think this might be overkill, but worth trying.
-  //       - Setting up a different skin, with more beautiful colors.
-  //       - Or if I don't use a skin, at least configure mine here.
-  //       - Avoid passing None as terminal width, and do something smarter, like doing the "print" function
-  //         which (presumably) does it automatically.
-  //
-  // TODO: Note that this functionality (printing using markdown) should be a different feature, and not be in
-  //       this branch (subtasks), so move it. I already confirmed that markdown and my custom checklists can coexist.
-  let skin = MadSkin::default();
-  skin
+  //         which makes the terminal scrollable and probably sets the width automatically.
+  //         I think this might be overkill, but worth trying.
+  MadSkin::default()
     .text(&checklists::format_checklist(s), None)
     .to_string()
     .trim()
