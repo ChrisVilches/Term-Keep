@@ -6,6 +6,7 @@ use crate::util::env::get_env_var;
 use crate::util::strings;
 use crate::util::strings::count_lines;
 use colored::Colorize;
+use termimad::MadSkin;
 
 const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
@@ -133,7 +134,16 @@ pub fn format_note_icons(note: &Note) -> String {
 }
 
 fn format_note_content(s: &str) -> String {
-  checklists::format_checklist(s).trim().to_string()
+  // TODO: There are some better (smarter) ways to use termimad:
+  //       - Use a different skin, or use different colors.
+  //       - Don't convert to string, but instead, use the builtin "print" function,
+  //         which makes the terminal scrollable and probably sets the width automatically.
+  //         I think this might be overkill, but worth trying.
+  MadSkin::default()
+    .text(&checklists::format_checklist(s), None)
+    .to_string()
+    .trim()
+    .into()
 }
 
 pub fn print_note(note: &Note) {
