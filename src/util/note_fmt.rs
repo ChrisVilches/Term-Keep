@@ -1,6 +1,7 @@
 use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
+use crate::util::checklists;
 use crate::util::env::get_env_var;
 use crate::util::strings;
 use crate::util::strings::count_lines;
@@ -77,6 +78,16 @@ fn format_normal_note_summary(note: &Note) -> String {
   )
 }
 
+fn format_task_checklist_completion(full_text: &str) -> String {
+  let (complete, total) = checklists::checklist_completion(full_text);
+
+  if total == 0 {
+    return " ".into();
+  }
+
+  format!(" {} ", format!("({} / {})", complete, total).dimmed())
+}
+
 fn format_task_summary(note: &Note, status: TaskStatus) -> String {
   let task_summary = match status {
     TaskStatus::Done => format_content(&note.content).dimmed().to_string(),
@@ -84,9 +95,10 @@ fn format_task_summary(note: &Note, status: TaskStatus) -> String {
   };
 
   format!(
-    "{: >3}\t{} {}{}",
+    "{: >3}\t{}{}{}{}",
     note.id.unwrap().to_string().bold(),
     format_task_status_icon(status),
+    format_task_checklist_completion(&note.content),
     task_summary,
     lines_amount_info(note)
   )
@@ -120,6 +132,10 @@ pub fn format_note_icons(note: &Note) -> String {
   note_icons(note).join(" ")
 }
 
+fn format_note_content(s: &str) -> String {
+  checklists::format_checklist(s).trim().to_string()
+}
+
 pub fn print_note(note: &Note) {
   println!("{}", format_note_description(note).blue());
 
@@ -136,5 +152,5 @@ pub fn print_note(note: &Note) {
 
   println!();
 
-  println!("{}", note.content.trim());
+  println!("{}", format_note_content(&note.content));
 }
