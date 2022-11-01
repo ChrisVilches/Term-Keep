@@ -57,14 +57,17 @@ pub fn format_checklist(s: &str) -> String {
 mod tests {
   use super::*;
 
-  // TODO: This is beta. Requires more testing (even though it looks fine now).
   #[test]
   fn test_format_checklist() {
-    // TODO: This test is very messy. I'd prefer if the strings could have the formatting removed while I test them.
-    //       I think it's possible to do that, somehow.
     let y = CHECKED.to_string();
     let n = UNCHECKED.to_string();
 
+    assert_eq!(format_checklist(" "), " ");
+    assert_eq!(format_checklist("- [] "), "- [] ");
+    assert_eq!(
+      format_checklist("- [] \n - [] a"),
+      format!("- [] \n{} a", n)
+    );
     assert_eq!(format_checklist(" normal text "), " normal text ");
     assert_eq!(
       format_checklist("not task\n - [x] hello"),
