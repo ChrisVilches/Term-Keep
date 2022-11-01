@@ -162,5 +162,9 @@ pub fn print_note(note: &Note, plain: bool) {
 
   println!();
 
-  println!("{}", if plain { note.content.to_string() } else { format_note_content(&note.content) });
+  if plain {
+    println!("{}", note.content);
+  } else {
+    println!("{}", format_note_content(&note.content));
+  }
 }

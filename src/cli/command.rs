@@ -18,11 +18,7 @@ pub struct ShowOne {
   )]
   pub less: bool,
 
-  #[clap(
-    long = "plain",
-    short = 'p',
-    help = "Disable formatting"
-  )]
+  #[clap(long = "plain", short = 'p', help = "Disable formatting")]
   pub plain: bool,
 }
 
