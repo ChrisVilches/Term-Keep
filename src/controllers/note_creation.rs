@@ -24,7 +24,7 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
     services::notes::create_note(&content)?;
   }
 
-  note_fmt::print_note(&services::notes::find_latest().unwrap());
+  note_fmt::print_note(&services::notes::find_latest().unwrap(), false);
 
   println!();
 

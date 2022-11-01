@@ -46,13 +46,13 @@ pub fn show_all(archived: bool) {
   }
 }
 
-pub fn show_one(note_id: u32, use_less: bool) -> Result<(), Box<dyn Error>> {
+pub fn show_one(note_id: u32, use_less: bool, plain: bool) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if use_less {
     cli::less(&note.content);
   } else {
-    note_fmt::print_note(&note);
+    note_fmt::print_note(&note, plain);
   }
 
   Ok(())
