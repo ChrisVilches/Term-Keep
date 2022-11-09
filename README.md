@@ -4,7 +4,7 @@ Terminal-based Google Keep clone (note-taking/to-do app). Can be used to manage 
 
 ## Quickstart
 
-```
+```sh
 cargo build --release
 ```
 
@@ -14,19 +14,19 @@ Specify where you want to store the database by defining the `TERM_KEEP_DB_PATH`
 
 Example using the `~/.bashrc` file:
 
-```
+```sh
 export TERM_KEEP_DB_PATH=/home/my_user/.term-keep/data.db
 ```
 
 Execute the following command to see the list of subcommands.
 
-```
+```sh
 term_keep -h
 ```
 
 Optionally, you can create an alias to make its access quicker and more convenient:
 
-```
+```sh
 # ~/.bashrc
 alias tk=term_keep
 ```
@@ -43,7 +43,7 @@ This app can be used to store memo notes or tasks related to your server adminis
 
 For a comprehensive list of features, execute the help command:
 
-```
+```sh
 term_keep -h
 ```
 
