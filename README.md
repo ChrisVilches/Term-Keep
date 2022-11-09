@@ -43,6 +43,10 @@ Several note-taking or To-Do apps exist nowadays, but because most of them use a
 
 This app can be used to store memo notes or tasks related to your server administration work, such as projects to complete, tasks related to data that needs to be backed up, or configuration files that are incomplete and need to be worked on.
 
+<p align="center">
+  <img src="https://github.com/ChrisVilches/Term-Keep/blob/main/data/term_keep_screenshot3.jpg?raw=true" />
+</p>
+
 ### Features
 
 For a comprehensive list of features, execute the help command:
@@ -80,21 +84,7 @@ Today's tasks
 - [x] Shower
 ```
 
-This will be displayed with a simple format and coloring when showing the note's content:
-
-```
-Today's tasks
-
-[   ] Clean my room
-[   ] Do 3 hours of work
-[ ✔ ] Shower
-```
-
-Subtask completion will also be displayed in the task summary (only works for task notes):
-
-```
-[   ] (1 / 3) Today's tasks (4 lines)
-```
+This will be displayed with a simple format and coloring when showing the note's content.
 
 #### Templates
 
