@@ -146,7 +146,7 @@ fn format_note_content(s: &str) -> String {
     .into()
 }
 
-pub fn print_note(note: &Note) {
+pub fn print_note(note: &Note, plain: bool) {
   println!("{}", format_note_description(note).blue());
 
   // TODO: Date display is beta. Might need to change the DateTime<Utc> to something else?
@@ -162,5 +162,9 @@ pub fn print_note(note: &Note) {
 
   println!();
 
-  println!("{}", format_note_content(&note.content));
+  if plain {
+    println!("{}", note.content);
+  } else {
+    println!("{}", format_note_content(&note.content));
+  }
 }

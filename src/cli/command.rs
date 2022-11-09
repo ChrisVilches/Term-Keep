@@ -17,6 +17,9 @@ pub struct ShowOne {
     help = "Use the 'less' command to display the content"
   )]
   pub less: bool,
+
+  #[clap(long = "plain", short = 'p', help = "Disable formatting")]
+  pub plain: bool,
 }
 
 #[derive(Args)]
