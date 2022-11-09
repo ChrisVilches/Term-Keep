@@ -115,9 +115,9 @@ term_keep remove-template -h
 
 | **Variable Name** | **Description** | **Example** |
 |--|--|--|
-| `EDITOR` | Name of editor to use | vim |
-| `TERM_KEEP_DB_PATH` | Path to store the database file | ~/.term-keep/test.db |
-| `TERM_KEEP_SUMMARY_MAX_LENGTH` | Amount of characters displayed before truncating a note's summary (when executing the main command `term_keep`) | 100 |
+| `EDITOR` | Name of editor to use | `vim` |
+| `TERM_KEEP_DB_PATH` | Path to store the database file | `~/.term-keep/test.db` |
+| `TERM_KEEP_SUMMARY_MAX_LENGTH` | Amount of characters displayed before truncating a note's summary (when executing the main command `term_keep`) | `100` |
 
 ## Development
 
