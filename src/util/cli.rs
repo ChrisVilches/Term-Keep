@@ -13,7 +13,7 @@ pub fn show_random_tip() {
 }
 
 pub fn abort_with_message<S: Display>(msg: S) -> ! {
-  eprintln!("{}", format!("Error: {}", msg).red().bold());
+  eprintln!("{}", color_danger(&format!("Error: {}", msg)));
   std::process::exit(1);
 }
 
@@ -40,6 +40,10 @@ pub fn color_primary(text: &str) -> String {
 
 pub fn color_secondary(text: &str) -> String {
   text.dimmed().to_string()
+}
+
+pub fn color_danger(text: &str) -> String {
+  text.red().bold().to_string()
 }
 
 pub fn less(text: &String) {

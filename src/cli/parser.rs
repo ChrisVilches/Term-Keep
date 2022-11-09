@@ -39,7 +39,8 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
     Command::ArchiveAllDone => {
       controllers::note_edit::archive_all_done();
       Ok(())
-    }
+    },
+    Command::RemoveNote(args) => controllers::note_edit::remove_note(args.id),
 
     // Pin / Archive
     Command::Pin(pin) => controllers::note_edit::pin_note(pin.id, !pin.remove),

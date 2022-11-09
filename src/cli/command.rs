@@ -76,6 +76,12 @@ pub struct RemoveTemplate {
   pub template_name: String,
 }
 
+#[derive(Args)]
+pub struct RemoveNote {
+  #[clap(name = "Note ID")]
+  pub id: u32,
+}
+
 #[derive(Subcommand)]
 pub enum Command {
   #[command(name = "all", about = "Show all notes")]
@@ -116,6 +122,9 @@ pub enum Command {
 
   #[command(about = "Archive all completed tasks")]
   ArchiveAllDone,
+
+  #[command(name = "rm", about = "Remove note permanently")]
+  RemoveNote(RemoveNote),
 
   #[command(about = "Show miscellaneous information")]
   Info,

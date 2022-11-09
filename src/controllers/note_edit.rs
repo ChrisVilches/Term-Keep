@@ -61,3 +61,21 @@ pub fn archive_all_done() {
     cli::color_primary(&format!("{} note(s) were archived", changed))
   );
 }
+
+pub fn remove_note(note_id: u32) -> Result<(), Box<dyn Error>> {
+  let note: Note = services::notes::find_one(note_id)?;
+
+  if !note.archived {
+    Err("The note must be archived before removing permanently")?;
+  }
+
+  services::notes::remove(note_id)?;
+
+  note_fmt::print_note(&note, false);
+
+  println!();
+
+  println!("{}", cli::color_danger("Removed"));
+
+  Ok(())
+}

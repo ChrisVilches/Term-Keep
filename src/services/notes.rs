@@ -77,3 +77,10 @@ pub fn archive_all_done() -> usize {
     rusqlite::params![TaskStatus::Done],
   )
 }
+
+pub fn remove(id: u32) -> Result<(), RowNotChangedError> {
+  change_row::<Note>(
+    "DELETE FROM note WHERE id = ? AND archived = ?",
+    rusqlite::params![id, true],
+  )
+}
