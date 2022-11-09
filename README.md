@@ -2,6 +2,10 @@
 
 Terminal-based Google Keep clone (note-taking/to-do app). Can be used to manage notes/tasks on a cloud server.
 
+<p align="center">
+  <img src="https://github.com/ChrisVilches/Term-Keep/blob/main/data/term_keep_screenshot.jpg?raw=true" />
+</p>
+
 ## Quickstart
 
 ```sh
@@ -66,7 +70,7 @@ Notes can be formatted using markdown, which is powered by the [termimad](https:
 
 #### Checklists
 
-You can also create checklists inside notes (only works for task notes) similar to how [task lists](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-task-lists) are handled in Github issues.
+You can also create checklists inside notes similar to how [task lists](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-task-lists) are handled in Github issues.
 
 ```
 Today's tasks
@@ -86,7 +90,7 @@ Today's tasks
 [ ✔ ] Shower
 ```
 
-Subtask completion will also be displayed in the task summary:
+Subtask completion will also be displayed in the task summary (only works for task notes):
 
 ```
 [   ] (1 / 3) Today's tasks (4 lines)
