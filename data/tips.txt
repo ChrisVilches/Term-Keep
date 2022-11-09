@@ -3,3 +3,5 @@ Task status can be: To-Do, in progress, done
 You can modify the default editor by setting the EDITOR environment variable
 Save time by using a custom template
 📌 means 'pinned', 📁 means 'archived'
+Create checklists inside notes (Use "- [] Some task" or "- [x] Done task" to create an item)
+Try using markdown inside notes
