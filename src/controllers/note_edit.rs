@@ -16,7 +16,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
     services::notes::update(id, &content)?;
   }
 
-  note_fmt::print_note(&services::notes::find_one(id)?);
+  note_fmt::print_note(&services::notes::find_one(id)?, false);
 
   println!();
 
