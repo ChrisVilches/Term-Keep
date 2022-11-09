@@ -64,7 +64,7 @@ fn lines_amount_info(note: &Note) -> String {
   let lines = count_lines(&note.content);
 
   if lines == 1 {
-    "".to_string()
+    String::new()
   } else {
     format!(" ({} lines)", lines).dimmed().to_string()
   }
