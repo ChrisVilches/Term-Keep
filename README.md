@@ -3,7 +3,7 @@
 Terminal-based Google Keep clone (note-taking/to-do app). Can be used to manage notes/tasks on a cloud server.
 
 <p align="center">
-  <img src="https://github.com/ChrisVilches/Term-Keep/blob/main/data/term_keep_screenshot.jpg?raw=true" />
+  <img src="https://github.com/ChrisVilches/Term-Keep/blob/main/data/term_keep_screenshot2.jpg?raw=true" />
 </p>
 
 ## Quickstart
