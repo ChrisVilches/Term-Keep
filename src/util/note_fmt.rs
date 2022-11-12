@@ -2,13 +2,12 @@ use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::util::checklists;
+use crate::util::date_fmt::format_date;
 use crate::util::env::get_env_var;
 use crate::util::strings;
 use crate::util::strings::count_lines;
 use colored::Colorize;
 use termimad::MadSkin;
-
-const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
 fn note_summary_max_length() -> usize {
   get_env_var::<usize>("SUMMARY_MAX_LENGTH").unwrap_or(50)
@@ -146,20 +145,20 @@ fn format_note_content(s: &str) -> String {
     .into()
 }
 
-pub fn print_note(note: &Note, plain: bool) {
-  println!("{}", format_note_description(note).blue());
-
-  // TODO: Date display is beta. Might need to change the DateTime<Utc> to something else?
-
+fn format_note_date(note: &Note) -> String {
   let mut date_display = String::new();
-  date_display += &format!("{}", note.created_at.format(DATE_FORMAT));
+  date_display += &format_date(note.created_at);
 
   if note.is_edited() {
-    date_display += &format!(" (Updated: {})", note.updated_at.format(DATE_FORMAT));
+    date_display += &format!(" (Updated: {})", format_date(note.updated_at));
   }
 
-  println!("{}", date_display.dimmed());
+  date_display
+}
 
+pub fn print_note(note: &Note, plain: bool) {
+  println!("{}", format_note_description(note).blue());
+  println!("{}", format_note_date(note).dimmed());
   println!();
 
   if plain {
