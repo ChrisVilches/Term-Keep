@@ -16,6 +16,12 @@ pub struct Note {
   pub updated_at: DateTime<Utc>,
 }
 
+impl Note {
+  pub fn is_edited(&self) -> bool {
+    self.created_at != self.updated_at
+  }
+}
+
 impl ModelName for Note {
   fn model_name() -> String {
     "note".to_string()
@@ -46,3 +52,32 @@ impl FromSqlRow for Note {
 // and use table references.
 // pub task_status: Option<TaskStatus>,
 // (I think) This is more related to the database than to this model though, now.
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_is_edited() {
+    let note = mock_note();
+    assert!(!note.is_edited());
+
+    let mut note_edited = mock_note();
+    note_edited.updated_at = Utc::now() + chrono::Duration::minutes(2);
+    assert!(note_edited.is_edited());
+  }
+
+  fn mock_note() -> Note {
+    let now = Utc::now();
+
+    Note {
+      id: None,
+      note_type: NoteType::Normal,
+      pinned: false,
+      archived: true,
+      content: String::new(),
+      created_at: now,
+      updated_at: now,
+    }
+  }
+}

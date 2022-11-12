@@ -154,7 +154,7 @@ pub fn print_note(note: &Note, plain: bool) {
   let mut date_display = String::new();
   date_display += &format!("{}", note.created_at.format(DATE_FORMAT));
 
-  if note.created_at != note.updated_at {
+  if note.is_edited() {
     date_display += &format!(" (Updated: {})", note.updated_at.format(DATE_FORMAT));
   }
 

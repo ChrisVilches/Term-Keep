@@ -39,7 +39,7 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
     Command::ArchiveAllDone => {
       controllers::note_edit::archive_all_done();
       Ok(())
-    },
+    }
     Command::RemoveNote(args) => controllers::note_edit::remove_note(args.id),
 
     // Pin / Archive
@@ -82,5 +82,30 @@ pub fn execute() {
 
   if should_show_tips(&cmd) {
     util::cli::show_random_tip();
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_should_show_logo() {
+    assert!(should_show_logo(&Command::Info));
+    assert!(should_show_logo(&Command::ShowAllNotes(ShowAllNotes {
+      archived: true
+    })));
+    assert!(!should_show_logo(&Command::Templates));
+    assert!(!should_show_logo(&Command::ArchiveAllDone));
+  }
+
+  #[test]
+  fn test_should_show_tips() {
+    assert!(should_show_tips(&Command::Info));
+    assert!(should_show_tips(&Command::ShowAllNotes(ShowAllNotes {
+      archived: true
+    })));
+    assert!(!should_show_tips(&Command::Templates));
+    assert!(!should_show_tips(&Command::ArchiveAllDone));
   }
 }
