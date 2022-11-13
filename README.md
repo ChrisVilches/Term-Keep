@@ -1,6 +1,6 @@
 # Term Keep
 
-Terminal-based Google Keep clone (note-taking/to-do app). Can be used to manage notes/tasks on a cloud server.
+Terminal-based Google Keep clone. Can be used as a note taking / To-Do list app on a server.
 
 <p align="center">
   <img src="https://github.com/ChrisVilches/Term-Keep/blob/main/data/term_keep_screenshot2.jpg?raw=true" />
@@ -22,7 +22,7 @@ Example using the `~/.bashrc` file:
 export TERM_KEEP_DB_PATH=/home/my_user/.term-keep/data.db
 ```
 
-Execute the following command to see the list of subcommands.
+Execute the following command to see the list of subcommands:
 
 ```sh
 term_keep -h
@@ -39,7 +39,7 @@ alias tk=term_keep
 
 ### Motivation
 
-Several note-taking or To-Do apps exist nowadays, but because most of them use a graphical interface, not many are compatible with a cloud server.
+Several note taking or to-do apps exist nowadays, but because most of them use a graphical interface, not many are compatible with a cloud server.
 
 This app can be used to store memo notes or tasks related to your server administration work, such as projects to complete, tasks related to data that needs to be backed up, or configuration files that are incomplete and need to be worked on.
 
@@ -60,7 +60,7 @@ term_keep -h
 Two types of notes are supported:
 
 1. **Normal Notes:** Useful for memos, and storing arbitrary information.
-2. **Tasks:** Tasks that need to be completed. Each task has one of three possible states: to-do (not started), in-progress, done.
+2. **Tasks:** Tasks that need to be completed. Each task has one of three possible states: to-do (not started), in-progress, and done.
 
 #### Editor Agnostic Editing
 
@@ -74,7 +74,7 @@ Notes can be formatted using markdown, which is powered by the [termimad](https:
 
 #### Checklists
 
-You can also create checklists inside notes similar to how [task lists](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-task-lists) are handled in Github issues.
+You can also create checklists inside notes, similar to how [task lists](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-task-lists) are handled in Github issues.
 
 ```
 Today's tasks
@@ -109,7 +109,7 @@ term_keep remove-template -h
 
 | **Variable Name** | **Description** | **Example** |
 |--|--|--|
-| `EDITOR` | Name of editor to use | `vim` |
+| `EDITOR` | Editor to use | `vim` |
 | `TERM_KEEP_DB_PATH` | Path to store the database file | `~/.term-keep/test.db` |
 | `TERM_KEEP_SUMMARY_MAX_LENGTH` | Amount of characters displayed before truncating a note's summary (when executing the main command `term_keep`) | `100` |
 
