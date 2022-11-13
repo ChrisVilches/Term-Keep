@@ -50,9 +50,9 @@ pub fn show_one(note_id: u32, use_less: bool, plain: bool) -> Result<(), Box<dyn
   let note: Note = services::notes::find_one(note_id)?;
 
   if use_less {
-    cli::less(&note.content);
+    cli::less(&note_fmt::format_note(&note, plain));
   } else {
-    note_fmt::print_note(&note, plain);
+    println!("{}", note_fmt::format_note(&note, plain));
   }
 
   Ok(())

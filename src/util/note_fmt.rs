@@ -156,14 +156,18 @@ fn format_note_date(note: &Note) -> String {
   date_display
 }
 
-pub fn print_note(note: &Note, plain: bool) {
-  println!("{}", format_note_description(note).blue());
-  println!("{}", format_note_date(note).dimmed());
-  println!();
+pub fn format_note(note: &Note, plain: bool) -> String {
+  let mut result = format!("{}\n{}\n\n", format_note_description(note).blue(), format_note_date(note).dimmed());
 
   if plain {
-    println!("{}", note.content);
+    result += &note.content;
   } else {
-    println!("{}", format_note_content(&note.content));
+    result += &format_note_content(&note.content);
   }
+
+  result
+}
+
+pub fn print_note(note: &Note, plain: bool) {
+  println!("{}", format_note(note, plain));
 }
