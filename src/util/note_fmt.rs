@@ -157,15 +157,18 @@ fn format_note_date(note: &Note) -> String {
 }
 
 pub fn format_note(note: &Note, plain: bool) -> String {
-  let mut result = format!("{}\n{}\n\n", format_note_description(note).blue(), format_note_date(note).dimmed());
-
-  if plain {
-    result += &note.content;
+  let content = if plain {
+    note.content.to_string()
   } else {
-    result += &format_note_content(&note.content);
-  }
+    format_note_content(&note.content)
+  };
 
-  result
+  format!(
+    "{}\n{}\n\n{}",
+    format_note_description(note).blue(),
+    format_note_date(note).dimmed(),
+    content
+  )
 }
 
 pub fn print_note(note: &Note, plain: bool) {
