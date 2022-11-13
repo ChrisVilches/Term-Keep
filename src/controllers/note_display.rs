@@ -25,13 +25,17 @@ fn format_note_aux(note: &Note) -> String {
   )
 }
 
+fn find_all_pinned_tuple(archived: bool) -> (Vec<Note>, Vec<Note>) {
+  let notes: Vec<Note> = services::notes::find_all(archived);
+  let pinned: Vec<Note> = notes.iter().filter(|n| n.pinned).cloned().collect();
+  let not_pinned: Vec<Note> = notes.iter().filter(|n| !n.pinned).cloned().collect();
+  (pinned, not_pinned)
+}
+
 pub fn show_all(archived: bool) {
   print_count();
 
-  let notes: Vec<Note> = services::notes::find_all(archived);
-
-  let pinned: Vec<&Note> = notes.iter().filter(|n| n.pinned).collect();
-  let not_pinned: Vec<&Note> = notes.iter().filter(|n| !n.pinned).collect();
+  let (pinned, not_pinned) = find_all_pinned_tuple(archived);
 
   for note in &pinned {
     println!("{}", format_note_aux(note));
