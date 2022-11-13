@@ -24,7 +24,7 @@ fn less_aux(text: &String) -> Result<(), Box<dyn Error>> {
     .spawn()?;
 
   match child.stdin.take() {
-    None => Err("cannot open stdin")?,
+    None => return Err("cannot open stdin".into()),
     Some(mut s) => std::thread::spawn({
       let t = text.to_string();
       move || {

@@ -15,7 +15,7 @@ fn note_summary_max_length() -> usize {
 
 fn format_content(content: &str) -> String {
   strings::truncate_string_ellipsis(
-    strings::first_line(content).trim().to_string(),
+    strings::first_line(content).trim().to_owned(),
     note_summary_max_length(),
   )
 }
@@ -153,7 +153,7 @@ fn format_note_date(note: &Note) -> String {
 
 pub fn format_note(note: &Note, plain: bool) -> String {
   let content = if plain {
-    note.content.to_string()
+    note.content.clone()
   } else {
     format_note_content(&note.content)
   };

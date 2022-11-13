@@ -26,7 +26,7 @@ pub const fn bool_to_str<'a>(b: bool) -> &'a str {
 
 pub fn first_line(s: &str) -> &str {
   s.split('\n')
-    .filter(|s| !s.trim().is_empty())
+    .filter(|line| !line.trim().is_empty())
     .collect::<Vec<&str>>()
     .first()
     .unwrap_or(&"")

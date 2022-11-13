@@ -66,7 +66,7 @@ pub fn remove_note(note_id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if !note.archived {
-    Err("The note must be archived before removing permanently")?;
+    return Err("The note must be archived before removing permanently".into());
   }
 
   services::notes::remove(note_id)?;

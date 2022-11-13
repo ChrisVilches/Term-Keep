@@ -8,5 +8,5 @@ pub fn random_tip() -> Option<String> {
     .filter(|line| !line.is_empty())
     .collect::<Vec<&str>>()
     .choose(&mut rand::thread_rng())
-    .map(|s| (*s).to_string())
+    .map(|s| (*s).to_owned())
 }

@@ -17,7 +17,7 @@ pub fn find_one(name: &String) -> Result<Template, NotFoundByFieldError> {
     "SELECT id, name, content FROM template WHERE name = ?",
     rusqlite::params![name],
   )
-  .ok_or_else(|| NotFoundByFieldError::new::<Template>("name".to_string(), name.to_string()))
+  .ok_or_else(|| NotFoundByFieldError::new::<Template>("name".to_owned(), name.to_string()))
 }
 
 pub fn create(name: &String, content: &String) -> Result<(), RowNotChangedError> {

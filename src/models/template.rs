@@ -10,7 +10,7 @@ pub struct Template {
 
 impl ModelName for Template {
   fn model_name() -> String {
-    "template".to_string()
+    "template".to_owned()
   }
 }
 

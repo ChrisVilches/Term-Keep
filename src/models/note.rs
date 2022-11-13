@@ -23,7 +23,7 @@ impl Note {
 
 impl ModelName for Note {
   fn model_name() -> String {
-    "note".to_string()
+    "note".to_owned()
   }
 }
 

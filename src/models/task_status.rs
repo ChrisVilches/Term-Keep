@@ -19,7 +19,7 @@ impl TaskStatus {
       "todo" => Ok(Self::Todo),
       "progress" => Ok(Self::Progress),
       "done" => Ok(Self::Done),
-      _ => Err(INVALID_STATUS_ERROR.to_string()),
+      _ => Err(INVALID_STATUS_ERROR.to_owned()),
     }
   }
 }

@@ -28,6 +28,6 @@ pub fn change_status(task_id: u32, status_str: &str) -> Result<(), Box<dyn Error
       .map(|new_status| change_aux(&task, current_status, new_status))
       .map(|_| ())
       .map_err(std::convert::Into::into),
-    NoteType::Normal => Err("Not a task")?,
+    NoteType::Normal => Err("Not a task".into()),
   }
 }
