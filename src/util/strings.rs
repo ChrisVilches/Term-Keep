@@ -67,8 +67,8 @@ mod tests {
 
   #[test]
   fn test_truncate_string_ellipsis() {
-    assert_eq!(truncate_string_ellipsis("abcde".to_string(), 2), "ab...");
-    assert_eq!(truncate_string_ellipsis("abcde".to_string(), 7), "abcde");
+    assert_eq!(truncate_string_ellipsis("abcde".to_owned(), 2), "ab...");
+    assert_eq!(truncate_string_ellipsis("abcde".to_owned(), 7), "abcde");
   }
 
   #[test]

@@ -2,23 +2,6 @@ use crate::services;
 use crate::util::note_fmt;
 use crate::Note;
 use colored::Colorize;
-use fuzzy_matcher::skim::SkimMatcherV2;
-use fuzzy_matcher::FuzzyMatcher;
-use std::cmp::Ordering;
-
-fn cmp((score1, n1): &(i64, &Note), (score2, _): &(i64, &Note)) -> Ordering {
-  let ord = score2.cmp(score1);
-
-  if ord == Ordering::Equal {
-    if n1.pinned {
-      Ordering::Less
-    } else {
-      Ordering::Greater
-    }
-  } else {
-    ord
-  }
-}
 
 fn format_result(score: i64, note: &Note) -> String {
   format!(
@@ -37,17 +20,7 @@ fn format_result(score: i64, note: &Note) -> String {
 }
 
 pub fn find_fuzzy(text: &String, archived: bool) {
-  let notes: Vec<Note> = services::notes::find_all(archived);
-
-  let matcher = SkimMatcherV2::default();
-
-  let mut results: Vec<(i64, &Note)> = notes
-    .iter()
-    .map(|note| (matcher.fuzzy_match(&note.content, text).unwrap_or(0), note))
-    .filter(|pair| pair.0 > 0)
-    .collect();
-
-  results.sort_by(cmp);
+  let results = services::notes::fuzzy_search(text, archived);
 
   println!(
     "{} results for {}",

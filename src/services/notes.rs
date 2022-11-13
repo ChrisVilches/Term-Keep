@@ -6,6 +6,9 @@ use crate::services::db::change_row;
 use crate::services::db::change_rows;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
+use fuzzy_matcher::skim::SkimMatcherV2;
+use fuzzy_matcher::FuzzyMatcher;
+use std::cmp::Ordering;
 
 pub fn find_all(archived: bool) -> Vec<Note> {
   rows_to_vec(
@@ -27,6 +30,35 @@ pub fn find_latest() -> Option<Note> {
     "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note ORDER BY id DESC LIMIT 1",
     rusqlite::params![],
   )
+}
+
+fn cmp((score1, n1): &(i64, Note), (score2, _): &(i64, Note)) -> Ordering {
+  let ord = score2.cmp(score1);
+
+  if ord == Ordering::Equal {
+    if n1.pinned {
+      Ordering::Less
+    } else {
+      Ordering::Greater
+    }
+  } else {
+    ord
+  }
+}
+
+pub fn fuzzy_search(text: &str, archived: bool) -> Vec<(i64, Note)> {
+  let notes: Vec<Note> = find_all(archived);
+
+  let matcher = SkimMatcherV2::default();
+
+  let mut results: Vec<(i64, Note)> = notes
+    .into_iter()
+    .map(|note| (matcher.fuzzy_match(&note.content, text).unwrap_or(0), note))
+    .filter(|pair| pair.0 > 0)
+    .collect();
+
+  results.sort_by(cmp);
+  results
 }
 
 pub fn create_note(text: &str) -> Result<(), RowNotChangedError> {

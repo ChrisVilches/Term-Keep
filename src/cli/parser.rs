@@ -18,6 +18,7 @@ struct Cli {
   command: Option<Command>,
 }
 
+#[allow(clippy::too_many_lines)]
 fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
   match cmd {
     // Display
