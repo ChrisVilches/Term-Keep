@@ -24,14 +24,12 @@ pub const fn bool_to_str<'a>(b: bool) -> &'a str {
   }
 }
 
-pub fn first_line(s: &str) -> String {
-  (*s
-    .split('\n')
+pub fn first_line(s: &str) -> &str {
+  s.split('\n')
     .filter(|s| !s.trim().is_empty())
     .collect::<Vec<&str>>()
     .first()
-    .unwrap_or(&""))
-  .to_string()
+    .unwrap_or(&"")
 }
 
 #[cfg(test)]
