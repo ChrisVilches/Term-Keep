@@ -11,7 +11,6 @@ pub struct Note {
   pub pinned: bool,
   pub note_type: NoteType,
   pub archived: bool,
-  // TODO: Is "Utc" good for this use case?
   pub created_at: DateTime<Utc>,
   pub updated_at: DateTime<Utc>,
 }

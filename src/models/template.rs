@@ -6,8 +6,6 @@ pub struct Template {
   pub id: Option<u32>,
   pub name: String,
   pub content: String,
-  // TODO: Add created_at
-  // TODO: Add updated_at
 }
 
 impl ModelName for Template {
