@@ -18,7 +18,10 @@ pub fn abort_with_message<S: Display>(msg: S) -> ! {
 }
 
 fn less_aux(text: &String) -> Result<(), Box<dyn Error>> {
-  let mut child = Command::new("less").stdin(Stdio::piped()).spawn()?;
+  let mut child = Command::new("less")
+    .args(["-R"])
+    .stdin(Stdio::piped())
+    .spawn()?;
 
   match child.stdin.take() {
     None => Err("cannot open stdin")?,
