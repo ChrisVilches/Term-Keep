@@ -117,11 +117,8 @@ mod tests {
   }
 
   #[test]
-  fn test_checklist_completion2() {
+  fn test_checklist_completion_empty() {
     let empty_checkbox = (0, 1);
-    let checked_checkbox = (1, 1);
-    let not_checkbox = (0, 0);
-
     assert_eq!(checklist_completion("- [] x"), empty_checkbox);
     assert_eq!(checklist_completion("   -  [] x"), empty_checkbox);
     assert_eq!(checklist_completion("-  []   x"), empty_checkbox);
@@ -130,17 +127,24 @@ mod tests {
     assert_eq!(checklist_completion("   -  [ ] x"), empty_checkbox);
     assert_eq!(checklist_completion("-  [ ]   x"), empty_checkbox);
     assert_eq!(checklist_completion(" - [ ]  x   "), empty_checkbox);
+  }
 
+  #[test]
+  fn test_checklist_completion_checked() {
+    let checked_checkbox = (1, 1);
     assert_eq!(checklist_completion(" - [x]  x   "), checked_checkbox);
     assert_eq!(checklist_completion(" - [X]  x   "), checked_checkbox);
     assert_eq!(checklist_completion(" -   [x]   x   "), checked_checkbox);
     assert_eq!(checklist_completion("- [X]  x"), checked_checkbox);
-
     assert_eq!(checklist_completion(" - [x]  x   "), checked_checkbox);
     assert_eq!(checklist_completion(" - [X]  x   "), checked_checkbox);
     assert_eq!(checklist_completion(" -   [x]   x   "), checked_checkbox);
     assert_eq!(checklist_completion("- [X]  x"), checked_checkbox);
+  }
 
+  #[test]
+  fn test_checklist_completion_invalid() {
+    let not_checkbox = (0, 0);
     assert_eq!(checklist_completion("- []x"), not_checkbox);
     assert_eq!(checklist_completion("- []"), not_checkbox);
     assert_eq!(checklist_completion("- [] "), not_checkbox);
