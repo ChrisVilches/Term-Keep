@@ -36,10 +36,7 @@ fn create(name: &String) -> Result<(), Box<dyn Error>> {
 pub fn upsert(name: &String) -> Result<(), Box<dyn Error>> {
   let template = services::templates::find_one(name);
 
-  match template {
-    Ok(t) => edit(&t),
-    Err(_) => create(name),
-  }
+  template.map_or_else(|_| create(name), |t| edit(&t))
 }
 
 pub fn remove(name: &String) -> Result<(), Box<dyn Error>> {

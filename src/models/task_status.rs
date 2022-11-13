@@ -14,11 +14,11 @@ pub enum TaskStatus {
 const INVALID_STATUS_ERROR: &str = "Invalid status (allowed values: todo, progress, done)";
 
 impl TaskStatus {
-  pub fn from_string(status: &str) -> Result<TaskStatus, String> {
+  pub fn from_string(status: &str) -> Result<Self, String> {
     match status {
-      "todo" => Ok(TaskStatus::Todo),
-      "progress" => Ok(TaskStatus::Progress),
-      "done" => Ok(TaskStatus::Done),
+      "todo" => Ok(Self::Todo),
+      "progress" => Ok(Self::Progress),
+      "done" => Ok(Self::Done),
       _ => Err(INVALID_STATUS_ERROR.to_string()),
     }
   }
@@ -28,9 +28,9 @@ impl FromSql for TaskStatus {
   #[inline]
   fn column_result(value: ValueRef<'_>) -> FromSqlResult<Self> {
     match value {
-      ValueRef::Integer(0) => Ok(TaskStatus::Todo),
-      ValueRef::Integer(1) => Ok(TaskStatus::Progress),
-      ValueRef::Integer(2) => Ok(TaskStatus::Done),
+      ValueRef::Integer(0) => Ok(Self::Todo),
+      ValueRef::Integer(1) => Ok(Self::Progress),
+      ValueRef::Integer(2) => Ok(Self::Done),
       _ => Err(FromSqlError::Other(
         format!("Cannot convert value {:?} to status", value).into(),
       )),

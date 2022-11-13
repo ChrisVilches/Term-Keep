@@ -16,7 +16,7 @@ pub fn count_lines(s: &str) -> usize {
     .count()
 }
 
-pub fn bool_to_str<'a>(b: bool) -> &'a str {
+pub const fn bool_to_str<'a>(b: bool) -> &'a str {
   if b {
     "Yes"
   } else {

@@ -18,32 +18,29 @@ pub fn checklist_completion(s: &str) -> (i32, i32) {
   let mut complete = 0;
 
   for line in s.lines() {
-    match CHECKBOX_REGEX.captures(line) {
-      None => {}
-      Some(captured) => {
-        total += 1;
+    CHECKBOX_REGEX.captures(line).map_or((), |captured| {
+      total += 1;
 
-        if item_checked(&captured[1]) {
-          complete += 1;
-        }
+      if item_checked(&captured[1]) {
+        complete += 1;
       }
-    }
+    });
   }
 
   (complete, total)
 }
 
 fn format_line(line: &str) -> String {
-  match CHECKBOX_REGEX.captures(line) {
-    None => line.into(),
-    Some(captured) => {
+  CHECKBOX_REGEX.captures(line).map_or_else(
+    || line.into(),
+    |captured| {
       if item_checked(&captured[1]) {
         format!("{} {}", *CHECKED, &captured[2].dimmed())
       } else {
         format!("{} {}", *UNCHECKED, &captured[2])
       }
-    }
-  }
+    },
+  )
 }
 
 pub fn format_checklist(s: &str) -> String {

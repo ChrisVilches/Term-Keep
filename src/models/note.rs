@@ -34,7 +34,7 @@ impl FromSqlRow for Note {
       num => NoteType::Task(num.unwrap_or(TaskStatus::Todo)),
     };
 
-    Ok(Note {
+    Ok(Self {
       id: row.get(0)?,
       content: row.get(1)?,
       pinned: row.get(2)?,

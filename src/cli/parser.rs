@@ -59,11 +59,11 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
   }
 }
 
-fn should_show_logo(cmd: &Command) -> bool {
+const fn should_show_logo(cmd: &Command) -> bool {
   matches!(cmd, Command::ShowAllNotes(_) | Command::Info)
 }
 
-fn should_show_tips(cmd: &Command) -> bool {
+const fn should_show_tips(cmd: &Command) -> bool {
   matches!(cmd, Command::ShowAllNotes(_) | Command::Info)
 }
 

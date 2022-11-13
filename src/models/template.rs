@@ -16,7 +16,7 @@ impl ModelName for Template {
 
 impl FromSqlRow for Template {
   fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
-    Ok(Template {
+    Ok(Self {
       id: row.get(0)?,
       name: row.get(1)?,
       content: row.get(2)?,

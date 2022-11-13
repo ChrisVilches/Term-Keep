@@ -29,7 +29,7 @@ fn format_task_status_icon(task_status: TaskStatus) -> String {
   .to_string()
 }
 
-fn format_task_status_text(task_status: TaskStatus) -> &'static str {
+const fn format_task_status_text(task_status: TaskStatus) -> &'static str {
   match task_status {
     TaskStatus::Todo => "To-Do",
     TaskStatus::Progress => "In Progress",
