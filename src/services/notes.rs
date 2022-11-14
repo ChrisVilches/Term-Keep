@@ -8,6 +8,7 @@ use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
+use rayon::prelude::*;
 use std::cmp::Ordering;
 
 pub fn find_all(archived: bool) -> Vec<Note> {
@@ -52,12 +53,12 @@ pub fn fuzzy_search(text: &str, archived: bool) -> Vec<(i64, Note)> {
   let matcher = SkimMatcherV2::default();
 
   let mut results: Vec<(i64, Note)> = notes
-    .into_iter()
+    .into_par_iter()
     .map(|note| (matcher.fuzzy_match(&note.content, text).unwrap_or(0), note))
     .filter(|pair| pair.0 > 0)
     .collect();
 
-  results.sort_by(cmp);
+  results.par_sort_unstable_by(cmp);
   results
 }
 
