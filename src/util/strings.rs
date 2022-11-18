@@ -1,11 +1,10 @@
 pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
-  let mut new_s = s.to_owned();
+  let chars = s.chars();
 
-  if new_s.len() <= length {
-    new_s
+  if chars.clone().count() <= length {
+    s.to_owned()
   } else {
-    new_s.truncate(length);
-    new_s + "..."
+    format!("{}...", chars.take(length).collect::<String>())
   }
 }
 
@@ -69,6 +68,9 @@ mod tests {
   fn test_truncate_string_ellipsis() {
     assert_eq!(truncate_string_ellipsis("abcde", 2), "ab...");
     assert_eq!(truncate_string_ellipsis("abcde", 7), "abcde");
+    assert_eq!(truncate_string_ellipsis("東京都港区", 2), "東京...");
+    assert_eq!(truncate_string_ellipsis("東京都港区", 5), "東京都港区");
+    assert_eq!(truncate_string_ellipsis("東京都港区", 15), "東京都港区");
   }
 
   #[test]
