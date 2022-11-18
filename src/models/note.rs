@@ -29,19 +29,19 @@ impl ModelName for Note {
 
 impl FromSqlRow for Note {
   fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
-    let note_type = match row.get(4)? {
+    let note_type = match row.get("task_status")? {
       None => NoteType::Normal,
       num => NoteType::Task(num.unwrap_or(TaskStatus::Todo)),
     };
 
     Ok(Self {
-      id: row.get(0)?,
-      content: row.get(1)?,
-      pinned: row.get(2)?,
-      archived: row.get(3)?,
+      id: row.get("id")?,
+      content: row.get("content")?,
+      pinned: row.get("pinned")?,
+      archived: row.get("archived")?,
       note_type,
-      created_at: row.get(5)?,
-      updated_at: row.get(6)?,
+      created_at: row.get("created_at")?,
+      updated_at: row.get("updated_at")?,
     })
   }
 }
