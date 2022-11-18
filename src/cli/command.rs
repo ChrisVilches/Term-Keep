@@ -60,8 +60,8 @@ pub struct Search {
   #[clap(name = "Text to search")]
   pub text: String,
 
-  #[clap(long = "archived", short = 'a', help = "Only archived notes")]
-  pub archived: bool,
+  #[clap(long = "tag", short = 't', help = "Search by tag")]
+  pub tag_name: bool,
 }
 
 #[derive(Args)]
@@ -80,6 +80,16 @@ pub struct RemoveTemplate {
 pub struct RemoveNote {
   #[clap(name = "Note ID")]
   pub id: u32,
+}
+
+#[derive(Args)]
+pub struct ShowTags {
+  #[clap(
+    help = "Normalize tag names to lowercase",
+    long = "lowercase",
+    short = 'l'
+  )]
+  pub lowercase: bool,
 }
 
 #[derive(Subcommand)]
@@ -125,6 +135,9 @@ pub enum Command {
 
   #[command(name = "rm", about = "Remove note permanently")]
   RemoveNote(RemoveNote),
+
+  #[command(name = "tags", about = "Show all tags")]
+  ShowTags(ShowTags),
 
   #[command(about = "Show miscellaneous information")]
   Info,

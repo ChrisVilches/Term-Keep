@@ -28,7 +28,11 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
     }
     Command::Show(args) => controllers::note_display::show_one(args.id, args.less, args.plain),
     Command::Search(args) => {
-      controllers::search::find_fuzzy(&args.text, args.archived);
+      if args.tag_name {
+        controllers::tags::find_notes_by_tag(&args.text);
+      } else {
+        controllers::search::find_fuzzy(&args.text);
+      }
       Ok(())
     }
 
@@ -54,6 +58,12 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
     }
     Command::UpsertTemplate(args) => controllers::templates::upsert(&args.template_name),
     Command::RemoveTemplate(args) => controllers::templates::remove(&args.template_name),
+
+    // Tags
+    Command::ShowTags(args) => {
+      controllers::tags::show_all(args.lowercase);
+      Ok(())
+    }
 
     // Misc
     Command::Info => controllers::info::info(),

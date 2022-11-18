@@ -19,8 +19,8 @@ fn format_result(score: i64, note: &Note) -> String {
   )
 }
 
-pub fn find_fuzzy(text: &String, archived: bool) {
-  let results = services::notes::fuzzy_search(text, archived);
+pub fn find_fuzzy(text: &String) {
+  let results = services::notes::fuzzy_search(text);
 
   println!(
     "{} results for {}",
