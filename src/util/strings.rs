@@ -1,5 +1,5 @@
-pub fn truncate_string_ellipsis(s: String, length: usize) -> String {
-  let mut new_s = s;
+pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
+  let mut new_s = s.to_owned();
 
   if new_s.len() <= length {
     new_s
@@ -75,8 +75,8 @@ mod tests {
 
   #[test]
   fn test_truncate_string_ellipsis() {
-    assert_eq!(truncate_string_ellipsis("abcde".to_owned(), 2), "ab...");
-    assert_eq!(truncate_string_ellipsis("abcde".to_owned(), 7), "abcde");
+    assert_eq!(truncate_string_ellipsis("abcde", 2), "ab...");
+    assert_eq!(truncate_string_ellipsis("abcde", 7), "abcde");
   }
 
   #[test]
