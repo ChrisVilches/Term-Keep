@@ -1,4 +1,3 @@
-// TODO: Could be &str I think?
 pub fn truncate_string_ellipsis(s: String, length: usize) -> String {
   let mut new_s = s;
 
