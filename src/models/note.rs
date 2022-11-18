@@ -16,6 +16,23 @@ pub struct Note {
 }
 
 impl Note {
+  #[cfg(test)]
+  pub fn mock() -> Self {
+    let now = Utc::now();
+
+    Note {
+      id: None,
+      note_type: NoteType::Normal,
+      pinned: false,
+      archived: true,
+      content: String::new(),
+      created_at: now,
+      updated_at: now,
+    }
+  }
+}
+
+impl Note {
   pub fn is_edited(&self) -> bool {
     self.created_at != self.updated_at
   }
@@ -58,25 +75,11 @@ mod tests {
 
   #[test]
   fn test_is_edited() {
-    let note = mock_note();
+    let note = Note::mock();
     assert!(!note.is_edited());
 
-    let mut note_edited = mock_note();
+    let mut note_edited = Note::mock();
     note_edited.updated_at = Utc::now() + chrono::Duration::minutes(2);
     assert!(note_edited.is_edited());
-  }
-
-  fn mock_note() -> Note {
-    let now = Utc::now();
-
-    Note {
-      id: None,
-      note_type: NoteType::Normal,
-      pinned: false,
-      archived: true,
-      content: String::new(),
-      created_at: now,
-      updated_at: now,
-    }
   }
 }
