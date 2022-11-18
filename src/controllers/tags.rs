@@ -1,5 +1,10 @@
-use crate::{models::note::Note, services, util::note_fmt};
 use colored::Colorize;
+
+use crate::{
+  models::note::Note,
+  services,
+  util::{self, note_fmt},
+};
 
 pub fn show_all(lowercase: bool) {
   let tags = services::tags::find_all(lowercase);
@@ -13,7 +18,7 @@ pub fn show_all(lowercase: bool) {
   }
 }
 
-// TODO: Similar to the one in fuzzy_search. Try to recycle code.
+// TODO: This format is not very clean. When there are icons, they ruin the layout a bit.
 fn format_result(note: &Note) -> String {
   vec![
     note_fmt::format_note_icons(note),
@@ -26,25 +31,11 @@ fn format_result(note: &Note) -> String {
   .join(" ")
 }
 
-pub fn find_notes_by_tag(tag_name: &String) {
+pub fn find_notes_by_tag(tag_name: &str) {
   let results = services::tags::find_notes_by_tag(tag_name);
 
-  // TODO: This formatting/output is almost the same as the one for fuzzy search (except without scores)
-  //       so try to recycle that code.
-
   println!(
-    "{} results for {}",
-    results.len().to_string().bold(),
-    tag_name.bold()
+    "{}",
+    util::search::format_search_results(tag_name, &results, format_result)
   );
-
-  if results.is_empty() {
-    return;
-  }
-
-  println!();
-
-  for note in &results {
-    println!("{}", format_result(note));
-  }
 }
