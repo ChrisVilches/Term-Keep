@@ -11,9 +11,6 @@ use regex::Regex;
 
 use super::notes;
 
-// TODO: This todo doesn't belong here probably, but it'd be good to format the #tags when outputting the note's content,
-//       this is very hard to do though, but it's possible.
-
 lazy_static! {
   // TODO: Tag regex is still very simple. I need to add more restrictions to it.
   static ref TAG_REGEX: Regex = Regex::new(r"^#([^\s^#]+)$").unwrap();

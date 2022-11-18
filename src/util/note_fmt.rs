@@ -7,6 +7,8 @@ use crate::util::env::get_env_var;
 use crate::util::strings;
 use crate::util::strings::count_lines;
 use colored::Colorize;
+use lazy_static::lazy_static;
+use regex::{Captures, Regex};
 use termimad::MadSkin;
 
 fn note_summary_max_length() -> usize {
@@ -132,9 +134,33 @@ pub fn format_note_icons(note: &Note) -> String {
   note_icons(note).join(" ")
 }
 
+lazy_static! {
+  // TODO: This is a WIP. It's probably not 100% correct, or not 100& complete.
+  // TODO: It's absolutely necessary that the Regex for formatting is exactly the same as the regex
+  //       for fetching tags from a note, so that the highlighting is not a false positive that the tag
+  //       was added. The user may believe it was considered a tag, but instead it's just plain text, and won't
+  //       appear in the search results and the show-all-tags command.
+  // TODO: Remove this TAG_REGEX and use just one defined somewhere else (currently there are two regex definitions
+  //       that are different... there has to be just one)
+  static ref TAG_REGEX: Regex = Regex::new(r"#([^\s^#]+)").unwrap();
+}
+
+fn markdown_highlight(s: &str) -> String {
+  format!("**`#{}`**", s)
+}
+
+fn format_note_tags(s: &str) -> String {
+  TAG_REGEX
+    .replace_all(s, |c: &Captures| markdown_highlight(&c[1]))
+    .into_owned()
+}
+
 fn format_note_content(s: &str) -> String {
+  let mut text = checklists::format_checklist(s);
+  text = format_note_tags(&text);
+
   MadSkin::default()
-    .text(&checklists::format_checklist(s), None)
+    .text(&text, None)
     .to_string()
     .trim()
     .into()
