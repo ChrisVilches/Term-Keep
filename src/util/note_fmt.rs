@@ -15,7 +15,7 @@ fn note_summary_max_length() -> usize {
 
 fn format_content(content: &str) -> String {
   strings::truncate_string_ellipsis(
-    strings::first_line(content).trim().to_owned(),
+    strings::first_line(content).trim(),
     note_summary_max_length(),
   )
 }
