@@ -8,7 +8,7 @@ lazy_static! {
   // TODO: The look-behind/ahead works. Now all I have to do is improve the content of the () in the regex (the tag name matching).
   //       For example, avoid symbols and weird things. But do allow Japanese and other languages.
   //       I currently added a few symbols, but it's not enough.
-  pub static ref TAG_REGEX: fancy_regex::Regex = fancy_regex::Regex::new(r"(?<=\s|^)#([^[\s#\.\,\)\(\'\&\%\$)]]+)(?=\s|$)").unwrap();
+  pub static ref TAG_REGEX: fancy_regex::Regex = fancy_regex::Regex::new(r"(?<=\s|^)#([^[\s#\.\,\}\{\)\(\'\&\%\$)]]+)(?=\s|$)").unwrap();
 }
 
 pub fn format_text(s: &str) -> String {
