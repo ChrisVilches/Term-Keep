@@ -139,8 +139,8 @@ fn apply_markdown(s: &str) -> String {
 fn format_note_content(s: &str) -> String {
   let mut text = s.to_owned();
 
-  text = super::tags::format_text(&text);
   text = apply_markdown(&text);
+  text = super::tags::format_text(&text);
   text = checklists::format_checklist(&text);
   text = text.trim().to_owned();
 
