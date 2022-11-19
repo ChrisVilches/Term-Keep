@@ -35,7 +35,7 @@ pub fn first_line(s: &str) -> &str {
 }
 
 pub fn highlight(s: &str) -> String {
-  format!("{}", s.bold().truecolor(0, 0, 0).on_truecolor(194, 171, 4))
+  format!("{}", s.bold().truecolor(0, 0, 0).on_truecolor(233, 173, 12))
 }
 
 #[cfg(test)]
