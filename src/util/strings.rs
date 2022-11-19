@@ -32,14 +32,6 @@ pub fn first_line(s: &str) -> &str {
     .unwrap_or(&"")
 }
 
-pub fn markdown_highlight(s: &str) -> String {
-  if s.is_empty() {
-    String::new()
-  } else {
-    format!("**`{}`**", s)
-  }
-}
-
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -83,12 +75,5 @@ mod tests {
   fn test_bool_to_str() {
     assert_eq!(bool_to_str(true), "Yes");
     assert_eq!(bool_to_str(false), "No");
-  }
-
-  #[test]
-  fn test_markdown_highlight() {
-    assert_eq!(markdown_highlight("aaa"), "**`aaa`**");
-    assert_eq!(markdown_highlight("   "), "**`   `**");
-    assert_eq!(markdown_highlight(""), "");
   }
 }

@@ -1,9 +1,8 @@
 use std::collections::HashSet;
 
+use colored::Colorize;
 use fancy_regex::Captures;
 use lazy_static::lazy_static;
-
-use super::strings::markdown_highlight;
 
 lazy_static! {
   // TODO: The look-behind/ahead works. Now all I have to do is improve the content of the () in the regex (the tag name matching).
@@ -12,9 +11,13 @@ lazy_static! {
   pub static ref TAG_REGEX: fancy_regex::Regex = fancy_regex::Regex::new(r"(?<=\s|^)#([^[\s#\.\,\)\(\'\&\%\$)]]+)(?=\s|$)").unwrap();
 }
 
+fn highlight(s: &str) -> String {
+  format!("{}", s.bold().reversed())
+}
+
 pub fn format_text(s: &str) -> String {
   TAG_REGEX
-    .replace_all(s, |c: &Captures| markdown_highlight(&format!("#{}", &c[1])))
+    .replace_all(s, |c: &Captures| highlight(&format!("#{}", &c[1])))
     .into_owned()
 }
 
