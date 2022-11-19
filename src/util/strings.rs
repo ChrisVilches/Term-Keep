@@ -1,3 +1,5 @@
+use colored::Colorize;
+
 pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
   let mut new_s = s.to_owned();
 
@@ -30,6 +32,10 @@ pub fn first_line(s: &str) -> &str {
     .collect::<Vec<&str>>()
     .first()
     .unwrap_or(&"")
+}
+
+pub fn highlight(s: &str) -> String {
+  format!("{}", s.bold().truecolor(0, 0, 0).on_truecolor(194, 171, 4))
 }
 
 #[cfg(test)]
