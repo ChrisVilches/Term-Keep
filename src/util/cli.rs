@@ -17,7 +17,7 @@ pub fn abort_with_message<S: Display>(msg: S) -> ! {
   std::process::exit(1);
 }
 
-fn less_aux(text: &String) -> Result<(), Box<dyn Error>> {
+fn less_aux(text: &str) -> Result<(), Box<dyn Error>> {
   let mut child = Command::new("less")
     .args(["-R"])
     .stdin(Stdio::piped())
@@ -26,7 +26,7 @@ fn less_aux(text: &String) -> Result<(), Box<dyn Error>> {
   match child.stdin.take() {
     None => return Err("cannot open stdin".into()),
     Some(mut s) => std::thread::spawn({
-      let t = text.to_string();
+      let t = text.to_owned();
       move || {
         s.write_all(t.as_bytes()).expect("cannot write to stdin");
       }
@@ -49,6 +49,6 @@ pub fn color_danger(text: &str) -> String {
   text.red().bold().to_string()
 }
 
-pub fn less(text: &String) {
+pub fn less(text: &str) {
   less_aux(text).unwrap_or_else(|e| abort_with_message(format!("Couldn't use 'less' ({})", e)));
 }

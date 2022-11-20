@@ -12,22 +12,22 @@ pub fn find_all() -> Vec<Template> {
   )
 }
 
-pub fn find_one(name: &String) -> Result<Template, NotFoundByFieldError> {
+pub fn find_one(name: &str) -> Result<Template, NotFoundByFieldError> {
   single_row::<Template>(
     "SELECT id, name, content FROM template WHERE name = ?",
     rusqlite::params![name],
   )
-  .ok_or_else(|| NotFoundByFieldError::new::<Template>("name".to_owned(), name.to_string()))
+  .ok_or_else(|| NotFoundByFieldError::new::<Template>("name".to_owned(), name.to_owned()))
 }
 
-pub fn create(name: &String, content: &String) -> Result<(), RowNotChangedError> {
+pub fn create(name: &str, content: &str) -> Result<(), RowNotChangedError> {
   change_row::<Template>(
     "INSERT INTO template (name, content) VALUES (?, ?)",
     rusqlite::params![name, content],
   )
 }
 
-pub fn update(id: u32, content: &String) -> Result<(), RowNotChangedError> {
+pub fn update(id: u32, content: &str) -> Result<(), RowNotChangedError> {
   change_row::<Template>(
     "UPDATE template SET content = ? WHERE id = ?",
     rusqlite::params![content, id],
