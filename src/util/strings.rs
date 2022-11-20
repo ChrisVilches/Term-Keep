@@ -1,12 +1,13 @@
 use colored::Colorize;
+use unicode_segmentation::UnicodeSegmentation;
 
 pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
-  let chars = s.chars();
+  let graphemes = s.graphemes(true);
 
-  if chars.clone().count() <= length {
+  if graphemes.clone().count() <= length {
     s.to_owned()
   } else {
-    format!("{}...", chars.take(length).collect::<String>())
+    format!("{}...", graphemes.take(length).collect::<String>())
   }
 }
 
@@ -77,6 +78,18 @@ mod tests {
     assert_eq!(truncate_string_ellipsis("東京都港区", 2), "東京...");
     assert_eq!(truncate_string_ellipsis("東京都港区", 5), "東京都港区");
     assert_eq!(truncate_string_ellipsis("東京都港区", 15), "東京都港区");
+  }
+
+  #[test]
+  fn test_truncate_string_ellipsis_hindi() {
+    assert_eq!(truncate_string_ellipsis("न", 1), "न");
+    assert_eq!(truncate_string_ellipsis("नम", 2), "नम");
+    assert_eq!(truncate_string_ellipsis("नमस्", 2), "नम...");
+    assert_eq!(truncate_string_ellipsis("नमस्", 3), "नमस्");
+    assert_eq!(truncate_string_ellipsis("नमस्ते", 2), "नम...");
+    assert_eq!(truncate_string_ellipsis("नमस्ते", 3), "नमस्...");
+    assert_eq!(truncate_string_ellipsis("नमस्ते", 4), "नमस्ते");
+    assert_eq!(truncate_string_ellipsis("नमस्ते", 5), "नमस्ते");
   }
 
   #[test]

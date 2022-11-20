@@ -19,6 +19,7 @@ fancy-regex = "0.10.0"
 lazy_static = "1.4.0"
 termimad = "0.14"
 rayon = "1.5.3"
+unicode-segmentation = "1.9.0"
 
 [dev-dependencies]
 test-case = "2.2.2"
