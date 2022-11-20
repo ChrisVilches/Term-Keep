@@ -1,6 +1,6 @@
 use crate::TaskStatus;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum NoteType {
   Normal,
   Task(TaskStatus),

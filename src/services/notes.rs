@@ -76,7 +76,7 @@ pub fn create_task(text: &str) -> Result<(), RowNotChangedError> {
   )
 }
 
-pub fn update(id: u32, text: &String) -> Result<(), RowNotChangedError> {
+pub fn update(id: u32, text: &str) -> Result<(), RowNotChangedError> {
   change_row::<Note>(
     "UPDATE note SET content = ? WHERE id = ?",
     rusqlite::params![text, id],
