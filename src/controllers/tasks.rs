@@ -1,6 +1,7 @@
 use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
+use crate::models::traits::RequireId;
 use crate::services;
 use crate::util::cli;
 use crate::Note;
@@ -14,7 +15,7 @@ fn change_aux(
   if current_status == status {
     println!("{}", cli::color_secondary("Not changed"));
   } else {
-    services::notes::change_task_status(task.id.unwrap(), status as i32)?;
+    services::notes::change_task_status(task.require_id(), status as i32)?;
   }
 
   Ok(())

@@ -1,6 +1,7 @@
 use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
+use crate::models::traits::RequireId;
 use crate::util::checklists;
 use crate::util::date_fmt::format_date;
 use crate::util::env::get_env_var;
@@ -42,7 +43,7 @@ pub fn format_note_description(note: &Note) -> String {
 
   desc.push(format_note_icons(note));
 
-  desc.push(format!("ID {}", note.id.unwrap()));
+  desc.push(format!("ID {}", note.require_id()));
 
   match note.note_type {
     NoteType::Normal => desc.push("Note".into()),
@@ -72,7 +73,7 @@ fn lines_amount_info(note: &Note) -> String {
 fn format_normal_note_summary(note: &Note) -> String {
   format!(
     "{: >3}\t{}{}",
-    note.id.unwrap().to_string().bold(),
+    note.require_id().to_string().bold(),
     format_content(&note.content),
     lines_amount_info(note)
   )
@@ -96,7 +97,7 @@ fn format_task_summary(note: &Note, status: TaskStatus) -> String {
 
   format!(
     "{: >3}\t{}{}{}{}",
-    note.id.unwrap().to_string().bold(),
+    note.require_id().to_string().bold(),
     format_task_status_icon(status),
     format_task_checklist_completion(&note.content),
     task_summary,

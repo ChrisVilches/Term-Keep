@@ -1,4 +1,5 @@
 use crate::models::template::Template;
+use crate::models::traits::RequireId;
 use crate::services;
 use crate::util::cli;
 use colored::Colorize;
@@ -21,7 +22,7 @@ fn edit(template: &Template) -> Result<(), Box<dyn Error>> {
   if content == template.content {
     println!("{}", cli::color_secondary("Not changed"));
   } else {
-    services::templates::update(template.id.unwrap(), &content)?;
+    services::templates::update(template.require_id(), &content)?;
   }
   Ok(())
 }
@@ -41,6 +42,6 @@ pub fn upsert(name: &str) -> Result<(), Box<dyn Error>> {
 
 pub fn remove(name: &str) -> Result<(), Box<dyn Error>> {
   let template = services::templates::find_one(name)?;
-  services::templates::remove(template.id.unwrap())?;
+  services::templates::remove(template.require_id())?;
   Ok(())
 }
