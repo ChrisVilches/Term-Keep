@@ -1,4 +1,3 @@
-use crate::abort_with_message;
 use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
@@ -10,11 +9,12 @@ use std::sync::Mutex;
 const INSTALL_DATABASE_SQL: &str = include_str!("../../data/install.sql");
 const DATABASE_LOCK_ERROR: &str = "Couldn't lock the database";
 const STATEMENT_PREPARE_ERROR: &str = "Query statement couldn't be prepared";
+const STATEMENT_EXECUTE_ERROR: &str = "Prepared statement execution error";
 
 lazy_static! {
   static ref DB_PATH: String = env::require_string_env_var("DB_PATH");
   static ref CONNECTION: Mutex<rusqlite::Connection> =
-    Mutex::new(Connection::open(DB_PATH.clone()).unwrap_or_else(|e| abort_with_message(e)));
+    Mutex::new(Connection::open(DB_PATH.clone()).unwrap());
 }
 
 pub fn install_database() -> Result<(), rusqlite::Error> {
@@ -29,7 +29,9 @@ fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Er
 pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) -> Vec<T> {
   let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
-  let mapped = stmt.query_map(params, row_to_template::<T>).unwrap();
+  let mapped = stmt
+    .query_map(params, row_to_template::<T>)
+    .expect(STATEMENT_EXECUTE_ERROR);
   mapped.map(std::result::Result::unwrap).collect()
 }
 
@@ -46,7 +48,7 @@ pub fn change_row<T: ModelName>(
 ) -> Result<(), RowNotChangedError> {
   let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
-  let rows_changed = stmt.execute(params).unwrap();
+  let rows_changed = stmt.execute(params).expect(STATEMENT_EXECUTE_ERROR);
 
   match rows_changed {
     1 => Ok(()),
@@ -57,5 +59,5 @@ pub fn change_row<T: ModelName>(
 pub fn change_rows<T: ModelName>(query: &str, params: &[&dyn rusqlite::ToSql]) -> usize {
   let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
-  stmt.execute(params).unwrap()
+  stmt.execute(params).expect(STATEMENT_EXECUTE_ERROR)
 }
