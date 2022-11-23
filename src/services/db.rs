@@ -8,6 +8,7 @@ use rusqlite::Connection;
 use std::sync::Mutex;
 
 const INSTALL_DATABASE_SQL: &str = include_str!("../../data/install.sql");
+const DATABASE_LOCK_ERROR: &str = "Couldn't lock the database";
 
 lazy_static! {
   static ref DB_PATH: String = env::require_string_env_var("DB_PATH");
@@ -16,7 +17,7 @@ lazy_static! {
 }
 
 pub fn install_database() -> Result<(), rusqlite::Error> {
-  let conn = CONNECTION.lock().unwrap();
+  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   conn.execute_batch(INSTALL_DATABASE_SQL)
 }
 
@@ -25,7 +26,7 @@ fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Er
 }
 
 pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) -> Vec<T> {
-  let conn = CONNECTION.lock().unwrap();
+  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   let mut stmt = conn.prepare(query).unwrap();
   let mapped = stmt.query_map(params, row_to_template::<T>).unwrap();
   mapped.map(std::result::Result::unwrap).collect()
@@ -42,7 +43,7 @@ pub fn change_row<T: ModelName>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
 ) -> Result<(), RowNotChangedError> {
-  let conn = CONNECTION.lock().unwrap();
+  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   let stmt = conn.prepare(query);
   let rows_changed = stmt.unwrap().execute(params).unwrap();
 
@@ -53,7 +54,7 @@ pub fn change_row<T: ModelName>(
 }
 
 pub fn change_rows<T: ModelName>(query: &str, params: &[&dyn rusqlite::ToSql]) -> usize {
-  let conn = CONNECTION.lock().unwrap();
+  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
   let mut stmt = conn.prepare(query).unwrap();
   stmt.execute(params).unwrap()
 }
