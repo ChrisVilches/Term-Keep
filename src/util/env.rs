@@ -46,10 +46,10 @@ mod tests {
   #[test]
   fn test_get_env_var() {
     env::set_var("TERM_KEEP_NUM", "123");
-    assert_eq!(get_env_var::<String>("NUM").unwrap(), "123");
-    assert_eq!(get_env_var::<i32>("NUM").unwrap(), 123);
+    assert_eq!(get_env_var::<String>("NUM"), Ok("123".to_owned()));
+    assert_eq!(get_env_var::<i32>("NUM"), Ok(123));
 
-    assert_eq!(get_env_var::<String>("INVALID_VARIABLE").unwrap(), "");
+    assert_eq!(get_env_var::<String>("INVALID_VARIABLE"), Ok(String::new()));
     assert!(get_env_var::<i32>("INVALID_VARIABLE").is_err());
   }
 }
