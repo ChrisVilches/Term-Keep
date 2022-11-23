@@ -3,6 +3,8 @@ name = "term_keep"
 version = "1.0.0"
 authors = ["Chris Vilches (https://github.com/ChrisVilches)"]
 edition = "2021"
+description = "Terminal-based Google Keep clone. Can be used as a note taking / To-Do list app on a server."
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
