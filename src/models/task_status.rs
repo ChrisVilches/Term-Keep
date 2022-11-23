@@ -1,6 +1,7 @@
 use rusqlite::types::FromSql;
 use rusqlite::types::FromSqlError;
 use rusqlite::types::FromSqlResult;
+use rusqlite::types::ToSqlOutput;
 use rusqlite::types::ValueRef;
 use rusqlite::ToSql;
 
@@ -14,12 +15,12 @@ pub enum TaskStatus {
 const INVALID_STATUS_ERROR: &str = "Invalid status (allowed values: todo, progress, done)";
 
 impl TaskStatus {
-  pub fn from_string(status: &str) -> Result<Self, String> {
+  pub fn from_string(status: &str) -> Result<Self, &str> {
     match status {
       "todo" => Ok(Self::Todo),
       "progress" => Ok(Self::Progress),
       "done" => Ok(Self::Done),
-      _ => Err(INVALID_STATUS_ERROR.to_owned()),
+      _ => Err(INVALID_STATUS_ERROR),
     }
   }
 }
@@ -39,7 +40,7 @@ impl FromSql for TaskStatus {
 }
 
 impl ToSql for TaskStatus {
-  fn to_sql(&self) -> std::result::Result<rusqlite::types::ToSqlOutput<'_>, rusqlite::Error> {
+  fn to_sql(&self) -> Result<ToSqlOutput<'_>, rusqlite::Error> {
     Ok((*self as i32).into())
   }
 }
@@ -50,39 +51,33 @@ mod tests {
 
   #[test]
   fn test_from_string() {
-    assert_eq!(TaskStatus::from_string("todo").unwrap(), TaskStatus::Todo);
+    assert_eq!(TaskStatus::from_string("todo"), Ok(TaskStatus::Todo));
     assert_eq!(
-      TaskStatus::from_string("progress").unwrap(),
-      TaskStatus::Progress
+      TaskStatus::from_string("progress"),
+      Ok(TaskStatus::Progress)
     );
-    assert_eq!(TaskStatus::from_string("done").unwrap(), TaskStatus::Done);
+    assert_eq!(TaskStatus::from_string("done"), Ok(TaskStatus::Done));
   }
 
   #[test]
   fn test_from_string_case_sensitive() {
-    assert_eq!(
-      TaskStatus::from_string("tODO").err().unwrap(),
-      INVALID_STATUS_ERROR
-    );
-    assert_eq!(
-      TaskStatus::from_string("Done").err().unwrap(),
-      INVALID_STATUS_ERROR
-    );
+    assert_eq!(TaskStatus::from_string("tODO"), Err(INVALID_STATUS_ERROR));
+    assert_eq!(TaskStatus::from_string("Done"), Err(INVALID_STATUS_ERROR));
   }
 
   #[test]
   fn test_column_result() {
     assert_eq!(
-      TaskStatus::column_result(ValueRef::Integer(0)).unwrap(),
-      TaskStatus::Todo
+      TaskStatus::column_result(ValueRef::Integer(0)),
+      Ok(TaskStatus::Todo)
     );
     assert_eq!(
-      TaskStatus::column_result(ValueRef::Integer(1)).unwrap(),
-      TaskStatus::Progress
+      TaskStatus::column_result(ValueRef::Integer(1)),
+      Ok(TaskStatus::Progress)
     );
     assert_eq!(
-      TaskStatus::column_result(ValueRef::Integer(2)).unwrap(),
-      TaskStatus::Done
+      TaskStatus::column_result(ValueRef::Integer(2)),
+      Ok(TaskStatus::Done)
     );
     assert_eq!(
       TaskStatus::column_result(ValueRef::Integer(3))
@@ -95,8 +90,8 @@ mod tests {
 
   #[test]
   fn test_to_sql() {
-    assert_eq!(TaskStatus::Todo.to_sql().unwrap(), 0.into());
-    assert_eq!(TaskStatus::Progress.to_sql().unwrap(), 1.into());
-    assert_eq!(TaskStatus::Done.to_sql().unwrap(), 2.into());
+    assert_eq!(TaskStatus::Todo.to_sql(), Ok(ToSqlOutput::from(0)));
+    assert_eq!(TaskStatus::Progress.to_sql(), Ok(ToSqlOutput::from(1)));
+    assert_eq!(TaskStatus::Done.to_sql(), Ok(ToSqlOutput::from(2)));
   }
 }

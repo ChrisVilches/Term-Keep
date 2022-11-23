@@ -32,7 +32,7 @@ pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) 
   let mapped = stmt
     .query_map(params, row_to_template::<T>)
     .expect(STATEMENT_EXECUTE_ERROR);
-  mapped.map(std::result::Result::unwrap).collect()
+  mapped.map(Result::unwrap).collect()
 }
 
 pub fn single_row<T: FromSqlRow + Clone>(
