@@ -4,6 +4,8 @@ use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
 use chrono::{DateTime, Utc};
 
+use super::traits::RequireId;
+
 #[derive(Debug, Clone)]
 pub struct Note {
   pub id: Option<u32>,
@@ -63,6 +65,12 @@ impl FromSqlRow for Note {
   }
 }
 
+impl RequireId for Note {
+  fn option_id(&self) -> Option<u32> {
+    self.id
+  }
+}
+
 // https://stackoverflow.com/questions/5299267/how-to-create-enum-type-in-sqlite
 // I can create an enum table (an actual SQL table that contains the possible data).
 // and use table references.
@@ -81,5 +89,19 @@ mod tests {
     let mut note_edited = Note::mock();
     note_edited.updated_at = Utc::now() + chrono::Duration::minutes(2);
     assert!(note_edited.is_edited());
+  }
+
+  #[test]
+  #[should_panic]
+  fn test_require_id_panic() {
+    let note = Note::mock();
+    note.require_id();
+  }
+
+  #[test]
+  fn test_require_id() {
+    let mut note = Note::mock();
+    note.id = Some(1);
+    assert_eq!(note.id, Some(1));
   }
 }

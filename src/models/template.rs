@@ -1,6 +1,8 @@
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
 
+use super::traits::RequireId;
+
 #[derive(Debug, Clone, Default)]
 pub struct Template {
   pub id: Option<u32>,
@@ -21,5 +23,11 @@ impl FromSqlRow for Template {
       name: row.get("name")?,
       content: row.get("content")?,
     })
+  }
+}
+
+impl RequireId for Template {
+  fn option_id(&self) -> Option<u32> {
+    self.id
   }
 }
