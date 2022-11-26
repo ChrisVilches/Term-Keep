@@ -8,11 +8,17 @@ Terminal-based Google Keep clone. Can be used as a note taking / To-Do list app 
 
 ## Quickstart
 
+Install using cargo:
+
+```sh
+cargo install term_keep
+```
+
+Or clone the repository, and install manually. Add the executable to your `PATH` afterwards.
+
 ```sh
 cargo build --release
 ```
-
-Add the executable to your `PATH`.
 
 Specify where you want to store the database by defining the `TERM_KEEP_DB_PATH` environment variable.
 
