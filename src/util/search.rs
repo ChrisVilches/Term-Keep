@@ -16,7 +16,7 @@ const fn results_string(count: usize) -> &'static str {
   }
 }
 
-pub fn format_search_results<T, F>(query: &str, notes: &Vec<T>, format_note: F) -> String
+pub fn format_search_results<T, F>(query: &str, notes: &[T], format_note: F) -> String
 where
   F: Fn(&T) -> String,
 {

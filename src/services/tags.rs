@@ -4,7 +4,7 @@ use super::notes;
 use crate::{models::note::Note, util};
 use rayon::prelude::*;
 
-fn extract_all_tags(notes: &Vec<Note>, lowercase: bool) -> HashMap<String, usize> {
+fn extract_all_tags(notes: &[Note], lowercase: bool) -> HashMap<String, usize> {
   let result = Mutex::new(HashMap::new());
 
   notes.into_par_iter().for_each(|note| {
@@ -72,7 +72,7 @@ mod tests {
         note.content = (*c).to_owned();
         note
       })
-      .collect();
+      .collect::<Vec<Note>>();
 
     let map: HashMap<String, usize> = result.iter().map(|t| (t.0.to_owned(), t.1)).collect();
     assert_eq!(extract_all_tags(&notes, false), map);
@@ -89,7 +89,7 @@ mod tests {
         note.content = (*c).to_owned();
         note
       })
-      .collect();
+      .collect::<Vec<Note>>();
 
     let map: HashMap<String, usize> = result.iter().map(|t| (t.0.to_owned(), t.1)).collect();
     assert_eq!(extract_all_tags(&notes, true), map);
