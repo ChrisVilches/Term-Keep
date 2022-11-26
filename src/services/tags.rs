@@ -4,14 +4,14 @@ use super::notes;
 use crate::{models::note::Note, util};
 use rayon::prelude::*;
 
-fn extract_all_tags(notes: &[Note], lowercase: bool) -> HashMap<String, usize> {
+fn extract_all_tags(notes: &[Note], case_sensitive: bool) -> HashMap<String, usize> {
   let result = Mutex::new(HashMap::new());
 
   notes.into_par_iter().for_each(|note| {
-    let content = if lowercase {
-      note.content.to_lowercase()
-    } else {
+    let content = if case_sensitive {
       note.content.clone()
+    } else {
+      note.content.to_lowercase()
     };
 
     let mut map = result.lock().unwrap();
@@ -32,9 +32,9 @@ fn cmp((s1, count1): &(String, usize), (s2, count2): &(String, usize)) -> Orderi
   }
 }
 
-pub fn find_all(lowercase: bool) -> Vec<(String, usize)> {
+pub fn find_all(case_sensitive: bool) -> Vec<(String, usize)> {
   let mut tags: Vec<(String, usize)> =
-    extract_all_tags(&notes::find_all_include_archived(), lowercase)
+    extract_all_tags(&notes::find_all_include_archived(), case_sensitive)
       .into_iter()
       .collect();
   tags.par_sort_unstable_by(cmp);

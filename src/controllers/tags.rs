@@ -6,8 +6,8 @@ use crate::{
   util::{self, note_fmt},
 };
 
-pub fn show_all(lowercase: bool) {
-  let tags = services::tags::find_all(lowercase);
+pub fn show_all(case_sensitive: bool) {
+  let tags = services::tags::find_all(case_sensitive);
 
   for (tag_name, count) in tags {
     println!(

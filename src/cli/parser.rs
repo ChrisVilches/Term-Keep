@@ -61,7 +61,7 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
 
     // Tags
     Command::ShowTags(args) => {
-      controllers::tags::show_all(args.lowercase);
+      controllers::tags::show_all(args.case_sensitive);
       Ok(())
     }
 

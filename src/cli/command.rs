@@ -89,11 +89,11 @@ pub struct RemoveNote {
 #[derive(Args)]
 pub struct ShowTags {
   #[clap(
-    help = "Normalize tag names to lowercase",
-    long = "lowercase",
-    short = 'l'
+    help = "Don't convert tags to lowercase",
+    long = "case-sensitive",
+    short = 'c'
   )]
-  pub lowercase: bool,
+  pub case_sensitive: bool,
 }
 
 #[derive(Subcommand)]
