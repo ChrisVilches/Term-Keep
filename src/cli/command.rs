@@ -60,10 +60,6 @@ pub struct Search {
   #[clap(name = "Text to search")]
   pub text: String,
 
-  // TODO: Note that this flag makes the command description (term_keep search -h) a bit strange.
-  //       A more generic way would be "Find notes. By default it does a fuzzy text search".
-  //       Then this flag should change to "Search by tag name instead of note content" or something like that,
-  //       although the tags are also part of the content, so be careful with the wording.
   #[clap(long = "tag", short = 't', help = "Search by tag")]
   pub tag_name: bool,
 }
@@ -104,7 +100,7 @@ pub enum Command {
   #[command(about = "Show one note")]
   Show(ShowOne),
 
-  #[command(about = "Find notes (text search)", alias = "find")]
+  #[command(about = "Find notes (fuzzy text search by default)", alias = "find")]
   Search(Search),
 
   #[command(name = "edit", about = "Edit a note")]
