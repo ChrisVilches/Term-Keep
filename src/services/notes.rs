@@ -11,10 +11,17 @@ use fuzzy_matcher::FuzzyMatcher;
 use rayon::prelude::*;
 use std::cmp::Ordering;
 
-pub fn find_all(archived: bool) -> Vec<Note> {
+pub fn find_all(only_archived: bool) -> Vec<Note> {
   rows_to_vec(
     "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note WHERE archived = ?",
-    rusqlite::params![archived],
+    rusqlite::params![only_archived],
+  )
+}
+
+pub fn find_all_include_archived() -> Vec<Note> {
+  rows_to_vec(
+    "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note",
+    rusqlite::params![],
   )
 }
 
