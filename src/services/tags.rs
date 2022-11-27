@@ -64,6 +64,23 @@ mod tests {
   #[test_case(vec!["#tag", "#Tag #tag"], vec![("tag", 2), ("Tag", 1)])]
   #[test_case(vec![" #tag ", " #Tag #tag "], vec![("tag", 2), ("Tag", 1)]; "extra spaces")]
   #[test_case(vec![" #a #A "], vec![("A", 1), ("a", 1)])]
+  fn test_extract_all_tags_case_sensitive(contents: Vec<&str>, result: Vec<(&str, usize)>) {
+    let notes = contents
+      .iter()
+      .map(|c| {
+        let mut note = Note::mock();
+        note.content = (*c).to_owned();
+        note
+      })
+      .collect::<Vec<Note>>();
+
+    let map: HashMap<String, usize> = result.iter().map(|t| (t.0.to_owned(), t.1)).collect();
+    assert_eq!(extract_all_tags(&notes, true), map);
+  }
+
+  #[test_case(vec![" #tag ", " #Tag #tag "], vec![("tag", 2)])]
+  #[test_case(vec!["#a", "#A"], vec![("a", 2)])]
+  #[test_case(vec![" #a #A "], vec![("a", 1)])]
   fn test_extract_all_tags(contents: Vec<&str>, result: Vec<(&str, usize)>) {
     let notes = contents
       .iter()
@@ -76,22 +93,5 @@ mod tests {
 
     let map: HashMap<String, usize> = result.iter().map(|t| (t.0.to_owned(), t.1)).collect();
     assert_eq!(extract_all_tags(&notes, false), map);
-  }
-
-  #[test_case(vec![" #tag ", " #Tag #tag "], vec![("tag", 2)])]
-  #[test_case(vec!["#a", "#A"], vec![("a", 2)])]
-  #[test_case(vec![" #a #A "], vec![("a", 1)])]
-  fn test_extract_all_tags_lowercase(contents: Vec<&str>, result: Vec<(&str, usize)>) {
-    let notes = contents
-      .iter()
-      .map(|c| {
-        let mut note = Note::mock();
-        note.content = (*c).to_owned();
-        note
-      })
-      .collect::<Vec<Note>>();
-
-    let map: HashMap<String, usize> = result.iter().map(|t| (t.0.to_owned(), t.1)).collect();
-    assert_eq!(extract_all_tags(&notes, true), map);
   }
 }
