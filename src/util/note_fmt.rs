@@ -133,12 +133,19 @@ pub fn format_note_icons(note: &Note) -> String {
   note_icons(note).join(" ")
 }
 
+fn apply_markdown(s: &str) -> String {
+  MadSkin::default().text(s, None).to_string()
+}
+
 fn format_note_content(s: &str) -> String {
-  MadSkin::default()
-    .text(&checklists::format_checklist(s), None)
-    .to_string()
-    .trim()
-    .into()
+  let mut text = s.to_owned();
+
+  text = apply_markdown(&text);
+  text = super::tags::format_text(&text);
+  text = checklists::format_checklist(&text);
+  text = text.trim().to_owned();
+
+  text
 }
 
 fn format_note_date(note: &Note) -> String {

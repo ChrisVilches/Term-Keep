@@ -54,8 +54,8 @@ fn cmp((score1, n1): &(i64, Note), (score2, _): &(i64, Note)) -> Ordering {
   }
 }
 
-pub fn fuzzy_search(text: &str, archived: bool) -> Vec<(i64, Note)> {
-  let notes: Vec<Note> = find_all(archived);
+pub fn fuzzy_search(text: &str) -> Vec<(i64, Note)> {
+  let notes: Vec<Note> = find_all_include_archived();
 
   let matcher = SkimMatcherV2::default();
 

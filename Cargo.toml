@@ -19,7 +19,11 @@ rand = "0.8.5"
 fuzzy-matcher = "0.3.7"
 chrono = "0.4.19"
 regex = "1"
+fancy-regex = "0.10.0"
 lazy_static = "1.4.0"
 termimad = "0.14"
 rayon = "1.5.3"
 unicode-segmentation = "1.9.0"
+
+[dev-dependencies]
+test-case = "2.2.2"

@@ -60,8 +60,8 @@ pub struct Search {
   #[clap(name = "Text to search")]
   pub text: String,
 
-  #[clap(long = "archived", short = 'a', help = "Only archived notes")]
-  pub archived: bool,
+  #[clap(long = "tag", short = 't', help = "Search by tag")]
+  pub tag_name: bool,
 }
 
 #[derive(Args)]
@@ -82,6 +82,16 @@ pub struct RemoveNote {
   pub id: u32,
 }
 
+#[derive(Args)]
+pub struct ShowTags {
+  #[clap(
+    help = "Don't convert tags to lowercase",
+    long = "case-sensitive",
+    short = 'c'
+  )]
+  pub case_sensitive: bool,
+}
+
 #[derive(Subcommand)]
 pub enum Command {
   #[command(name = "all", about = "Show all notes")]
@@ -90,7 +100,7 @@ pub enum Command {
   #[command(about = "Show one note")]
   Show(ShowOne),
 
-  #[command(about = "Find notes (text search)", alias = "find")]
+  #[command(about = "Find notes (fuzzy text search by default)", alias = "find")]
   Search(Search),
 
   #[command(name = "edit", about = "Edit a note")]
@@ -125,6 +135,9 @@ pub enum Command {
 
   #[command(name = "rm", about = "Remove note permanently")]
   RemoveNote(RemoveNote),
+
+  #[command(name = "tags", about = "Show all tags")]
+  ShowTags(ShowTags),
 
   #[command(about = "Show miscellaneous information")]
   Info,

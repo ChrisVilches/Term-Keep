@@ -1,3 +1,4 @@
+use colored::Colorize;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
@@ -31,6 +32,10 @@ pub fn first_line(s: &str) -> &str {
     .collect::<Vec<&str>>()
     .first()
     .unwrap_or(&"")
+}
+
+pub fn highlight(s: &str) -> String {
+  format!("{}", s.bold().truecolor(0, 0, 0).on_truecolor(233, 173, 12))
 }
 
 #[cfg(test)]

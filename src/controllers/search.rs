@@ -1,8 +1,9 @@
-use crate::services;
 use crate::util::note_fmt;
 use crate::Note;
+use crate::{services, util};
 use colored::Colorize;
 
+// TODO: This format is not very clean. When there are icons, they ruin the layout a bit.
 fn format_result(score: i64, note: &Note) -> String {
   format!(
     "{}\t{}",
@@ -19,22 +20,11 @@ fn format_result(score: i64, note: &Note) -> String {
   )
 }
 
-pub fn find_fuzzy(text: &String, archived: bool) {
-  let results = services::notes::fuzzy_search(text, archived);
+pub fn find_fuzzy(text: &str) {
+  let results = services::notes::fuzzy_search(text);
 
   println!(
-    "{} results for {}",
-    results.len().to_string().bold(),
-    text.bold()
+    "{}",
+    util::search::format_search_results(text, &results, |tuple| format_result(tuple.0, &tuple.1))
   );
-
-  if results.is_empty() {
-    return;
-  }
-
-  println!();
-
-  for (score, note) in &results {
-    println!("{}", format_result(*score, note));
-  }
 }
