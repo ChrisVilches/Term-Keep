@@ -1,5 +1,5 @@
-use crate::runner::{exec_test, run_and_grep_stdout, run_app, run_error, run_success};
-use crate::util::randomize_cases;
+use crate::common::runner::{exec_test, run_and_grep_stdout, run_app, run_error, run_success};
+use crate::common::util::randomize_cases;
 use term_keep::models::note::Note;
 use term_keep::models::note_type::NoteType;
 use term_keep::models::task_status::TaskStatus;

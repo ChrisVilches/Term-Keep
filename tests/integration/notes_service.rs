@@ -1,4 +1,4 @@
-use crate::runner::exec_test;
+use crate::common::runner::exec_test;
 use term_keep::services;
 
 #[test]
