@@ -9,16 +9,29 @@ const INSTALL_DATABASE_SQL: &str = include_str!("../../data/install.sql");
 const DATABASE_LOCK_ERROR: &str = "Couldn't lock the database";
 const STATEMENT_PREPARE_ERROR: &str = "Query statement couldn't be prepared";
 const STATEMENT_EXECUTE_ERROR: &str = "Prepared statement execution error";
+const CONNECTION_NOT_INITIALIZED: &str = "Connection object should be initialized";
 
 lazy_static! {
-  static ref DB_PATH: String = env::require_string_env_var("DB_PATH");
-  static ref CONNECTION: Mutex<rusqlite::Connection> =
-    Mutex::new(Connection::open(DB_PATH.clone()).unwrap());
+  static ref CONNECTION: Mutex<Option<rusqlite::Connection>> = Mutex::new(None);
 }
 
-pub fn install_database() -> Result<(), rusqlite::Error> {
-  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
-  conn.execute_batch(INSTALL_DATABASE_SQL)
+fn with_connection<T>(callback: impl Fn(&rusqlite::Connection) -> T) -> T {
+  let guard = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
+  let conn = guard.as_ref().expect(CONNECTION_NOT_INITIALIZED);
+  let result = callback(conn);
+  drop(guard);
+  result
+}
+
+fn create_db(db_file_path: &str) -> Result<(), rusqlite::Error> {
+  let mut conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
+  *conn = Some(Connection::open(db_file_path)?);
+  Ok(())
+}
+
+pub fn set_database(db_file_path: &str) -> Result<(), rusqlite::Error> {
+  create_db(db_file_path)?;
+  with_connection(|conn| conn.execute_batch(INSTALL_DATABASE_SQL))
 }
 
 fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Error> {
@@ -26,12 +39,13 @@ fn row_to_template<T: FromSqlRow>(row: &rusqlite::Row) -> Result<T, rusqlite::Er
 }
 
 pub fn rows_to_vec<T: FromSqlRow>(query: &str, params: &[&dyn rusqlite::ToSql]) -> Vec<T> {
-  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
-  let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
-  let mapped = stmt
-    .query_map(params, row_to_template::<T>)
-    .expect(STATEMENT_EXECUTE_ERROR);
-  mapped.map(Result::unwrap).collect()
+  with_connection(|conn| {
+    let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
+    let mapped = stmt
+      .query_map(params, row_to_template::<T>)
+      .expect(STATEMENT_EXECUTE_ERROR);
+    mapped.map(Result::unwrap).collect()
+  })
 }
 
 pub fn single_row<T: FromSqlRow + Clone>(
@@ -45,18 +59,20 @@ pub fn change_row<T: ModelName>(
   query: &str,
   params: &[&dyn rusqlite::ToSql],
 ) -> Result<(), RowNotChangedError> {
-  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
-  let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
-  let rows_changed = stmt.execute(params).expect(STATEMENT_EXECUTE_ERROR);
+  with_connection(|conn| {
+    let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
+    let rows_changed = stmt.execute(params).expect(STATEMENT_EXECUTE_ERROR);
 
-  match rows_changed {
-    1 => Ok(()),
-    _ => Err(RowNotChangedError::new::<T>()),
-  }
+    match rows_changed {
+      1 => Ok(()),
+      _ => Err(RowNotChangedError::new::<T>()),
+    }
+  })
 }
 
 pub fn change_rows<T: ModelName>(query: &str, params: &[&dyn rusqlite::ToSql]) -> usize {
-  let conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
-  let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
-  stmt.execute(params).expect(STATEMENT_EXECUTE_ERROR)
+  with_connection(|conn| {
+    let mut stmt = conn.prepare(query).expect(STATEMENT_PREPARE_ERROR);
+    stmt.execute(params).expect(STATEMENT_EXECUTE_ERROR)
+  })
 }

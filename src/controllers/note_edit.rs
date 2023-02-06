@@ -1,7 +1,7 @@
+use crate::models::note::Note;
 use crate::services;
 use crate::util::cli;
 use crate::util::note_fmt;
-use crate::Note;
 use std::error::Error;
 
 pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {

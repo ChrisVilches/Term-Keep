@@ -1,8 +1,9 @@
+use colored::Colorize;
+
+use crate::models::note::Note;
 use crate::services;
 use crate::util::cli;
 use crate::util::note_fmt;
-use crate::Note;
-use colored::Colorize;
 use std::error::Error;
 
 fn print_count() {

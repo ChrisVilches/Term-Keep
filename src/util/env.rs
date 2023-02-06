@@ -1,6 +1,7 @@
-use crate::abort_with_message;
 use std::env;
 use std::str::FromStr;
+
+use super::cli::abort_with_message;
 
 const ENV_VAR_PREFIX: &str = "TERM_KEEP_";
 

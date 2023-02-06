@@ -9,14 +9,12 @@
 #![deny(clippy::shadow_same)]
 #![deny(clippy::shadow_reuse)]
 #![deny(clippy::shadow_unrelated)]
+#![allow(clippy::missing_errors_doc)]
 
-use term_keep::cli;
-use term_keep::services;
-use term_keep::util::cli::abort_with_message;
-use term_keep::util::env;
+// TODO: I don't understand why this doesn't work if the files (in /integration) folder
+//       are in /tests instead.
 
-fn main() {
-  let db_path: String = env::require_string_env_var("DB_PATH");
-  services::db::set_database(&db_path).unwrap_or_else(|e| abort_with_message(e));
-  cli::parser::execute();
-}
+mod cli_test;
+mod notes_service;
+mod runner;
+mod util;

@@ -1,5 +1,5 @@
 use crate::services::notes;
-use crate::tips::random_tip;
+use crate::services::tips::random_tip;
 use crate::util::env;
 use crate::util::strings::bool_to_str;
 use colored::Colorize;

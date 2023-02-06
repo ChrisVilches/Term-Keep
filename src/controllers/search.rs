@@ -1,5 +1,5 @@
+use crate::models::note::Note;
 use crate::util::note_fmt;
-use crate::Note;
 use crate::{services, util};
 use colored::Colorize;
 

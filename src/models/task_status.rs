@@ -16,7 +16,9 @@ const INVALID_STATUS_ERROR: &str = "Invalid status (allowed values: todo, progre
 
 impl TaskStatus {
   pub fn from_string(status: &str) -> Result<Self, &str> {
-    match status {
+    let lower = status.to_lowercase();
+
+    match lower.as_str() {
       "todo" => Ok(Self::Todo),
       "progress" => Ok(Self::Progress),
       "done" => Ok(Self::Done),
@@ -61,8 +63,9 @@ mod tests {
 
   #[test]
   fn test_from_string_case_sensitive() {
-    assert_eq!(TaskStatus::from_string("tODO"), Err(INVALID_STATUS_ERROR));
-    assert_eq!(TaskStatus::from_string("Done"), Err(INVALID_STATUS_ERROR));
+    // TODO: It's now case-insensitive. Remove these I guess, or replace with something else.
+    // assert_eq!(TaskStatus::from_string("tODO"), Err(INVALID_STATUS_ERROR));
+    // assert_eq!(TaskStatus::from_string("Done"), Err(INVALID_STATUS_ERROR));
   }
 
   #[test]

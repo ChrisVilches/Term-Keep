@@ -1,8 +1,8 @@
-use crate::abort_with_message;
 use crate::cli::command::Command;
 use crate::cli::command::ShowAllNotes;
 use crate::controllers;
 use crate::util;
+use crate::util::cli::abort_with_message;
 use clap::Parser;
 use colored::Colorize;
 use std::error::Error;

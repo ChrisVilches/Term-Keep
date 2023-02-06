@@ -1,10 +1,10 @@
 use crate::errors::row_not_changed_error::RowNotChangedError;
+use crate::models::note::Note;
 use crate::models::note_type::NoteType;
 use crate::models::task_status::TaskStatus;
 use crate::models::traits::RequireId;
 use crate::services;
 use crate::util::cli;
-use crate::Note;
 use std::error::Error;
 
 fn change_aux(
