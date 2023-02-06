@@ -35,7 +35,7 @@ impl FromSql for TaskStatus {
       ValueRef::Integer(1) => Ok(Self::Progress),
       ValueRef::Integer(2) => Ok(Self::Done),
       _ => Err(FromSqlError::Other(
-        format!("Cannot convert value {:?} to status", value).into(),
+        format!("Cannot convert value {value:?} to status").into(),
       )),
     }
   }
@@ -59,13 +59,19 @@ mod tests {
       Ok(TaskStatus::Progress)
     );
     assert_eq!(TaskStatus::from_string("done"), Ok(TaskStatus::Done));
+
+    assert_eq!(TaskStatus::from_string("ToDo"), Ok(TaskStatus::Todo));
+    assert_eq!(
+      TaskStatus::from_string("PrOgReSs"),
+      Ok(TaskStatus::Progress)
+    );
+    assert_eq!(TaskStatus::from_string("dOnE"), Ok(TaskStatus::Done));
   }
 
   #[test]
-  fn test_from_string_case_sensitive() {
-    // TODO: It's now case-insensitive. Remove these I guess, or replace with something else.
-    // assert_eq!(TaskStatus::from_string("tODO"), Err(INVALID_STATUS_ERROR));
-    // assert_eq!(TaskStatus::from_string("Done"), Err(INVALID_STATUS_ERROR));
+  fn test_from_string_invalid() {
+    assert_eq!(TaskStatus::from_string("tODOs"), Err(INVALID_STATUS_ERROR));
+    assert_eq!(TaskStatus::from_string("Doned"), Err(INVALID_STATUS_ERROR));
   }
 
   #[test]

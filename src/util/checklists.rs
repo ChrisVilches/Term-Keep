@@ -1,13 +1,13 @@
+use once_cell::sync::Lazy;
+
 use colored::ColoredString;
 use colored::Colorize;
-use lazy_static::lazy_static;
-use regex::Regex;
+use fancy_regex::Regex;
 
-lazy_static! {
-  static ref CHECKBOX_REGEX: Regex = Regex::new(r"(^\s*-\s+\[[xX\s]?\]\s+)(.*[^\s].*)").unwrap();
-  static ref CHECKED: ColoredString = "[ ✔ ]".dimmed().bold();
-  static ref UNCHECKED: ColoredString = "[   ]".dimmed().bold();
-}
+static CHECKBOX_REGEX: Lazy<Regex> =
+  Lazy::new(|| Regex::new(r"(^\s*-\s+\[[xX\s]?\]\s+)(.*[^\s].*)").unwrap());
+static CHECKED: Lazy<ColoredString> = Lazy::new(|| "[ ✔ ]".dimmed().bold());
+static UNCHECKED: Lazy<ColoredString> = Lazy::new(|| "[   ]".dimmed().bold());
 
 fn item_checked(item: &str) -> bool {
   item.contains('x') || item.contains('X')
@@ -18,26 +18,33 @@ pub fn checklist_completion(s: &str) -> (i32, i32) {
   let mut complete = 0;
 
   for line in s.lines() {
-    CHECKBOX_REGEX.captures(line).map_or((), |captured| {
-      total += 1;
+    let captures = CHECKBOX_REGEX
+      .captures(line)
+      .expect("Should attempt to parse");
 
-      if item_checked(&captured[1]) {
+    if let Some(c) = captures {
+      total += 1;
+      if item_checked(&c[1]) {
         complete += 1;
       }
-    });
+    }
   }
 
   (complete, total)
 }
 
 fn format_line(line: &str) -> String {
-  CHECKBOX_REGEX.captures(line).map_or_else(
-    || line.into(),
-    |captured| {
-      if item_checked(&captured[1]) {
-        format!("{} {}", *CHECKED, &captured[2].dimmed())
+  let captures = CHECKBOX_REGEX
+    .captures(line)
+    .expect("Should attempt to parse");
+
+  captures.map_or_else(
+    || line.to_owned(),
+    |c| {
+      if item_checked(&c[1]) {
+        format!("{} {}", *CHECKED, &c[2].dimmed())
       } else {
-        format!("{} {}", *UNCHECKED, &captured[2])
+        format!("{} {}", *UNCHECKED, &c[2])
       }
     },
   )

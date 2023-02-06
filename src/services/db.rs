@@ -1,7 +1,6 @@
 use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
-use lazy_static::lazy_static;
 use rusqlite::Connection;
 use std::sync::Mutex;
 
@@ -11,9 +10,7 @@ const STATEMENT_PREPARE_ERROR: &str = "Query statement couldn't be prepared";
 const STATEMENT_EXECUTE_ERROR: &str = "Prepared statement execution error";
 const CONNECTION_NOT_INITIALIZED: &str = "Connection object should be initialized";
 
-lazy_static! {
-  static ref CONNECTION: Mutex<Option<rusqlite::Connection>> = Mutex::new(None);
-}
+static CONNECTION: Mutex<Option<rusqlite::Connection>> = Mutex::new(None);
 
 fn with_connection<T>(callback: impl Fn(&rusqlite::Connection) -> T) -> T {
   let guard = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);

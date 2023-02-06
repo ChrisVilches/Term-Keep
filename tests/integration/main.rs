@@ -16,5 +16,5 @@
 //       to ./tests/ and see if it compiles.
 
 mod cli_test;
-mod notes_service;
 mod common;
+mod notes_service;

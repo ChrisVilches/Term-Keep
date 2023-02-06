@@ -10,10 +10,12 @@ pub fn show_all(case_sensitive: bool) {
   let tags = services::tags::find_all(case_sensitive);
 
   for (tag_name, count) in tags {
+    let notes_label = if count == 1 { "note" } else { "notes" };
+
     println!(
       "{} {}",
-      format!("({} notes)", count).dimmed(),
-      format!("#{}", tag_name).bold()
+      format!("({count} {notes_label})").dimmed(),
+      format!("#{tag_name}").bold()
     );
   }
 }

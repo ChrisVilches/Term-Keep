@@ -1,19 +1,20 @@
 use crate::models::note::Note;
 use crate::services;
 use crate::util::cli;
+use crate::util::cli::get_text_input;
 use crate::util::note_fmt;
 use std::error::Error;
 
 pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(id)?;
-  let template = note.content;
+  let prev_content = note.content;
 
-  let content = edit::edit(&template)?;
+  let new_content: String = get_text_input(&prev_content)?;
 
-  let same_content = template.eq(&content);
+  let same_content = prev_content.eq(&new_content);
 
   if !same_content {
-    services::notes::update(id, &content)?;
+    services::notes::update(id, &new_content)?;
   }
 
   note_fmt::print_note(&services::notes::find_one(id)?, false);
@@ -58,7 +59,7 @@ pub fn archive_all_done() {
 
   println!(
     "{}",
-    cli::color_primary(&format!("{} note(s) were archived", changed))
+    cli::color_primary(&format!("{changed} note(s) were archived"))
   );
 }
 

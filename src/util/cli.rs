@@ -8,12 +8,22 @@ use std::process::{Command, Stdio};
 pub fn show_random_tip() {
   if let Some(t) = tips::random_tip() {
     println!();
-    println!("💡 Tip: {}", t);
+    println!("💡 Tip: {t}");
   }
 }
 
+pub fn get_text_input(initial_text: &str) -> Result<String, Box<dyn Error>> {
+  Ok(if atty::is(atty::Stream::Stdin) {
+    edit::edit(initial_text)?
+  } else {
+    let mut buf = String::new();
+    std::io::stdin().read_to_string(&mut buf)?;
+    buf
+  })
+}
+
 pub fn abort_with_message<S: Display>(msg: S) -> ! {
-  eprintln!("{}", color_danger(&format!("Error: {}", msg)));
+  eprintln!("{}", color_danger(&format!("Error: {msg}")));
   std::process::exit(1);
 }
 
@@ -53,5 +63,5 @@ pub fn color_danger(text: &str) -> String {
 }
 
 pub fn less(text: &str) {
-  less_aux(text).unwrap_or_else(|e| abort_with_message(format!("Couldn't use 'less' ({})", e)));
+  less_aux(text).unwrap_or_else(|e| abort_with_message(format!("Couldn't use 'less' ({e})")));
 }

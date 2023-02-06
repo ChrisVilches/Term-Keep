@@ -67,7 +67,7 @@ fn lines_amount_info(note: &Note) -> String {
   if lines == 1 {
     String::new()
   } else {
-    format!(" ({} lines)", lines).dimmed().to_string()
+    format!(" ({lines} lines)").dimmed().to_string()
   }
 }
 
@@ -87,7 +87,7 @@ fn format_task_checklist_completion(full_text: &str) -> String {
     return " ".into();
   }
 
-  format!(" {} ", format!("({} / {})", complete, total).dimmed())
+  format!(" {} ", format!("({complete} / {total})").dimmed())
 }
 
 fn format_task_summary(note: &Note, status: TaskStatus) -> String {

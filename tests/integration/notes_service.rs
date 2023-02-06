@@ -4,7 +4,6 @@ use term_keep::services;
 #[test]
 fn test_empty_notes() {
   exec_test(|| {
-    std::thread::sleep(std::time::Duration::from_millis(200));
     let notes = services::notes::find_all(false);
     assert!(notes.is_empty());
   });

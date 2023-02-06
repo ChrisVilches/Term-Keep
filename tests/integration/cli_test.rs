@@ -1,4 +1,6 @@
-use crate::common::runner::{exec_test, run_and_grep_stdout, run_app, run_error, run_success};
+use crate::common::runner::{
+  exec_test, run_and_grep_stdout, run_app, run_app_with_stdin, run_error, run_success,
+};
 use crate::common::util::randomize_cases;
 use term_keep::models::note::Note;
 use term_keep::models::note_type::NoteType;
@@ -31,6 +33,45 @@ fn test_note_count() {
 }
 
 #[test]
+fn test_new_note() {
+  exec_test(|| {
+    let (stdout, _, exit_status) = run_app_with_stdin(&["new"], Some("my new note from STDIN!"));
+    assert!(exit_status.success());
+    assert!(stdout.contains("ID 1  |  Note\n"));
+    assert!(stdout.contains("my new note from STDIN!\n"));
+    assert!(stdout.contains("Created\n"));
+  });
+}
+
+#[test]
+fn test_edit_note() {
+  exec_test(|| {
+    services::notes::create_note("some text").unwrap();
+    let stdout = run_success(&["show", "1"]);
+    assert!(!stdout.contains("Updated"));
+    assert!(stdout.contains("some text"));
+
+    std::thread::sleep(std::time::Duration::from_millis(1100));
+    let (stdout, _, exit_status) = run_app_with_stdin(&["edit", "1"], Some("some modified text"));
+
+    assert!(exit_status.success());
+    assert!(stdout.contains("(Updated: "));
+    assert!(stdout.contains("some modified text"));
+  });
+
+  exec_test(|| {
+    services::notes::create_note("some text").unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(1100));
+    let (stdout, _, exit_status) = run_app_with_stdin(&["edit", "1"], Some("some text"));
+
+    assert!(exit_status.success());
+    assert!(!stdout.contains("Updated"));
+    assert!(stdout.contains("some text"));
+    assert!(stdout.contains("Not changed"));
+  });
+}
+
+#[test]
 fn test_subtasks() {
   exec_test(|| {
     services::notes::create_task("- [] task\n- [x] completed").unwrap();
@@ -40,6 +81,14 @@ fn test_subtasks() {
   exec_test(|| {
     services::notes::create_task("- [x] task\n- [x] completed").unwrap();
     assert!(run_success(&[]).contains("(2 / 2)"));
+  });
+
+  exec_test(|| {
+    services::notes::create_task("- [] todo (subtask)\n- [x] completed (subtask)").unwrap();
+    let lines = run_and_grep_stdout(&["show", "1"], "(subtask)");
+    assert_eq!(lines.len(), 2);
+    assert_eq!(lines[0], "[   ] todo (subtask)");
+    assert_eq!(lines[1], "[ ✔ ] completed (subtask)");
   });
 }
 
@@ -189,8 +238,7 @@ fn test_show_tags() {
     let lines: Vec<&str> = stdout.split('\n').collect();
     assert!(exit_status.success());
     assert!(lines[0].contains("(2 notes) #some"));
-    // TODO: Should be "1 note"
-    assert!(lines[1].contains("(1 notes) #another-tag"));
+    assert!(lines[1].contains("(1 note) #another-tag"));
   });
 }
 
@@ -248,18 +296,22 @@ fn test_search_fuzzy() {
 
   exec_test(|| {
     setup();
-    let search_results = run_and_grep_stdout(&["search", "hello"], "(score ");
+    let args = &["search", "hello"];
+    let search_results = run_and_grep_stdout(args, "(score ");
 
     assert_eq!(search_results.len(), 2);
+    assert!(run_success(args).contains("2 results for hello"));
     assert!(search_results[0].contains("hello heelloo hello hello"));
     assert!(search_results[1].contains("hello world"));
   });
 
   exec_test(|| {
     setup();
-    let search_results = run_and_grep_stdout(&["search", "bye"], "(score ");
+    let args = &["search", "bye"];
+    let search_results = run_and_grep_stdout(args, "(score ");
 
     assert_eq!(search_results.len(), 1);
+    assert!(run_success(args).contains("1 result for bye"));
     assert!(search_results[0].contains("byebye world"));
   });
 
@@ -298,7 +350,68 @@ fn test_search_by_tags() {
 
 #[test]
 fn test_templates() {
-  // TODO: Implement
-  println!("Not implemented yet!");
-  // todo!();
+  exec_test(|| {
+    services::templates::create("todo-template", "template content").unwrap();
+    services::templates::create("journaling-template", "journal template content").unwrap();
+
+    assert!(run_success(&["templates"]).starts_with("2 template(s)\n"));
+
+    let templates = run_and_grep_stdout(&["templates"], "-template");
+    assert_eq!(templates.len(), 2);
+    assert_eq!(templates[0], "todo-template");
+    assert_eq!(templates[1], "journaling-template");
+  });
+}
+
+#[test]
+fn test_remove_templates() {
+  exec_test(|| {
+    services::templates::create("todo-template", "template content").unwrap();
+
+    assert_eq!(
+      run_error(&["remove-template", "asdf"]),
+      "Error: template not found with name = asdf\n"
+    );
+    assert_eq!(services::templates::find_all().len(), 1);
+
+    assert!(run_success(&["remove-template", "todo-template"]).is_empty());
+    assert!(services::templates::find_all().is_empty());
+  });
+}
+
+#[test]
+fn test_upsert_templates() {
+  let setup = || {
+    assert!(services::templates::find_all().is_empty());
+    run_app_with_stdin(
+      &["upsert-template", "template-one"],
+      Some("some template content"),
+    );
+    run_app_with_stdin(
+      &["upsert-template", "template-two"],
+      Some("another template"),
+    );
+  };
+
+  exec_test(|| {
+    setup();
+
+    let templates = services::templates::find_all();
+    assert_eq!(templates.len(), 2);
+    let lines = run_and_grep_stdout(&["templates"], "template-");
+    assert_eq!(lines[0], "template-one");
+    assert_eq!(lines[1], "template-two");
+    assert_eq!(templates[0].content, "some template content");
+    assert_eq!(templates[1].content, "another template");
+  });
+
+  exec_test(|| {
+    setup();
+
+    run_app_with_stdin(&["upsert-template", "template-two"], Some("new content!!"));
+    let templates = services::templates::find_all();
+    assert_eq!(templates.len(), 2);
+    assert_eq!(templates[0].content, "some template content");
+    assert_eq!(templates[1].content, "new content!!");
+  });
 }

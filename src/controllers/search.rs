@@ -7,7 +7,7 @@ use colored::Colorize;
 fn format_result(score: i64, note: &Note) -> String {
   format!(
     "{}\t{}",
-    format!("(score {: >3})", score).purple().bold(),
+    format!("(score {score: >3})").purple().bold(),
     vec![
       note_fmt::format_note_icons(note),
       note_fmt::format_note_summary(note)

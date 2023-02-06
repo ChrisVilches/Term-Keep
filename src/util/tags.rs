@@ -1,15 +1,21 @@
-use fancy_regex::Captures;
-use lazy_static::lazy_static;
+use fancy_regex::{Captures, Regex};
+use once_cell::sync::Lazy;
 use std::collections::HashSet;
 
 use super::strings::highlight;
 
-lazy_static! {
-  // TODO: Disallow more symbols from the tag name (I added a few symbols like punctuation, but it's not enough).
-  // TODO: A better way to build the regex would be to have a symbol array (chars) and then concatenate everything, and build it.
-  //       This current way is too hard to read (and hard to add symbols).
-  pub static ref TAG_REGEX: fancy_regex::Regex = fancy_regex::Regex::new(r"(?<=\s|^)#([^[\s#\.\,\}\{\)\(\'\&\%\$)]]+)(?=\s|$)").unwrap();
-}
+static TAG_REGEX: Lazy<Regex> = Lazy::new(|| {
+  // TODO: Keep adding more symbols.
+  let invalid_tag_symbols = r"\.,#${}[]()+!#$%&'/@:;";
+  let escaped = invalid_tag_symbols
+    .chars()
+    .map(|c| format!("\\{c}"))
+    .collect::<String>();
+
+  let regex_str = format!(r"(?<=\s|^)#([^[\s{escaped}]]+)(?=\s|$)");
+
+  Regex::new(&regex_str).unwrap()
+});
 
 #[must_use]
 pub fn format_text(s: &str) -> String {
@@ -50,8 +56,13 @@ mod tests {
 
   #[test_case("this #text is a tag", vec!["text"])]
   #[test_case("#a #b", vec!["a", "b"])]
+  #[test_case("#aa-bb", vec!["aa-bb"])]
+  #[test_case("#aaa_bbb", vec!["aaa_bbb"])]
   #[test_case("#a #a  #a #a", vec!["a", "a", "a", "a"])]
-  #[test_case("#first #period. #last", vec!["first", "last"])]
+  // TODO: I think this should extract "#period" because the user may type a period after a tag.
+  //       The problem is that there are several kinds of periods (e.g. in Japanese)
+  //       so it's not so easy.
+  #[test_case("#first #period. #last #slash/slash", vec!["first", "last"])]
   #[test_case("some animals #🐊 #🐌🐌🐌", vec!["🐊", "🐌🐌🐌"])]
   #[test_case("some #tag\nwith spaces", vec!["tag"])]
   #[test_case("two tags #tag and #Tag", vec!["tag", "Tag"])]

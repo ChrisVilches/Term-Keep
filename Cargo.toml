@@ -1,6 +1,6 @@
 [package]
 name = "term_keep"
-version = "1.1.0"
+version = "1.2.0"
 authors = ["Chris Vilches (https://github.com/ChrisVilches)"]
 edition = "2021"
 description = "Terminal-based Google Keep clone. Can be used as a note taking / To-Do list app on a server."
@@ -10,6 +10,9 @@ homepage = "https://github.com/ChrisVilches/Term-Keep"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# TODO: once_cell may eventually be part of std, so
+#       remove the crate and use the one from std.
+
 [dependencies]
 clap = { version = "4.0.8", features = ["derive"] }
 rusqlite = { version = "0.28.0", features = ["bundled", "chrono"] }
@@ -18,12 +21,12 @@ edit = "0.1.4"
 rand = "0.8.5"
 fuzzy-matcher = "0.3.7"
 chrono = "0.4.19"
-regex = "1"
-fancy-regex = "0.10.0"
-lazy_static = "1.4.0"
+fancy-regex = "0.11.0"
 termimad = "0.14"
 rayon = "1.5.3"
 unicode-segmentation = "1.9.0"
+atty = "0.2.14"
+once_cell = "1.17.0"
 
 [dev-dependencies]
 test-case = "2.2.2"
