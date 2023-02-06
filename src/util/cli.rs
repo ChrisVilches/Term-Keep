@@ -37,14 +37,17 @@ fn less_aux(text: &str) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
+#[must_use]
 pub fn color_primary(text: &str) -> String {
   text.blue().to_string()
 }
 
+#[must_use]
 pub fn color_secondary(text: &str) -> String {
   text.dimmed().to_string()
 }
 
+#[must_use]
 pub fn color_danger(text: &str) -> String {
   text.red().bold().to_string()
 }

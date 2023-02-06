@@ -8,6 +8,7 @@ fn prefixed_env_var(name: &str) -> String {
   format!("{}{}", ENV_VAR_PREFIX, name)
 }
 
+#[must_use]
 pub fn require_string_env_var(name: &str) -> String {
   let var_name: String = prefixed_env_var(name);
   let value = env::var(&var_name);

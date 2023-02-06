@@ -9,6 +9,7 @@ pub struct NotFoundByIdError {
 }
 
 impl NotFoundByIdError {
+  #[must_use]
   pub fn new<T: ModelName>(id: u32) -> Self {
     Self {
       id,

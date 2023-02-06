@@ -1,7 +1,6 @@
 use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
-use crate::util::env;
 use lazy_static::lazy_static;
 use rusqlite::Connection;
 use std::sync::Mutex;

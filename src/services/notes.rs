@@ -11,6 +11,7 @@ use fuzzy_matcher::FuzzyMatcher;
 use rayon::prelude::*;
 use std::cmp::Ordering;
 
+#[must_use]
 pub fn find_all(only_archived: bool) -> Vec<Note> {
   rows_to_vec(
     "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note WHERE archived = ?",
@@ -18,6 +19,7 @@ pub fn find_all(only_archived: bool) -> Vec<Note> {
   )
 }
 
+#[must_use]
 pub fn find_all_include_archived() -> Vec<Note> {
   rows_to_vec(
     "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note",
@@ -33,6 +35,7 @@ pub fn find_one(id: u32) -> Result<Note, NotFoundByIdError> {
   .ok_or_else(|| NotFoundByIdError::new::<Note>(id))
 }
 
+#[must_use]
 pub fn find_latest() -> Option<Note> {
   single_row::<Note>(
     "SELECT id, content, pinned, archived, task_status, created_at, updated_at FROM note ORDER BY id DESC LIMIT 1",
@@ -111,6 +114,7 @@ pub fn change_task_status(id: u32, status: i32) -> Result<(), RowNotChangedError
   )
 }
 
+#[must_use]
 pub fn archive_all_done() -> usize {
   change_rows::<Note>(
     "UPDATE note SET archived = true WHERE task_status = ? AND archived = false",

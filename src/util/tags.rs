@@ -6,22 +6,27 @@ use super::strings::highlight;
 
 lazy_static! {
   // TODO: Disallow more symbols from the tag name (I added a few symbols like punctuation, but it's not enough).
+  // TODO: A better way to build the regex would be to have a symbol array (chars) and then concatenate everything, and build it.
+  //       This current way is too hard to read (and hard to add symbols).
   pub static ref TAG_REGEX: fancy_regex::Regex = fancy_regex::Regex::new(r"(?<=\s|^)#([^[\s#\.\,\}\{\)\(\'\&\%\$)]]+)(?=\s|$)").unwrap();
 }
 
+#[must_use]
 pub fn format_text(s: &str) -> String {
   TAG_REGEX
     .replace_all(s, |c: &Captures| highlight(&format!("#{}", &c[1])))
     .into_owned()
 }
 
+#[must_use]
 pub fn extract_tags_non_unique(text: &str) -> Vec<String> {
   TAG_REGEX
     .captures_iter(text)
-    .map(|cap| cap.unwrap()[1].to_owned())
+    .map(|cap| cap.expect("Should parse tags")[1].to_owned())
     .collect()
 }
 
+#[must_use]
 pub fn extract_tags_unique(text: &str) -> HashSet<String> {
   extract_tags_non_unique(text).into_iter().collect()
 }

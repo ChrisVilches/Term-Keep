@@ -1,6 +1,7 @@
 use colored::Colorize;
 use unicode_segmentation::UnicodeSegmentation;
 
+#[must_use]
 pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
   let graphemes = s.graphemes(true);
 
@@ -11,6 +12,7 @@ pub fn truncate_string_ellipsis(s: &str, length: usize) -> String {
   }
 }
 
+#[must_use]
 pub fn count_lines(s: &str) -> usize {
   s.split('\n')
     .map(str::trim)
@@ -18,6 +20,7 @@ pub fn count_lines(s: &str) -> usize {
     .count()
 }
 
+#[must_use]
 pub const fn bool_to_str<'a>(b: bool) -> &'a str {
   if b {
     "Yes"
@@ -26,6 +29,7 @@ pub const fn bool_to_str<'a>(b: bool) -> &'a str {
   }
 }
 
+#[must_use]
 pub fn first_line(s: &str) -> &str {
   s.split('\n')
     .filter(|line| !line.trim().is_empty())
@@ -34,6 +38,7 @@ pub fn first_line(s: &str) -> &str {
     .unwrap_or(&"")
 }
 
+#[must_use]
 pub fn highlight(s: &str) -> String {
   format!("{}", s.bold().truecolor(0, 0, 0).on_truecolor(233, 173, 12))
 }

@@ -38,6 +38,7 @@ const fn format_task_status_text(task_status: TaskStatus) -> &'static str {
   }
 }
 
+#[must_use]
 pub fn format_note_description(note: &Note) -> String {
   let mut desc = vec![];
 
@@ -105,6 +106,7 @@ fn format_task_summary(note: &Note, status: TaskStatus) -> String {
   )
 }
 
+#[must_use]
 pub fn format_note_summary(note: &Note) -> String {
   match note.note_type {
     NoteType::Normal => format_normal_note_summary(note),
@@ -129,6 +131,7 @@ fn note_icons(note: &Note) -> Vec<&str> {
   icons
 }
 
+#[must_use]
 pub fn format_note_icons(note: &Note) -> String {
   note_icons(note).join(" ")
 }
@@ -159,6 +162,7 @@ fn format_note_date(note: &Note) -> String {
   date_display
 }
 
+#[must_use]
 pub fn format_note(note: &Note, plain: bool) -> String {
   let content = if plain {
     note.content.clone()

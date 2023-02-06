@@ -5,6 +5,7 @@ use crate::services::db::change_row;
 use crate::services::db::rows_to_vec;
 use crate::services::db::single_row;
 
+#[must_use]
 pub fn find_all() -> Vec<Template> {
   rows_to_vec(
     "SELECT id, name, content FROM template",

@@ -35,6 +35,7 @@ impl Note {
 }
 
 impl Note {
+  #[must_use]
   pub fn is_edited(&self) -> bool {
     self.created_at != self.updated_at
   }

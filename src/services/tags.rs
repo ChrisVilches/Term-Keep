@@ -41,6 +41,7 @@ pub fn find_all(case_sensitive: bool) -> Vec<(String, usize)> {
   tags
 }
 
+#[must_use]
 pub fn find_notes_by_tag(tag_name: &str) -> Vec<Note> {
   let tag_name_lower = tag_name.to_lowercase();
 

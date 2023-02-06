@@ -8,6 +8,7 @@ pub struct RowNotChangedError {
 }
 
 impl RowNotChangedError {
+  #[must_use]
   pub fn new<T: ModelName>() -> Self {
     Self {
       model_name: T::model_name(),

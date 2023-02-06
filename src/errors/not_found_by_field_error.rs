@@ -10,6 +10,7 @@ pub struct NotFoundByFieldError {
 }
 
 impl NotFoundByFieldError {
+  #[must_use]
   pub fn new<T: ModelName>(field: String, value: String) -> Self {
     Self {
       model_name: T::model_name(),
