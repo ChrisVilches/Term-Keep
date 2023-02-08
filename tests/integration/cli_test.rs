@@ -142,6 +142,31 @@ fn test_show() {
 }
 
 #[test]
+fn test_show_format_and_plain() {
+  let setup = || {
+    services::notes::create_note("content: a *note* with `format`").unwrap();
+  };
+
+  exec_test(|| {
+    setup();
+    assert_eq!(
+      run_and_grep_stdout(&["show", "1"], "content:").first().cloned(),
+      Some("content: a \u{1b}[3mnote\u{1b}[0m with \u{1b}[48;5;235m\u{1b}[38;5;249mformat\u{1b}[49m\u{1b}[39m".to_owned())
+    );
+  });
+
+  exec_test(|| {
+    setup();
+    assert_eq!(
+      run_and_grep_stdout(&["show", "1", "--plain"], "content:")
+        .first()
+        .cloned(),
+      Some("content: a *note* with `format`".to_owned())
+    );
+  });
+}
+
+#[test]
 fn test_pin() {
   let get_pinned_notes = || -> Vec<Note> {
     services::notes::find_all(false)

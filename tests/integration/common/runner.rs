@@ -13,7 +13,7 @@ static COMPILE_APP: Once = Once::new();
 const TMP_DB_FILE: &str = "/tmp/term_keep_test.db";
 const EXECUTABLE_PATH: &str = "./target/debug/term_keep";
 
-pub fn exec_test(callback: impl Fn()) {
+pub fn exec_test(callback: impl FnOnce()) {
   /*
    * TODO: If one test fails, the mutex will become poisoned, but the idea
    * is that other tests can continue executing. So try to clear poison from the
