@@ -1,11 +1,10 @@
 use crate::errors::row_not_changed_error::RowNotChangedError;
 use crate::models::traits::FromSqlRow;
 use crate::models::traits::ModelName;
+use parking_lot::Mutex;
 use rusqlite::Connection;
-use std::sync::Mutex;
 
 const INSTALL_DATABASE_SQL: &str = include_str!("../../data/install.sql");
-const DATABASE_LOCK_ERROR: &str = "Couldn't lock the database";
 const STATEMENT_PREPARE_ERROR: &str = "Query statement couldn't be prepared";
 const STATEMENT_EXECUTE_ERROR: &str = "Prepared statement execution error";
 const CONNECTION_NOT_INITIALIZED: &str = "Connection object should be initialized";
@@ -13,7 +12,7 @@ const CONNECTION_NOT_INITIALIZED: &str = "Connection object should be initialize
 static CONNECTION: Mutex<Option<rusqlite::Connection>> = Mutex::new(None);
 
 fn with_connection<T>(callback: impl Fn(&rusqlite::Connection) -> T) -> T {
-  let guard = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
+  let guard = CONNECTION.lock();
   let conn = guard.as_ref().expect(CONNECTION_NOT_INITIALIZED);
   let result = callback(conn);
   drop(guard);
@@ -21,7 +20,7 @@ fn with_connection<T>(callback: impl Fn(&rusqlite::Connection) -> T) -> T {
 }
 
 fn create_db(db_file_path: &str) -> Result<(), rusqlite::Error> {
-  let mut conn = CONNECTION.lock().expect(DATABASE_LOCK_ERROR);
+  let mut conn = CONNECTION.lock();
   *conn = Some(Connection::open(db_file_path)?);
   Ok(())
 }

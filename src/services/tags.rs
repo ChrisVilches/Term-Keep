@@ -1,7 +1,8 @@
-use std::{cmp::Ordering, collections::HashMap, sync::Mutex};
+use std::{cmp::Ordering, collections::HashMap};
 
 use super::notes;
 use crate::{models::note::Note, util};
+use parking_lot::Mutex;
 use rayon::prelude::*;
 
 fn extract_all_tags(notes: &[Note], case_sensitive: bool) -> HashMap<String, usize> {
@@ -14,14 +15,12 @@ fn extract_all_tags(notes: &[Note], case_sensitive: bool) -> HashMap<String, usi
       note.content.to_lowercase()
     };
 
-    let mut map = result.lock().unwrap();
-
     for tag in util::tags::extract_tags_unique(&content) {
-      *map.entry(tag).or_default() += 1;
+      *result.lock().entry(tag).or_default() += 1;
     }
   });
 
-  result.into_inner().unwrap()
+  result.into_inner()
 }
 
 fn cmp((s1, count1): &(String, usize), (s2, count2): &(String, usize)) -> Ordering {

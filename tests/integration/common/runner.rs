@@ -1,9 +1,10 @@
+use parking_lot::Mutex;
 use std::fs;
 use std::io::Write;
 use std::process::Stdio;
 use std::{
   process::{Command, ExitStatus},
-  sync::{Mutex, Once},
+  sync::Once,
 };
 use term_keep::services;
 
@@ -14,23 +15,11 @@ const TMP_DB_FILE: &str = "/tmp/term_keep_test.db";
 const EXECUTABLE_PATH: &str = "./target/debug/term_keep";
 
 pub fn exec_test(callback: impl FnOnce()) {
-  /*
-   * TODO: If one test fails, the mutex will become poisoned, but the idea
-   * is that other tests can continue executing. So try to clear poison from the
-   * mutex. This functionality cannot be used because it's unstable, so try later.
-   * Current issue: if one test fails, the output becomes hard to understand because
-   * many tests will fail (because they can't acquire the lock).
-   * Note: This is only a problem while writing tests and debugging. If all tests are OK,
-   * then this is not a problem, because the output will be clean.
-   */
-  let guard = TEST_MUTEX
-    .lock()
-    .expect("Should be able to obtain test lock");
+  let guard = TEST_MUTEX.lock();
   let _ = fs::remove_file(TMP_DB_FILE);
   services::db::set_database(TMP_DB_FILE).expect("Should be able to install test database");
   callback();
-
-  std::mem::drop(guard);
+  drop(guard);
 }
 
 fn ensure_compiled() {
