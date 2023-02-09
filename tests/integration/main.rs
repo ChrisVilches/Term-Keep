@@ -11,10 +11,6 @@
 #![deny(clippy::shadow_unrelated)]
 #![allow(clippy::missing_errors_doc)]
 
-// TODO: I don't understand why this doesn't work if the files (in /integration) folder
-//       are in /tests instead. Try once again moving the files from ./tests/integration
-//       to ./tests/ and see if it compiles.
-
 mod cli_test;
 mod common;
 mod notes_service;
