@@ -4,9 +4,9 @@ use crate::controllers;
 use crate::util;
 use crate::util::cli::abort_with_message;
 use crate::util::env::get_bool;
+use anyhow::Result;
 use clap::Parser;
 use colored::Colorize;
-use std::error::Error;
 
 static LOGO: &str = include_str!("../../data/logo.txt");
 const DEFAULT_CMD: Command = Command::ShowAllNotes(ShowAllNotes { archived: false });
@@ -20,7 +20,7 @@ struct Cli {
 }
 
 #[allow(clippy::too_many_lines)]
-fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
+fn execute_command(cmd: &Command) -> Result<()> {
   match cmd {
     // Display
     Command::ShowAllNotes(args) => {
@@ -88,9 +88,7 @@ pub fn execute() {
     println!();
   }
 
-  let result: Result<(), Box<dyn Error>> = command_result(&cmd);
-
-  result.unwrap_or_else(|e| abort_with_message(e));
+  execute_command(&cmd).unwrap_or_else(|e| abort_with_message(e));
 
   if should_show_tips(&cmd) {
     util::cli::show_random_tip();

@@ -2,16 +2,16 @@ use crate::services;
 use crate::util::cli::get_text_input;
 use crate::util::cli::{self, validate_text_input_mode};
 use crate::util::note_fmt;
-use std::error::Error;
+use anyhow::Result;
 
-fn template_text(template_name: &Option<String>) -> Result<String, Box<dyn Error>> {
+fn template_text(template_name: &Option<String>) -> Result<String> {
   Ok(match template_name {
     Some(name) => services::templates::find_one(name)?.content,
     None => String::new(),
   })
 }
 
-fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Error>> {
+fn create(template_name: &Option<String>, task: bool) -> Result<()> {
   let (content, mode) = get_text_input(&template_text(template_name)?)?;
 
   validate_text_input_mode(mode, template_name.is_some())?;
@@ -35,10 +35,10 @@ fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Erro
   Ok(())
 }
 
-pub fn create_note(template_name: &Option<String>) -> Result<(), Box<dyn Error>> {
+pub fn create_note(template_name: &Option<String>) -> Result<()> {
   create(template_name, false)
 }
 
-pub fn create_task(template_name: &Option<String>) -> Result<(), Box<dyn Error>> {
+pub fn create_task(template_name: &Option<String>) -> Result<()> {
   create(template_name, true)
 }

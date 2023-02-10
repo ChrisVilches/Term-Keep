@@ -1,6 +1,6 @@
 use crate::services::tips;
+use anyhow::{anyhow, Result};
 use colored::Colorize;
-use std::error::Error;
 use std::fmt::Display;
 use std::io::prelude::*;
 use std::process::{Command, Stdio};
@@ -12,13 +12,13 @@ pub fn show_random_tip() {
   }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum TextInputMode {
   Stdin,
   Editor,
 }
 
-pub fn get_text_input(initial_text: &str) -> Result<(String, TextInputMode), Box<dyn Error>> {
+pub fn get_text_input(initial_text: &str) -> Result<(String, TextInputMode)> {
   Ok(if atty::is(atty::Stream::Stdin) {
     (edit::edit(initial_text)?, TextInputMode::Editor)
   } else {
@@ -28,12 +28,11 @@ pub fn get_text_input(initial_text: &str) -> Result<(String, TextInputMode), Box
   })
 }
 
-pub fn validate_text_input_mode(
-  mode: TextInputMode,
-  using_template: bool,
-) -> Result<(), Box<dyn Error>> {
+pub fn validate_text_input_mode(mode: TextInputMode, using_template: bool) -> Result<()> {
   if using_template && mode == TextInputMode::Stdin {
-    Err("Cannot get text from STDIN and use a template at the same time")?
+    return Err(anyhow!(
+      "Cannot get text from STDIN and use a template at the same time"
+    ));
   }
 
   Ok(())
@@ -44,14 +43,14 @@ pub fn abort_with_message<S: Display>(msg: S) -> ! {
   std::process::exit(1);
 }
 
-fn less_aux(text: &str) -> Result<(), Box<dyn Error>> {
+fn less_aux(text: &str) -> Result<()> {
   let mut child = Command::new("less")
     .args(["-R"])
     .stdin(Stdio::piped())
     .spawn()?;
 
   match child.stdin.take() {
-    None => Err("cannot open stdin")?,
+    None => return Err(anyhow!("cannot open stdin")),
     Some(mut s) => std::thread::spawn({
       let t = text.to_owned();
       move || {

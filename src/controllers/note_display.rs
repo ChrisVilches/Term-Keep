@@ -1,10 +1,9 @@
-use colored::Colorize;
-
 use crate::models::note::Note;
 use crate::services;
 use crate::util::cli;
 use crate::util::note_fmt;
-use std::error::Error;
+use anyhow::Result;
+use colored::Colorize;
 
 fn print_count() {
   let non_archived_notes: Vec<Note> = services::notes::find_all(false);
@@ -51,7 +50,7 @@ pub fn show_all(archived: bool) {
   }
 }
 
-pub fn show_one(note_id: u32, use_less: bool, plain: bool) -> Result<(), Box<dyn Error>> {
+pub fn show_one(note_id: u32, use_less: bool, plain: bool) -> Result<()> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if use_less {

@@ -23,6 +23,7 @@ pub fn require_string_env_var(name: &str) -> String {
   result
 }
 
+#[must_use]
 pub fn get_bool(name: &str, default_value: bool) -> bool {
   let var_name: String = prefixed_env_var(name);
   let value = env::var(var_name).unwrap_or_default();

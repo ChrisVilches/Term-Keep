@@ -5,7 +5,7 @@ use crate::models::task_status::TaskStatus;
 use crate::models::traits::RequireId;
 use crate::services;
 use crate::util::cli;
-use std::error::Error;
+use anyhow::{anyhow, Result};
 
 fn change_aux(
   task: &Note,
@@ -21,14 +21,15 @@ fn change_aux(
   Ok(())
 }
 
-pub fn change_status(task_id: u32, status_str: &str) -> Result<(), Box<dyn Error>> {
+pub fn change_status(task_id: u32, status_str: &str) -> Result<()> {
   let task = services::notes::find_one(task_id)?;
 
   match task.note_type {
+    // TODO: Refactor/simplify this.
     NoteType::Task(current_status) => TaskStatus::from_string(status_str)
       .map(|new_status| change_aux(&task, current_status, new_status))
       .map(|_| ())
-      .map_err(std::convert::Into::into),
-    NoteType::Normal => Err("Not a task".into()),
+      .map_err(|s| anyhow!(s.to_owned())), // TODO: Does this need Err(...) ? Does that work?
+    NoteType::Normal => Err(anyhow!("Not a task")),
   }
 }

@@ -9,6 +9,8 @@ use term_keep::models::note_type::NoteType;
 use term_keep::models::task_status::TaskStatus;
 use term_keep::services;
 
+// TODO: Split integration tests into multiple files.
+
 // TODO: Create integration tests about the tag search case-sensitive and insensitive
 //       since there are a few differences, and I haven't really tested it manually either,
 //       as far as I can remember.

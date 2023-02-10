@@ -3,9 +3,9 @@ use crate::services;
 use crate::util::cli;
 use crate::util::cli::get_text_input;
 use crate::util::note_fmt;
-use std::error::Error;
+use anyhow::{anyhow, Result};
 
-pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
+pub fn edit_content(id: u32) -> Result<()> {
   let note: Note = services::notes::find_one(id)?;
   let prev_content = note.content;
 
@@ -30,7 +30,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
-pub fn pin_note(id: u32, pinned: bool) -> Result<(), Box<dyn Error>> {
+pub fn pin_note(id: u32, pinned: bool) -> Result<()> {
   let note = services::notes::find_one(id)?;
 
   if note.pinned == pinned {
@@ -42,7 +42,7 @@ pub fn pin_note(id: u32, pinned: bool) -> Result<(), Box<dyn Error>> {
   Ok(())
 }
 
-pub fn archive(note_id: u32, archived: bool) -> Result<(), Box<dyn Error>> {
+pub fn archive(note_id: u32, archived: bool) -> Result<()> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if note.archived == archived {
@@ -63,11 +63,13 @@ pub fn archive_all_done() {
   );
 }
 
-pub fn remove_note(note_id: u32) -> Result<(), Box<dyn Error>> {
+pub fn remove_note(note_id: u32) -> Result<()> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if !note.archived {
-    Err("The note must be archived before removing permanently")?;
+    return Err(anyhow!(
+      "The note must be archived before removing permanently"
+    ));
   }
 
   services::notes::remove(note_id)?;
