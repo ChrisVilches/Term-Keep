@@ -17,7 +17,7 @@ pub fn show_all() {
 }
 
 fn edit(template: &Template) -> Result<(), Box<dyn Error>> {
-  let content = get_text_input(&template.content)?;
+  let (content, _) = get_text_input(&template.content)?;
 
   if content == template.content {
     println!("{}", cli::color_secondary("Not changed"));
@@ -28,7 +28,7 @@ fn edit(template: &Template) -> Result<(), Box<dyn Error>> {
 }
 
 fn create(name: &str) -> Result<(), Box<dyn Error>> {
-  let content = get_text_input("")?;
+  let (content, _) = get_text_input("")?;
   services::templates::create(name, &content)?;
   println!("{}", cli::color_primary("Created a new template"));
   Ok(())

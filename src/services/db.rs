@@ -20,8 +20,7 @@ fn with_connection<T>(callback: impl Fn(&rusqlite::Connection) -> T) -> T {
 }
 
 fn create_db(db_file_path: &str) -> Result<(), rusqlite::Error> {
-  let mut conn = CONNECTION.lock();
-  *conn = Some(Connection::open(db_file_path)?);
+  *CONNECTION.lock() = Some(Connection::open(db_file_path)?);
   Ok(())
 }
 

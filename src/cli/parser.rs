@@ -3,6 +3,7 @@ use crate::cli::command::ShowAllNotes;
 use crate::controllers;
 use crate::util;
 use crate::util::cli::abort_with_message;
+use crate::util::env::get_bool;
 use clap::Parser;
 use colored::Colorize;
 use std::error::Error;
@@ -70,8 +71,8 @@ fn command_result(cmd: &Command) -> Result<(), Box<dyn Error>> {
   }
 }
 
-const fn should_show_logo(cmd: &Command) -> bool {
-  matches!(cmd, Command::ShowAllNotes(_) | Command::Info)
+fn should_show_logo(cmd: &Command) -> bool {
+  matches!(cmd, Command::ShowAllNotes(_) | Command::Info) && !get_bool("HIDE_LOGO", false)
 }
 
 const fn should_show_tips(cmd: &Command) -> bool {
@@ -98,16 +99,27 @@ pub fn execute() {
 
 #[cfg(test)]
 mod tests {
+  use std::env;
+
   use super::*;
 
   #[test]
   fn test_should_show_logo() {
+    env::set_var("TERM_KEEP_HIDE_LOGO", " 0 ");
+
     assert!(should_show_logo(&Command::Info));
     assert!(should_show_logo(&Command::ShowAllNotes(ShowAllNotes {
       archived: true
     })));
     assert!(!should_show_logo(&Command::Templates));
     assert!(!should_show_logo(&Command::ArchiveAllDone));
+
+    env::set_var("TERM_KEEP_HIDE_LOGO", " 1 ");
+
+    assert!(!should_show_logo(&Command::Info));
+    assert!(!should_show_logo(&Command::ShowAllNotes(ShowAllNotes {
+      archived: true
+    })));
   }
 
   #[test]

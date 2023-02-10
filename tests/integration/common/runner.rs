@@ -72,14 +72,14 @@ pub fn run_app_with_stdin(args: &[&str], stdin: Option<&str>) -> (String, String
 pub fn run_success(args: &[&str]) -> String {
   let (stdout, _, exit_status) = run_app_with_stdin(args, None);
   assert!(exit_status.success());
-  return stdout;
+  stdout
 }
 
 pub fn run_error(args: &[&str]) -> String {
   let (stdout, stderr, exit_status) = run_app_with_stdin(args, None);
   assert!(stdout.is_empty());
   assert_eq!(exit_status.code(), Some(1));
-  return stderr;
+  stderr
 }
 
 pub fn run_and_grep_stdout(args: &[&str], pattern: &str) -> Vec<String> {

@@ -1,6 +1,6 @@
 use crate::services;
-use crate::util::cli;
 use crate::util::cli::get_text_input;
+use crate::util::cli::{self, validate_text_input_mode};
 use crate::util::note_fmt;
 use std::error::Error;
 
@@ -12,12 +12,9 @@ fn template_text(template_name: &Option<String>) -> Result<String, Box<dyn Error
 }
 
 fn create(template_name: &Option<String>, task: bool) -> Result<(), Box<dyn Error>> {
-  // TODO: The only problem with this is that it ignores the template if used.
-  //       Not a big deal, since it's kinda like the expected behavior, but telling
-  //       the user that STDIN was used and that the template was ignored would be cool,
-  //       I guess???
+  let (content, mode) = get_text_input(&template_text(template_name)?)?;
 
-  let content: String = get_text_input(&template_text(template_name)?)?;
+  validate_text_input_mode(mode, template_name.is_some())?;
 
   if content.trim().is_empty() {
     println!("{}", cli::color_secondary("Not saved"));

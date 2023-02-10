@@ -23,6 +23,18 @@ pub fn require_string_env_var(name: &str) -> String {
   result
 }
 
+pub fn get_bool(name: &str, default_value: bool) -> bool {
+  let var_name: String = prefixed_env_var(name);
+  let value = env::var(var_name).unwrap_or_default();
+  let trimmed = value.trim();
+
+  if trimmed.is_empty() {
+    default_value
+  } else {
+    trimmed == "1"
+  }
+}
+
 pub fn get_env_var<T: FromStr>(name: &str) -> Result<T, <T as std::str::FromStr>::Err> {
   let var_name: String = prefixed_env_var(name);
   let value = env::var(var_name);
@@ -38,6 +50,44 @@ mod tests {
   fn test_require_string_env_var() {
     env::set_var("TERM_KEEP_NEW_VARIABLE", "some value");
     assert_eq!(require_string_env_var("NEW_VARIABLE"), "some value");
+  }
+
+  #[test]
+  fn test_get_bool_default() {
+    assert!(!get_bool("SOME_RANDOM_VARIABLE", false));
+    assert!(get_bool("SOME_RANDOM_VARIABLE", true));
+  }
+
+  #[test]
+  fn test_get_bool() {
+    let expect = |v: bool| {
+      assert_eq!(get_bool("SOME_BOOL", false), v);
+      assert_eq!(get_bool("SOME_BOOL", true), v);
+    };
+
+    env::set_var("TERM_KEEP_SOME_BOOL", "1");
+    expect(true);
+    env::set_var("TERM_KEEP_SOME_BOOL", " 1 ");
+    expect(true);
+
+    env::set_var("TERM_KEEP_SOME_BOOL", "0");
+    expect(false);
+    env::set_var("TERM_KEEP_SOME_BOOL", " 0 ");
+    expect(false);
+
+    env::set_var("TERM_KEEP_SOME_BOOL", "xxxxx");
+    expect(false);
+  }
+
+  #[test]
+  fn test_get_bool_empty() {
+    env::set_var("TERM_KEEP_SOME_BOOL", "");
+    assert!(!get_bool("SOME_BOOL", false));
+    assert!(get_bool("SOME_BOOL", true));
+
+    env::set_var("TERM_KEEP_SOME_BOOL", "    ");
+    assert!(!get_bool("SOME_BOOL", false));
+    assert!(get_bool("SOME_BOOL", true));
   }
 
   #[test]

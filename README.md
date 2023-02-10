@@ -118,6 +118,7 @@ term_keep remove-template -h
 | `EDITOR` | Editor to use | `vim` |
 | `TERM_KEEP_DB_PATH` | Path to store the database file | `~/.term-keep/test.db` |
 | `TERM_KEEP_SUMMARY_MAX_LENGTH` | Amount of characters displayed before truncating a note's summary (when executing the main command `term_keep`) | `100` |
+| `TERM_KEEP_HIDE_LOGO` | Hide logo. Logo is shown by default. | `0` (false) or `1` (true).
 
 ## Development
 

@@ -1,3 +1,5 @@
+use std::env;
+
 use crate::common::runner::{
   exec_test, run_and_grep_stdout, run_app, run_app_with_stdin, run_error, run_success,
 };
@@ -6,6 +8,19 @@ use term_keep::models::note::Note;
 use term_keep::models::note_type::NoteType;
 use term_keep::models::task_status::TaskStatus;
 use term_keep::services;
+
+// TODO: Create integration tests about the tag search case-sensitive and insensitive
+//       since there are a few differences, and I haven't really tested it manually either,
+//       as far as I can remember.
+
+#[test]
+fn test_logo() {
+  env::set_var("TERM_KEEP_HIDE_LOGO", " 0 ");
+  assert_eq!(run_and_grep_stdout(&[], "████████╗██╗░░██╗").len(), 1);
+
+  env::set_var("TERM_KEEP_HIDE_LOGO", " 1 ");
+  assert!(run_and_grep_stdout(&[], "████████╗██╗░░██╗").is_empty());
+}
 
 #[test]
 fn test_info() {
@@ -40,6 +55,25 @@ fn test_new_note() {
     assert!(stdout.contains("ID 1  |  Note\n"));
     assert!(stdout.contains("my new note from STDIN!\n"));
     assert!(stdout.contains("Created\n"));
+  });
+
+  exec_test(|| {
+    let (_, stderr, exit_status) = run_app_with_stdin(&["new", "-t", "my-template"], Some("..."));
+    assert_eq!(exit_status.code(), Some(1));
+    assert_eq!(
+      stderr,
+      "Error: template not found with name = my-template\n"
+    );
+  });
+
+  exec_test(|| {
+    services::templates::create("my-template", "some content").unwrap();
+    let (_, stderr, exit_status) = run_app_with_stdin(&["new", "-t", "my-template"], Some("..."));
+    assert_eq!(exit_status.code(), Some(1));
+    assert_eq!(
+      stderr,
+      "Error: Cannot get text from STDIN and use a template at the same time\n"
+    );
   });
 }
 

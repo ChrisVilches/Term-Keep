@@ -9,7 +9,7 @@ pub fn edit_content(id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(id)?;
   let prev_content = note.content;
 
-  let new_content: String = get_text_input(&prev_content)?;
+  let (new_content, _) = get_text_input(&prev_content)?;
 
   let same_content = prev_content.eq(&new_content);
 
@@ -67,7 +67,7 @@ pub fn remove_note(note_id: u32) -> Result<(), Box<dyn Error>> {
   let note: Note = services::notes::find_one(note_id)?;
 
   if !note.archived {
-    return Err("The note must be archived before removing permanently".into());
+    Err("The note must be archived before removing permanently")?;
   }
 
   services::notes::remove(note_id)?;

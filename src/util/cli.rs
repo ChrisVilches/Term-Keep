@@ -12,14 +12,31 @@ pub fn show_random_tip() {
   }
 }
 
-pub fn get_text_input(initial_text: &str) -> Result<String, Box<dyn Error>> {
+#[derive(Clone, PartialEq)]
+pub enum TextInputMode {
+  Stdin,
+  Editor,
+}
+
+pub fn get_text_input(initial_text: &str) -> Result<(String, TextInputMode), Box<dyn Error>> {
   Ok(if atty::is(atty::Stream::Stdin) {
-    edit::edit(initial_text)?
+    (edit::edit(initial_text)?, TextInputMode::Editor)
   } else {
     let mut buf = String::new();
     std::io::stdin().read_to_string(&mut buf)?;
-    buf
+    (buf, TextInputMode::Stdin)
   })
+}
+
+pub fn validate_text_input_mode(
+  mode: TextInputMode,
+  using_template: bool,
+) -> Result<(), Box<dyn Error>> {
+  if using_template && mode == TextInputMode::Stdin {
+    Err("Cannot get text from STDIN and use a template at the same time")?
+  }
+
+  Ok(())
 }
 
 pub fn abort_with_message<S: Display>(msg: S) -> ! {
@@ -34,7 +51,7 @@ fn less_aux(text: &str) -> Result<(), Box<dyn Error>> {
     .spawn()?;
 
   match child.stdin.take() {
-    None => return Err("cannot open stdin".into()),
+    None => Err("cannot open stdin")?,
     Some(mut s) => std::thread::spawn({
       let t = text.to_owned();
       move || {
@@ -64,4 +81,17 @@ pub fn color_danger(text: &str) -> String {
 
 pub fn less(text: &str) {
   less_aux(text).unwrap_or_else(|e| abort_with_message(format!("Couldn't use 'less' ({e})")));
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_validate_text_input_mode() {
+    assert!(validate_text_input_mode(TextInputMode::Editor, false).is_ok());
+    assert!(validate_text_input_mode(TextInputMode::Editor, true).is_ok());
+    assert!(validate_text_input_mode(TextInputMode::Stdin, false).is_ok());
+    assert!(validate_text_input_mode(TextInputMode::Stdin, true).is_err());
+  }
 }

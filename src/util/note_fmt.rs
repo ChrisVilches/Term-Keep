@@ -84,10 +84,10 @@ fn format_task_checklist_completion(full_text: &str) -> String {
   let (complete, total) = checklists::checklist_completion(full_text);
 
   if total == 0 {
-    return " ".into();
+    " ".into()
+  } else {
+    format!(" {} ", format!("({complete} / {total})").dimmed())
   }
-
-  format!(" {} ", format!("({complete} / {total})").dimmed())
 }
 
 fn format_task_summary(note: &Note, status: TaskStatus) -> String {
