@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Result};
 use rusqlite::types::FromSql;
 use rusqlite::types::FromSqlError;
 use rusqlite::types::FromSqlResult;
@@ -15,14 +16,14 @@ pub enum TaskStatus {
 const INVALID_STATUS_ERROR: &str = "Invalid status (allowed values: todo, progress, done)";
 
 impl TaskStatus {
-  pub fn from_string(status: &str) -> Result<Self, &str> {
+  pub fn from_string(status: &str) -> Result<Self> {
     let lower = status.to_lowercase();
 
     match lower.as_str() {
       "todo" => Ok(Self::Todo),
       "progress" => Ok(Self::Progress),
       "done" => Ok(Self::Done),
-      _ => Err(INVALID_STATUS_ERROR),
+      _ => Err(anyhow!(INVALID_STATUS_ERROR)),
     }
   }
 }
@@ -53,25 +54,22 @@ mod tests {
 
   #[test]
   fn test_from_string() {
-    assert_eq!(TaskStatus::from_string("todo"), Ok(TaskStatus::Todo));
-    assert_eq!(
-      TaskStatus::from_string("progress"),
-      Ok(TaskStatus::Progress)
-    );
-    assert_eq!(TaskStatus::from_string("done"), Ok(TaskStatus::Done));
-
-    assert_eq!(TaskStatus::from_string("ToDo"), Ok(TaskStatus::Todo));
-    assert_eq!(
-      TaskStatus::from_string("PrOgReSs"),
-      Ok(TaskStatus::Progress)
-    );
-    assert_eq!(TaskStatus::from_string("dOnE"), Ok(TaskStatus::Done));
+    let parse = |s: &str| TaskStatus::from_string(s).ok().unwrap();
+    assert_eq!(parse("todo"), TaskStatus::Todo);
+    assert_eq!(parse("progress"), TaskStatus::Progress);
+    assert_eq!(parse("done"), TaskStatus::Done);
+    assert_eq!(parse("ToDo"), TaskStatus::Todo);
+    assert_eq!(parse("PrOgReSs"), TaskStatus::Progress);
+    assert_eq!(parse("dOnE"), TaskStatus::Done);
   }
 
   #[test]
   fn test_from_string_invalid() {
-    assert_eq!(TaskStatus::from_string("tODOs"), Err(INVALID_STATUS_ERROR));
-    assert_eq!(TaskStatus::from_string("Doned"), Err(INVALID_STATUS_ERROR));
+    let parse_get_err_msg = |s: &str| TaskStatus::from_string(s).err().unwrap().to_string();
+    assert_eq!(parse_get_err_msg("tODOs"), INVALID_STATUS_ERROR);
+    assert_eq!(parse_get_err_msg("Doned"), INVALID_STATUS_ERROR);
+    assert_eq!(parse_get_err_msg("xxxyyzzz"), INVALID_STATUS_ERROR);
+    assert_eq!(parse_get_err_msg(" todo "), INVALID_STATUS_ERROR);
   }
 
   #[test]

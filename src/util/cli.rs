@@ -1,5 +1,5 @@
 use crate::services::tips;
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, bail, Result};
 use colored::Colorize;
 use std::fmt::Display;
 use std::io::prelude::*;
@@ -30,12 +30,12 @@ pub fn get_text_input(initial_text: &str) -> Result<(String, TextInputMode)> {
 
 pub fn validate_text_input_mode(mode: TextInputMode, using_template: bool) -> Result<()> {
   if using_template && mode == TextInputMode::Stdin {
-    return Err(anyhow!(
+    Err(anyhow!(
       "Cannot get text from STDIN and use a template at the same time"
-    ));
+    ))
+  } else {
+    Ok(())
   }
-
-  Ok(())
 }
 
 pub fn abort_with_message<S: Display>(msg: S) -> ! {
@@ -50,7 +50,7 @@ fn less_aux(text: &str) -> Result<()> {
     .spawn()?;
 
   match child.stdin.take() {
-    None => return Err(anyhow!("cannot open stdin")),
+    None => bail!("cannot open stdin"),
     Some(mut s) => std::thread::spawn({
       let t = text.to_owned();
       move || {
