@@ -1,4 +1,5 @@
 use crate::services::tips;
+use crate::util::env::get_bool;
 use anyhow::{anyhow, bail, Result};
 use colored::Colorize;
 use std::fmt::Display;
@@ -10,6 +11,10 @@ pub fn show_random_tip() {
     println!();
     println!("💡 Tip: {t}");
   }
+}
+
+pub fn hide_logo() -> bool {
+  get_bool("HIDE_LOGO", false)
 }
 
 #[derive(Copy, Clone, PartialEq, Eq)]

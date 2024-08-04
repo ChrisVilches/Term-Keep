@@ -1,6 +1,6 @@
 [package]
 name = "term_keep"
-version = "1.2.0"
+version = "1.2.1"
 authors = ["Chris Vilches (https://github.com/ChrisVilches)"]
 edition = "2021"
 description = "Terminal-based Google Keep clone. Can be used as a note taking / To-Do list app on a server."

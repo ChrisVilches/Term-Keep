@@ -3,7 +3,7 @@ use crate::cli::command::ShowAllNotes;
 use crate::controllers;
 use crate::util;
 use crate::util::cli::abort_with_message;
-use crate::util::env::get_bool;
+use crate::util::cli::hide_logo;
 use anyhow::Result;
 use clap::Parser;
 use colored::Colorize;
@@ -72,7 +72,7 @@ fn execute_command(cmd: &Command) -> Result<()> {
 }
 
 fn should_show_logo(cmd: &Command) -> bool {
-  matches!(cmd, Command::ShowAllNotes(_) | Command::Info) && !get_bool("HIDE_LOGO", false)
+  matches!(cmd, Command::ShowAllNotes(_) | Command::Info) && !hide_logo()
 }
 
 const fn should_show_tips(cmd: &Command) -> bool {

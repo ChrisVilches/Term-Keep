@@ -1,5 +1,6 @@
 use crate::services::notes;
 use crate::services::tips::random_tip;
+use crate::util::cli::hide_logo;
 use crate::util::env;
 use crate::util::strings::bool_to_str;
 use anyhow::Result;
@@ -20,6 +21,7 @@ pub fn info() -> Result<()> {
 
   // For debugging.
   print_item("Can read tips", bool_to_str(can_read_tips));
+  print_item("Hide logo", bool_to_str(hide_logo()));
 
   print_item("Editor", &get_editor_name()?);
   print_item("Notes", &notes::find_all(false).len().to_string());
